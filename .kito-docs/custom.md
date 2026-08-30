@@ -33,6 +33,7 @@ postgresql://ktuser:kt123qwe***@localhost:5432/n8n_db
 | 2026-08-30 | Docs Docker network + LAN: `.kito-docs/Docker/network-va-lan.md` |
 | 2026-08-30 | Thêm `.kito-docs/huong-dan-chay.md` (dev:be / worker / admin) |
 | 2026-08-30 | Tắt community/verified nodes trong `n8n.env` |
+| 2026-08-30 | `NODES_INCLUDE` whitelist node cơ bản (bỏ SaaS apps) |
 
 ## Ghi chú thêm
 
