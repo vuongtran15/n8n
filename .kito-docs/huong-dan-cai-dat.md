@@ -80,7 +80,9 @@ Env Redis trong `n8n.env` bật `EXECUTIONS_MODE=queue` (cần worker — xem b�
 
 ## 3. Chạy n8n ở chế độ dev
 
-Mở 2 terminal:
+> Note ngắn dùng hàng ngày: **[huong-dan-chay.md](./huong-dan-chay.md)**
+
+Mở terminal:
 
 ```powershell
 # Terminal 1 — backend (http://localhost:5678)
@@ -88,18 +90,15 @@ pnpm dev:be
 
 # Terminal 2 — frontend hot reload (http://localhost:8080)
 pnpm dev:fe:editor
+
+# Terminal 3 — worker (bắt buộc vì Redis/queue)
+cd packages\cli
+pnpm run dev:worker
 ```
 
 Không dùng `pnpm dev` ở root (đã bỏ).
 
-## 4. Worker (bắt buộc khi dùng Redis/queue)
-
-```powershell
-cd packages/cli
-pnpm run dev:worker
-```
-
-Không có worker thì workflow có thể không chạy execution.
+Lần đầu mở http://localhost:5678 để tạo **Owner** (admin). User Postgres `ktuser` không phải login n8n.
 
 ## 5. Chỉ dùng SQLite (không Docker)
 
