@@ -57,14 +57,17 @@ copy docker\kito-n8n\n8n.env packages\cli\bin\.env
 | Host | `localhost` |
 | Port | `5432` |
 | Database | `n8n_db` |
-| User | `n8n_user` |
-| Password | `test_password` |
+| User | `ktuser` |
+| Password | `kt123qwe***` |
 
 Connection string:
 
 ```
-postgresql://n8n_user:test_password@localhost:5432/n8n_db
+postgresql://ktuser:kt123qwe***@localhost:5432/n8n_db
 ```
+
+> Nếu container Postgres đã tạo trước đó với user cũ, cần recreate volume để áp dụng user mới:
+> `docker compose -f docker/kito-n8n/docker-compose.yml down -v` rồi `up -d` lại.
 
 ### Redis
 

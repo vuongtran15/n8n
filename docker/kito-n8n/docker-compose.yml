@@ -14,12 +14,12 @@ services:
       - '5432:5432'
     environment:
       POSTGRES_DB: n8n_db
-      POSTGRES_USER: n8n_user
-      POSTGRES_PASSWORD: test_password
+      POSTGRES_USER: ktuser
+      POSTGRES_PASSWORD: kt123qwe***
     volumes:
       - kito-n8n-postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U n8n_user -d n8n_db']
+      test: ['CMD-SHELL', 'pg_isready -U ktuser -d n8n_db']
       interval: 5s
       timeout: 5s
       retries: 10
