@@ -54,6 +54,20 @@ Pre-seed qua env (tuỳ chọn): `N8N_INSTANCE_OWNER_EMAIL` + `N8N_INSTANCE_OWNE
 | Redis | `localhost:6379` |
 | LAN (ví dụ) | `http://192.168.1.15:5678` |
 
+## Ẩn node nhà cung cấp ngoài (community)
+
+Trong `packages/cli/bin/.env` (template: `docker/kito-n8n/n8n.env`):
+
+```env
+N8N_COMMUNITY_PACKAGES_ENABLED=false
+N8N_VERIFIED_PACKAGES_ENABLED=false
+N8N_UNVERIFIED_PACKAGES_ENABLED=false
+```
+
+Sau đó **restart** `pnpm dev:be`. Panel “Action in an app” sẽ không còn danh sách verified community (1Shot, 2Captcha, …) — chỉ còn node built-in của n8n.
+
+Muốn thu hẹp thêm node built-in: dùng `NODES_EXCLUDE='["n8n-nodes-base.someNode"]'` hoặc `NODES_INCLUDE` (JSON array).
+
 ## Dừng
 
 - Ctrl+C các terminal `dev:*`
