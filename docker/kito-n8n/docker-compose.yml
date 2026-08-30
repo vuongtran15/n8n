@@ -1,0 +1,42 @@
+# Local Postgres + Redis for kito-n8n development.
+# Usage:
+#   docker compose -f docker/kito-n8n/docker-compose.yml up -d
+#   copy n8n.env → packages/cli/bin/.env
+#   pnpm dev:be
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: kito-n8n-postgres
+    restart: unless-stopped
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: n8n_db
+      POSTGRES_USER: n8n_user
+      POSTGRES_PASSWORD: test_password
+    volumes:
+      - kito-n8n-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U n8n_user -d n8n_db']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: kito-n8n-redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    volumes:
+      - kito-n8n-redis-data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  kito-n8n-postgres-data:
+  kito-n8n-redis-data:
