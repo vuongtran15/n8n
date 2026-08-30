@@ -54,19 +54,27 @@ Pre-seed qua env (tuỳ chọn): `N8N_INSTANCE_OWNER_EMAIL` + `N8N_INSTANCE_OWNE
 | Redis | `localhost:6379` |
 | LAN (ví dụ) | `http://192.168.1.15:5678` |
 
-## Ẩn node nhà cung cấp ngoài (community)
+## Ẩn node nhà cung cấp ngoài
 
-Trong `packages/cli/bin/.env` (template: `docker/kito-n8n/n8n.env`):
-
+### Community (verified npm)
 ```env
 N8N_COMMUNITY_PACKAGES_ENABLED=false
 N8N_VERIFIED_PACKAGES_ENABLED=false
 N8N_UNVERIFIED_PACKAGES_ENABLED=false
 ```
 
-Sau đó **restart** `pnpm dev:be`. Panel “Action in an app” sẽ không còn danh sách verified community (1Shot, 2Captcha, …) — chỉ còn node built-in của n8n.
+### Built-in apps (Airtable, Asana, AWS, …)
+Dùng **`NODES_INCLUDE`** (whitelist). Trong `docker/kito-n8n/n8n.env` đã chỉ giữ node cơ bản:
 
-Muốn thu hẹp thêm node built-in: dùng `NODES_EXCLUDE='["n8n-nodes-base.someNode"]'` hoặc `NODES_INCLUDE` (JSON array).
+- Trigger: Manual, Schedule, Webhook, Error, Execute Workflow  
+- Logic: Code, If, Switch, Split In Batches (loop), Filter, Set, Merge, Wait  
+- File: Read/Write File, Convert/Extract File, Spreadsheet, PDF, Compression  
+- Transform: Item Lists, Aggregate, Sort, Limit, …  
+- Utils: HTTP Request, Date & Time, Crypto, HTML, XML, Sticky Note  
+
+Sau khi sửa `.env` → **restart** `pnpm dev:be` + hard refresh browser.
+
+Muốn thêm 1 node built-in: thêm `"n8n-nodes-base.<tenNode>"` vào mảng `NODES_INCLUDE`.
 
 ## Dừng
 
