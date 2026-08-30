@@ -501,7 +501,7 @@ export function TriggerView() {
 	return view;
 }
 
-export function RegularView(_nodes: SimplifiedNodeType[]) {
+export function RegularView(nodes: SimplifiedNodeType[]) {
 	const i18n = useI18n();
 
 	const popularItemsSubcategory = [
@@ -512,7 +512,8 @@ export function RegularView(_nodes: SimplifiedNodeType[]) {
 		AI_TRANSFORM_NODE_TYPE,
 	];
 
-	// kito-n8n: hide AI, "Action in an app", and "Human review" — keep Core / Flow / Transform only.
+	// kito-n8n: keep Core / Flow / Transform; hide "Action in an app" + "Human review".
+	// AI category returns when langchain Agent (etc.) is in NODES_INCLUDE.
 	const view: NodeView = {
 		value: REGULAR_NODE_CREATOR_VIEW,
 		title: i18n.baseText('nodeCreator.triggerHelperPanel.whatHappensNext'),
@@ -601,6 +602,20 @@ export function RegularView(_nodes: SimplifiedNodeType[]) {
 			},
 		],
 	};
+
+	const hasAINodes = (nodes ?? []).some((node) => node.codex?.categories?.includes(AI_SUBCATEGORY));
+	if (hasAINodes) {
+		view.items.unshift({
+			key: AI_NODE_CREATOR_VIEW,
+			type: 'view',
+			properties: {
+				title: i18n.baseText('nodeCreator.aiPanel.langchainAiNodes'),
+				icon: 'robot',
+				description: i18n.baseText('nodeCreator.aiPanel.nodesForAi'),
+				borderless: true,
+			},
+		} as NodeViewItem);
+	}
 
 	view.items.push({
 		key: TRIGGER_NODE_CREATOR_VIEW,

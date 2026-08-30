@@ -93,6 +93,21 @@ Cần **rebuild/restart frontend**: `pnpm --filter n8n-editor-ui clean && pnpm -
 - Env: `N8N_PYTHON_ENABLED=false` (chặn execute nếu còn workflow cũ dùng Python)
 - Sau sửa: `pnpm --filter n8n-nodes-base build` + restart `pnpm dev:be`
 
+## AI Agent (langchain — không nằm trong nodes-base)
+
+AI Agent package: `@n8n/n8n-nodes-langchain`  
+Đã whitelist trong `NODES_INCLUDE` (Agent + Chat Model + Memory + Tools + Chat Trigger).
+
+Panel **AI** hiện lại khi các node langchain được load. Vẫn ẩn: Action in an app, Human review.
+
+Sau khi sửa `n8n.env`:
+
+```powershell
+copy docker\kito-n8n\n8n.env packages\cli\bin\.env
+# restart pnpm dev:be
+# nếu đổi UI: pnpm --filter n8n-editor-ui build
+```
+
 ## Dừng
 
 - Ctrl+C các terminal `dev:*`

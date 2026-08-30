@@ -36,6 +36,7 @@ postgresql://ktuser:kt123qwe***@localhost:5432/n8n_db
 | 2026-08-30 | `NODES_INCLUDE` whitelist node cơ bản (bỏ SaaS apps) |
 | 2026-08-30 | Ẩn AI / Action in an app / Human review khỏi node creator |
 | 2026-08-30 | Ẩn Code in Python (`N8N_PYTHON_ENABLED=false` + Code.node.ts) |
+| 2026-08-30 | Thêm AI Agent stack (langchain) vào `NODES_INCLUDE`, mở lại mục AI |
 
 ## Ghi chú thêm
 
