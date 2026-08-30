@@ -1,0 +1,26 @@
+{
+  "name": "n8n-nodes-rm-workflow",
+  "version": "0.1.0",
+  "description": "Kito custom nodes — RM Workflow group",
+  "license": "MIT",
+  "keywords": ["n8n-community-node-package", "rm-workflow"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/copy-codex.mjs",
+    "watch": "tsc -p tsconfig.json --watch",
+    "clean": "rimraf dist"
+  },
+  "files": ["dist"],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "nodes": ["dist/nodes/RmCallSubworkflow/RmCallSubworkflow.node.js"]
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "n8n-workflow": "workspace:*",
+    "rimraf": "catalog:",
+    "typescript": "catalog:"
+  }
+}

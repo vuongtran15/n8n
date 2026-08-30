@@ -38,6 +38,7 @@ postgresql://ktuser:kt123qwe***@localhost:5432/n8n_db
 | 2026-08-30 | Ẩn Code in Python (`N8N_PYTHON_ENABLED=false` + Code.node.ts) |
 | 2026-08-30 | Thêm AI Agent stack (langchain) vào `NODES_INCLUDE`, mở lại mục AI |
 | 2026-08-30 | Thêm nhóm RM Workflow + node `rmCallSubworkflow` |
+| 2026-08-30 | Tách RM nodes sang `custom/n8n-nodes-rm-workflow` (`CUSTOM.*`, `N8N_CUSTOM_EXTENSIONS`) |
 
 ## Ghi chú thêm
 

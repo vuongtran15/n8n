@@ -1,19 +1,25 @@
-import { NodeConnectionTypes, NodeOperationError, parseErrorMetadata } from 'n8n-workflow';
+import {
+	NodeConnectionTypes,
+	NodeOperationError,
+	parseErrorMetadata,
+} from 'n8n-workflow';
 import type {
 	ExecuteWorkflowData,
 	IExecuteFunctions,
+	ILoadOptionsFunctions,
 	INodeExecutionData,
+	INodeListSearchResult,
 	INodeType,
 	INodeTypeDescription,
 } from 'n8n-workflow';
 
-import { getWorkflowInfo } from '../../ExecuteWorkflow/ExecuteWorkflow/GenericFunctions';
-import { localResourceMapping } from '../../ExecuteWorkflow/ExecuteWorkflow/methods';
-import { getCurrentWorkflowInputData } from '../../../utils/workflowInputsResourceMapping/GenericFunctions';
+import { filterAuthorizedWorkflows } from '../../helpers/authorizedWorkflows';
+import { getWorkflowInfo } from '../../helpers/getWorkflowInfo';
+import { getCurrentWorkflowInputData, loadSubWorkflowInputs } from '../../helpers/workflowInputs';
 
 /**
- * RM Workflow — Call Subworkflow
- * Pick a workflow by ID; UI auto-loads that sub-workflow's declared input fields.
+ * RM Workflow — Call Subworkflow (custom package)
+ * Pick from authorized workflows or enter ID only — no create / no open-sub-workflow link.
  */
 export class RmCallSubworkflow implements INodeType {
 	description: INodeTypeDescription = {
@@ -22,28 +28,41 @@ export class RmCallSubworkflow implements INodeType {
 		icon: 'fa:sitemap',
 		iconColor: 'blue',
 		group: ['transform'],
-		version: 1.1,
+		version: 1.2,
 		subtitle: '={{"RM → " + $parameter["workflowId"]}}',
-		description: 'Call a sub-workflow by ID and map its declared inputs',
+		description: 'Call an authorized sub-workflow by ID and map its declared inputs',
 		defaults: {
 			name: 'RM Call Subworkflow',
 		},
 		inputs: [NodeConnectionTypes.Main],
 		outputs: [NodeConnectionTypes.Main],
-		codex: {
-			categories: ['RM Workflow'],
-			subcategories: {
-				'RM Workflow': ['RM Workflow'],
-			},
-			alias: ['rm', 'subworkflow', 'execute workflow'],
-		},
 		properties: [
 			{
 				displayName: 'Workflow',
 				name: 'workflowId',
-				type: 'workflowSelector',
-				default: '',
+				type: 'resourceLocator',
+				default: { mode: 'list', value: '' },
 				required: true,
+				description:
+					'Choose from workflows granted to this account, or enter a workflow ID. Sub-workflows cannot be opened or created from this node.',
+				modes: [
+					{
+						displayName: 'From granted list',
+						name: 'list',
+						type: 'list',
+						placeholder: 'Select an authorized workflow',
+						typeOptions: {
+							searchListMethod: 'searchAuthorizedWorkflows',
+							searchable: true,
+						},
+					},
+					{
+						displayName: 'By ID',
+						name: 'id',
+						type: 'string',
+						placeholder: 'Workflow ID',
+					},
+				],
 			},
 			{
 				displayName: 'Workflow Inputs',
@@ -118,11 +137,20 @@ export class RmCallSubworkflow implements INodeType {
 	};
 
 	methods = {
-		localResourceMapping,
+		listSearch: {
+			async searchAuthorizedWorkflows(
+				this: ILoadOptionsFunctions,
+				filter?: string,
+			): Promise<INodeListSearchResult> {
+				return { results: filterAuthorizedWorkflows(filter) };
+			},
+		},
+		localResourceMapping: {
+			loadSubWorkflowInputs,
+		},
 	};
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
-		const source = 'database';
 		const mode = this.getNodeParameter('mode', 0, false) as string;
 		const items = getCurrentWorkflowInputData.call(this);
 
@@ -139,7 +167,7 @@ export class RmCallSubworkflow implements INodeType {
 						i,
 						true,
 					) as boolean;
-					const workflowInfo = await getWorkflowInfo.call(this, source, i);
+					const workflowInfo = await getWorkflowInfo.call(this, i);
 
 					if (waitForSubWorkflow) {
 						const executionResult: ExecuteWorkflowData = await this.executeWorkflow(
@@ -236,7 +264,7 @@ export class RmCallSubworkflow implements INodeType {
 				0,
 				true,
 			) as boolean;
-			const workflowInfo = await getWorkflowInfo.call(this, source);
+			const workflowInfo = await getWorkflowInfo.call(this);
 
 			const executionResult: ExecuteWorkflowData = await this.executeWorkflow(
 				workflowInfo,
@@ -271,8 +299,7 @@ export class RmCallSubworkflow implements INodeType {
 				];
 			}
 
-			const workflowResult = executionResult.data as INodeExecutionData[][];
-			return workflowResult;
+			return executionResult.data as INodeExecutionData[][];
 		} catch (error) {
 			if (this.continueOnFail()) {
 				const metadata = parseErrorMetadata(error);

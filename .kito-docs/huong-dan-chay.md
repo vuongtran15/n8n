@@ -76,6 +76,18 @@ Sau khi sửa `.env` → **restart** `pnpm dev:be` + hard refresh browser.
 
 Muốn thêm 1 node built-in: thêm `"n8n-nodes-base.<tenNode>"` vào mảng `NODES_INCLUDE`.
 
+## RM Workflow (custom package — không nằm trong nodes-base)
+
+Package: `custom/n8n-nodes-rm-workflow/` → type id `CUSTOM.rmCallSubworkflow`.
+
+```powershell
+cd custom\n8n-nodes-rm-workflow
+pnpm install
+pnpm build
+```
+
+Env cần `N8N_CUSTOM_EXTENSIONS` trỏ tới folder package đó + `"CUSTOM.rmCallSubworkflow"` trong `NODES_INCLUDE`. Chi tiết: [custom-nodes-rm-workflow.md](./custom-nodes-rm-workflow.md).
+
 ## Ẩn mục AI / Action in an app / Human review
 
 Đã sửa UI node creator (`viewsData.ts` RegularView) trên branch kito — panel “What happens next?” chỉ còn:

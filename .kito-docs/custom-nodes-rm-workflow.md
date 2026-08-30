@@ -1,62 +1,70 @@
 # Custom nodes — RM Workflow
 
-Nhóm **RM Workflow** trên node creator. Thêm node mới dưới `packages/nodes-base/nodes/RmWorkflow/`.
+Package riêng ngoài `nodes-base`: `custom/n8n-nodes-rm-workflow/`  
+→ fork / merge upstream **không đụng** `packages/nodes-base`.
 
 ## Nodes hiện có
 
 | Node | Type | Mô tả |
 |------|------|--------|
-| RM Call Subworkflow | `n8n-nodes-base.rmCallSubworkflow` | Chọn workflow ID → tự hiện input fields của sub-workflow (resourceMapper) |
+| RM Call Subworkflow | `CUSTOM.rmCallSubworkflow` | Chọn workflow được cấp / nhập ID → map inputs (resourceMapper). Không tạo / không mở sub-workflow |
 
 Cơ chế fields: giống Execute Sub-workflow — đọc schema từ **Execute Workflow Trigger** của child. Child phải khai báo inputs (không phải “Accept all data”) thì panel mới có trường.
 
+Chọn workflow: `resourceLocator` — **From granted list** (popup danh sách cấp sẵn) hoặc **By ID**. Danh sách stub: `custom/n8n-nodes-rm-workflow/src/helpers/authorizedWorkflows.ts` (sau này thay API theo tài khoản). Không dùng `workflowSelector` → không nút tạo / mở sub-workflow.
+
+Loader: `N8N_CUSTOM_EXTENSIONS` → package name luôn là **`CUSTOM`**.
+
+## Env (bắt buộc)
+
+Trong `docker/kito-n8n/n8n.env` (copy sang `packages/cli/bin/.env`):
+
+```env
+N8N_CUSTOM_EXTENSIONS=E:/CODE/N8N/n8n/custom/n8n-nodes-rm-workflow
+```
+
+Và trong `NODES_INCLUDE` có `"CUSTOM.rmCallSubworkflow"`.
+
+Đổi path cho máy bạn nếu repo không nằm ở `E:/CODE/N8N/n8n`.
+
 ## Thêm node tiếp theo vào nhóm
 
-1. Tạo folder `packages/nodes-base/nodes/RmWorkflow/<TenNode>/`
+1. Tạo `custom/n8n-nodes-rm-workflow/src/nodes/<TenNode>/`
 2. File `*.node.ts` + `*.node.json` với:
 
 ```json
+"node": "CUSTOM.<tenNode>",
 "categories": ["RM Workflow"],
 "subcategories": { "RM Workflow": ["RM Workflow"] }
 ```
 
-3. Đăng ký path trong `packages/nodes-base/package.json` → `n8n.nodes`
-4. Thêm vào `NODES_INCLUDE` trong `docker/kito-n8n/n8n.env`
-5. Build / watch (xem dưới)
+3. Thêm path vào `package.json` → `n8n.nodes` (optional cho publish; loader globs `**/*.node.js`)
+4. Thêm `"CUSTOM.<tenNode>"` vào `NODES_INCLUDE`
+5. `pnpm build` trong package + restart `dev:be`
 
-## Test nhanh (không cần rebuild cả monorepo)
-
-### A. Unit test (nhanh nhất)
+## Dev / rebuild nhanh
 
 ```powershell
-cd packages\nodes-base
-pnpm test RmCallSubworkflow
-# hoặc file cụ thể:
-pnpm test nodes/RmWorkflow/RmCallSubworkflow
-```
+cd custom\n8n-nodes-rm-workflow
+pnpm install
+pnpm build
+# hoặc: pnpm watch   (chỉ tsc; lần đầu / đổi .node.json vẫn cần pnpm build)
 
-### B. Watch nodes-base + backend đã chạy
-
-```powershell
-# Terminal 1 — backend (giữ chạy)
+# Terminal khác — backend
 pnpm dev:be
-
-# Terminal 2 — chỉ rebuild nodes khi sửa (vài giây–chục giây, không full monorepo)
-pnpm --filter n8n-nodes-base watch
 ```
 
-`dev:be` (nodemon) thường reload khi `nodes-base/dist` đổi. Hard refresh browser.
+Hard refresh browser sau khi dist đổi.
 
-### C. Sửa UI node creator
+## Sửa UI node creator (nhóm RM Workflow)
+
+Tile **RM Workflow** nằm trong `editor-ui` (viewsData) — đó là customization fork nhỏ, không phải trong package node.
 
 ```powershell
-pnpm dev:fe:editor   # :8080 hot reload
-# hoặc
-pnpm --filter n8n-editor-ui clean
-pnpm --filter n8n-editor-ui build
+pnpm dev:fe:editor   # :8080
 ```
 
-### Tránh
+## Tránh
 
-- `pnpm build` / `pnpm reset` mỗi lần sửa 1 node — quá chậm  
-- Chỉ restart `dev:be` mà không `watch`/`build` nodes-base — UI vẫn node cũ
+- Đưa node vào `packages/nodes-base` — conflict khi fork/merge upstream  
+- Chỉ sửa `.ts` mà không `pnpm build` trong `custom/n8n-nodes-rm-workflow` — n8n chỉ load `*.node.js` trong dist
