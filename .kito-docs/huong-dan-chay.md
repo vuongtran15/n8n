@@ -85,7 +85,13 @@ Muốn thêm 1 node built-in: thêm `"n8n-nodes-base.<tenNode>"` vào mảng `NO
 - Core  
 - Add another trigger  
 
-Cần **rebuild/restart frontend**: `pnpm dev:fe:editor` (hoặc restart `dev:be` nếu chỉ dùng dist).
+Cần **rebuild/restart frontend**: `pnpm --filter n8n-editor-ui clean && pnpm --filter n8n-editor-ui build` rồi `pnpm dev:be`, hoặc dùng `pnpm dev:fe:editor` (:8080).
+
+## Ẩn Code in Python
+
+- UI: đã bỏ option Python trong `packages/nodes-base/nodes/Code/Code.node.ts`
+- Env: `N8N_PYTHON_ENABLED=false` (chặn execute nếu còn workflow cũ dùng Python)
+- Sau sửa: `pnpm --filter n8n-nodes-base build` + restart `pnpm dev:be`
 
 ## Dừng
 

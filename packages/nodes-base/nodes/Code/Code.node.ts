@@ -164,16 +164,12 @@ return items.map(item => ({
 						value: 'javaScript',
 						action: 'Code in JavaScript',
 					},
-					{
-						name: 'Python',
-						value: 'pythonNative',
-						action: 'Code in Python',
-					},
+					// kito-n8n: hide "Code in Python" from node creator / language picker
 				],
 				default: 'javaScript',
 				builderHint: {
 					propertyHint:
-						'Default to javaScript — the only language with library access and cross-node helpers. Choose pythonNative only when the user explicitly asks for Python.',
+						'Default to javaScript — the only language with library access and cross-node helpers.',
 				},
 			},
 			{
