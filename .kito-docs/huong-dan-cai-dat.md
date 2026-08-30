@@ -2,6 +2,8 @@
 
 Hướng dẫn chạy n8n local từ source trên Windows, kèm Postgres + Redis qua Docker.
 
+Tài liệu này nằm trong `.kito-docs/` (root repo).
+
 ## Yêu cầu
 
 | Tool | Phiên bản |
@@ -119,15 +121,18 @@ docker compose -f docker/kito-n8n/docker-compose.yml down
 docker compose -f docker/kito-n8n/docker-compose.yml down -v
 ```
 
-## Cấu trúc file liên quan
+## Cấu trúc liên quan
 
 ```
-docker/kito-n8n/
-  docker-compose.yml   # Postgres + Redis (port cố định)
-  n8n.env              # template env → copy sang packages/cli/bin/.env
-  .gitignore           # bỏ qua .env local / data
-  document/
-    huong-dan-cai-dat.md
+.kito-docs/                    # tài liệu + ghi chú custom
+  README.md
+  huong-dan-cai-dat.md
+  custom.md
+
+docker/kito-n8n/               # stack Docker local
+  docker-compose.yml
+  n8n.env
+  .gitignore
 ```
 
 `packages/cli/bin/.env` đã được gitignore — không commit file này.
@@ -141,3 +146,4 @@ docker/kito-n8n/
 | `spawn pnpm ENOENT` với `agent:setup` | Dùng `pnpm install` / `pnpm build` thủ công |
 | PowerShell: `--services=postgres,redis` bị lỗi | Bọc quotes: `--services='postgres,redis'` |
 | Workflow không chạy | Thiếu `pnpm run dev:worker` khi queue mode |
+| Không thấy `.kito-docs` trong Explorer | Bật “Show hidden items” (folder bắt đầu bằng `.`) |

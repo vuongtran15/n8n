@@ -1,4 +1,5 @@
 # Local Postgres + Redis for kito-n8n development.
+# Docs: .kito-docs/huong-dan-cai-dat.md
 # Usage:
 #   docker compose -f docker/kito-n8n/docker-compose.yml up -d
 #   copy n8n.env → packages/cli/bin/.env
