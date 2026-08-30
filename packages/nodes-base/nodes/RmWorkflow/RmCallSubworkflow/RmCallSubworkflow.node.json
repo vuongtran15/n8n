@@ -1,0 +1,13 @@
+{
+	"node": "n8n-nodes-base.rmCallSubworkflow",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["RM Workflow"],
+	"subcategories": {
+		"RM Workflow": ["RM Workflow"]
+	},
+	"alias": ["rm", "subworkflow", "execute workflow", "call workflow"],
+	"resources": {
+		"primaryDocumentation": []
+	}
+}

@@ -148,8 +148,9 @@ describe('NodesListPanel', () => {
 
 			await nextTick();
 			expect(screen.getByText('What happens next?')).toBeInTheDocument();
-			expect(screen.queryAllByTestId('item-iterator-item')).toHaveLength(4);
+			expect(screen.queryAllByTestId('item-iterator-item')).toHaveLength(5);
 
+			expect(screen.getByText('RM Workflow')).toBeInTheDocument();
 			expect(screen.getByText('Data transformation')).toBeInTheDocument();
 			expect(screen.getByText('Flow')).toBeInTheDocument();
 			expect(screen.getByText('Core')).toBeInTheDocument();

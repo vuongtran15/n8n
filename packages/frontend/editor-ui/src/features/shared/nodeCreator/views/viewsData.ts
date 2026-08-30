@@ -49,6 +49,7 @@ import {
 	OTHER_TRIGGER_NODES_SUBCATEGORY,
 	REGULAR_NODE_CREATOR_VIEW,
 	REMOVE_DUPLICATES_NODE_TYPE,
+	RM_WORKFLOW_CATEGORY,
 	RSS_READ_NODE_TYPE,
 	SCHEDULE_TRIGGER_NODE_TYPE,
 	SET_NODE_TYPE,
@@ -514,10 +515,20 @@ export function RegularView(nodes: SimplifiedNodeType[]) {
 
 	// kito-n8n: keep Core / Flow / Transform; hide "Action in an app" + "Human review".
 	// AI category returns when langchain Agent (etc.) is in NODES_INCLUDE.
+	// RM Workflow group for custom kito nodes.
 	const view: NodeView = {
 		value: REGULAR_NODE_CREATOR_VIEW,
 		title: i18n.baseText('nodeCreator.triggerHelperPanel.whatHappensNext'),
 		items: [
+			{
+				type: 'subcategory',
+				key: RM_WORKFLOW_CATEGORY,
+				category: RM_WORKFLOW_CATEGORY,
+				properties: {
+					title: RM_WORKFLOW_CATEGORY,
+					icon: 'layers',
+				},
+			},
 			{
 				type: 'subcategory',
 				key: TRANSFORM_DATA_SUBCATEGORY,

@@ -30,6 +30,7 @@ import {
 	MICROSOFT_TEAMS_NODE_TYPE,
 	RECOMMENDED_NODES,
 	REGULAR_NODE_CREATOR_VIEW,
+	RM_WORKFLOW_CATEGORY,
 } from '@/app/constants';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -79,6 +80,7 @@ export function subcategorizeItems(items: SimplifiedNodeType[]) {
 		CORE_NODES_CATEGORY,
 		AI_SUBCATEGORY,
 		HUMAN_IN_THE_LOOP_CATEGORY,
+		RM_WORKFLOW_CATEGORY,
 	];
 	return items.reduce((acc: SubcategorizedNodeTypes, item) => {
 		// Only some subcategories are allowed

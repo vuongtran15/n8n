@@ -553,6 +553,7 @@
       "dist/nodes/ExecuteCommand/ExecuteCommand.node.js",
       "dist/nodes/ExecuteWorkflow/ExecuteWorkflow/ExecuteWorkflow.node.js",
       "dist/nodes/ExecuteWorkflow/ExecuteWorkflowTrigger/ExecuteWorkflowTrigger.node.js",
+      "dist/nodes/RmWorkflow/RmCallSubworkflow/RmCallSubworkflow.node.js",
       "dist/nodes/ExecutionData/ExecutionData.node.js",
       "dist/nodes/Facebook/FacebookGraphApi.node.js",
       "dist/nodes/Facebook/FacebookTrigger.node.js",

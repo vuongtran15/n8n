@@ -2178,6 +2178,8 @@
 	"nodeCreator.subcategoryNames.files": "Files",
 	"nodeCreator.subcategoryNames.flow": "Flow",
 	"nodeCreator.subcategoryNames.helpers": "Core",
+	"nodeCreator.subcategoryNames.rmWorkflow": "RM Workflow",
+	"nodeCreator.subcategoryDescriptions.rmWorkflow": "Custom RM nodes — call sub-workflows and more",
 	"nodeCreator.subcategoryNames.otherTriggerNodes": "Other ways...",
 	"nodeCreator.subcategoryNames.agents": "Agents",
 	"nodeCreator.subcategoryNames.chains": "Chains",
