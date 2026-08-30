@@ -7,6 +7,7 @@ Ghi lại thay đổi / config / quyết định custom của team tại đây.
 - Branch: `kito-n8n`
 - Docker: `docker/kito-n8n/docker-compose.yml`
 - Env template: `docker/kito-n8n/n8n.env`
+- Network: `kito-n8n-net` (`172.28.10.0/24`) — tách khỏi bridge/testcontainers
 
 ## Tài khoản Postgres
 
@@ -28,6 +29,7 @@ postgresql://ktuser:kt123qwe***@localhost:5432/n8n_db
 |------|----------|
 | 2026-08-30 | Thêm Postgres + Redis compose, docs cài đặt Windows |
 | 2026-08-30 | Đổi Postgres user → `ktuser` / pass → `kt123qwe***` |
+| 2026-08-30 | Thêm network `kito-n8n-net` subnet `172.28.10.0/24` |
 
 ## Ghi chú thêm
 

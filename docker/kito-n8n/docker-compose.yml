@@ -10,6 +10,8 @@ services:
     image: postgres:16-alpine
     container_name: kito-n8n-postgres
     restart: unless-stopped
+    networks:
+      - kito-n8n-net
     ports:
       - '5432:5432'
     environment:
@@ -28,6 +30,8 @@ services:
     image: redis:7-alpine
     container_name: kito-n8n-redis
     restart: unless-stopped
+    networks:
+      - kito-n8n-net
     ports:
       - '6379:6379'
     volumes:
@@ -37,6 +41,16 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+
+networks:
+  kito-n8n-net:
+    name: kito-n8n-net
+    driver: bridge
+    ipam:
+      config:
+        # Subnet riêng — tránh đụng bridge mặc định (172.17) / testcontainers (172.18+)
+        - subnet: 172.28.10.0/24
+          gateway: 172.28.10.1
 
 volumes:
   kito-n8n-postgres-data:

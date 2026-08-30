@@ -133,12 +133,14 @@ docker compose -f docker/kito-n8n/docker-compose.yml down -v
   custom.md
 
 docker/kito-n8n/               # stack Docker local
-  docker-compose.yml
+  docker-compose.yml           # network: kito-n8n-net (172.28.10.0/24)
   n8n.env
   .gitignore
 ```
 
 `packages/cli/bin/.env` đã được gitignore — không commit file này.
+
+Network `kito-n8n-net` dùng subnet cố định để không đụng bridge mặc định / testcontainers (`n8n-svc-*`). Host vẫn nối qua `localhost:5432` / `localhost:6379`.
 
 ## Lỗi thường gặp
 
