@@ -72,7 +72,7 @@ import { useI18n } from '@n8n/i18n';
 import camelCase from 'lodash/camelCase';
 import type { INodeTypeDescription, NodeConnectionType, Themed } from 'n8n-workflow';
 import { EVALUATION_TRIGGER_NODE_TYPE, isHitlToolType, NodeConnectionTypes } from 'n8n-workflow';
-import { getAiTemplatesCallout, getSendAndWaitNodes } from '../nodeCreator.utils';
+import { getAiTemplatesCallout } from '../nodeCreator.utils';
 
 export interface NodeViewItemSection {
 	key: string;
@@ -501,7 +501,7 @@ export function TriggerView() {
 	return view;
 }
 
-export function RegularView(nodes: SimplifiedNodeType[]) {
+export function RegularView(_nodes: SimplifiedNodeType[]) {
 	const i18n = useI18n();
 
 	const popularItemsSubcategory = [
@@ -512,19 +512,11 @@ export function RegularView(nodes: SimplifiedNodeType[]) {
 		AI_TRANSFORM_NODE_TYPE,
 	];
 
+	// kito-n8n: hide AI, "Action in an app", and "Human review" — keep Core / Flow / Transform only.
 	const view: NodeView = {
 		value: REGULAR_NODE_CREATOR_VIEW,
 		title: i18n.baseText('nodeCreator.triggerHelperPanel.whatHappensNext'),
 		items: [
-			{
-				key: DEFAULT_SUBCATEGORY,
-				type: 'subcategory',
-				properties: {
-					title: 'App Regular Nodes',
-					icon: 'globe',
-					forceIncludeNodes: [RSS_READ_NODE_TYPE, EMAIL_SEND_NODE_TYPE],
-				},
-			},
 			{
 				type: 'subcategory',
 				key: TRANSFORM_DATA_SUBCATEGORY,
@@ -607,42 +599,8 @@ export function RegularView(nodes: SimplifiedNodeType[]) {
 					],
 				},
 			},
-			// To add node to this subcategory:
-			// - add "HITL" to the "categories" property of the node's codex
-			// - add "HITL": ["Human in the Loop"] to the "subcategories" property of the node's codex
-			// node has to have the "sendAndWait" operation, if a new operation needs to be included here:
-			// - update getHumanInTheLoopActions in packages/frontend/editor-ui/src/components/Node/NodeCreator/Modes/NodesMode.vue
-			{
-				type: 'subcategory',
-				key: HITL_SUBCATEGORY,
-				category: HUMAN_IN_THE_LOOP_CATEGORY,
-				properties: {
-					title: HITL_SUBCATEGORY,
-					icon: 'badge-check',
-					sections: [
-						{
-							key: 'sendAndWait',
-							title: i18n.baseText('nodeCreator.sectionNames.sendAndWait'),
-							items: getSendAndWaitNodes(nodes),
-						},
-					],
-				},
-			},
 		],
 	};
-
-	const hasAINodes = (nodes ?? []).some((node) => node.codex?.categories?.includes(AI_SUBCATEGORY));
-	if (hasAINodes)
-		view.items.unshift({
-			key: AI_NODE_CREATOR_VIEW,
-			type: 'view',
-			properties: {
-				title: i18n.baseText('nodeCreator.aiPanel.langchainAiNodes'),
-				icon: 'robot',
-				description: i18n.baseText('nodeCreator.aiPanel.nodesForAi'),
-				borderless: true,
-			},
-		} as NodeViewItem);
 
 	view.items.push({
 		key: TRIGGER_NODE_CREATOR_VIEW,

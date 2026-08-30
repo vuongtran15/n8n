@@ -76,6 +76,17 @@ Sau khi sửa `.env` → **restart** `pnpm dev:be` + hard refresh browser.
 
 Muốn thêm 1 node built-in: thêm `"n8n-nodes-base.<tenNode>"` vào mảng `NODES_INCLUDE`.
 
+## Ẩn mục AI / Action in an app / Human review
+
+Đã sửa UI node creator (`viewsData.ts` RegularView) trên branch kito — panel “What happens next?” chỉ còn:
+
+- Data transformation  
+- Flow  
+- Core  
+- Add another trigger  
+
+Cần **rebuild/restart frontend**: `pnpm dev:fe:editor` (hoặc restart `dev:be` nếu chỉ dùng dist).
+
 ## Dừng
 
 - Ctrl+C các terminal `dev:*`

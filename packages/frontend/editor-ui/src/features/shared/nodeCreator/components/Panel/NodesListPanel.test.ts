@@ -148,13 +148,14 @@ describe('NodesListPanel', () => {
 
 			await nextTick();
 			expect(screen.getByText('What happens next?')).toBeInTheDocument();
-			expect(screen.queryAllByTestId('item-iterator-item')).toHaveLength(6);
+			expect(screen.queryAllByTestId('item-iterator-item')).toHaveLength(4);
 
-			screen.getByText('Action in an app').click();
-			await nextTick();
-			mockedNodes.forEach((n) => {
-				expect(screen.queryByText(n.displayName)).toBeInTheDocument();
-			});
+			expect(screen.getByText('Data transformation')).toBeInTheDocument();
+			expect(screen.getByText('Flow')).toBeInTheDocument();
+			expect(screen.getByText('Core')).toBeInTheDocument();
+			expect(screen.queryByText('Action in an app')).not.toBeInTheDocument();
+			expect(screen.queryByText('Human review')).not.toBeInTheDocument();
+			expect(screen.queryByText('AI')).not.toBeInTheDocument();
 		});
 	});
 

@@ -663,7 +663,7 @@ export function getHumanInTheLoopCallout(nodes: SimplifiedNodeType[]): Subcatego
 export function getRootSearchCallouts(
 	search: string,
 	{ isRagStarterCalloutVisible = false } = {},
-	nodes: SimplifiedNodeType[] = [],
+	_nodes: SimplifiedNodeType[] = [],
 ) {
 	const results: INodeCreateElement[] = [];
 	const normalizedSearch = search.toLowerCase();
@@ -673,11 +673,7 @@ export function getRootSearchCallouts(
 		results.push(getRagStarterCallout());
 	}
 
-	// "human in the loop" is covered by the "human" prefix.
-	const hitlKeywords = ['human', 'hitl', 'approval', 'review'];
-	if (hitlKeywords.some((x) => normalizedSearch.startsWith(x))) {
-		results.push(getHumanInTheLoopCallout(nodes));
-	}
+	// kito-n8n: Human review category is hidden — do not surface HITL search callouts.
 
 	return results;
 }

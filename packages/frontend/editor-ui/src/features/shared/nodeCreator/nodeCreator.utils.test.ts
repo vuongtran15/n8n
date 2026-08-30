@@ -1382,9 +1382,9 @@ describe('NodeCreator - utils', () => {
 			getRootSearchCallouts(search, {}, [hitlNode]).find((item) => item.key === HITL_SUBCATEGORY);
 
 		it.each(['human', 'human in the loop', 'hitl', 'approval', 'review', 'HUMAN', 'Human Review'])(
-			'surfaces the Human review subcategory when searching "%s"',
+			'does not surface Human review (hidden in kito-n8n) when searching "%s"',
 			(search) => {
-				expect(findHitlCallout(search)?.type).toBe('subcategory');
+				expect(findHitlCallout(search)).toBeUndefined();
 			},
 		);
 
