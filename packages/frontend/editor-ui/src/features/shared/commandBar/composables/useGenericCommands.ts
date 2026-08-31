@@ -3,7 +3,12 @@ import { useRouter } from 'vue-router';
 import { useI18n } from '@n8n/i18n';
 import { N8nIcon } from '@n8n/design-system';
 import { useUIStore } from '@/app/stores/ui.store';
-import { WHATS_NEW_MODAL_KEY, VIEWS, ABOUT_MODAL_KEY } from '@/app/constants';
+import {
+	EnterpriseEditionFeature,
+	WHATS_NEW_MODAL_KEY,
+	VIEWS,
+	ABOUT_MODAL_KEY,
+} from '@/app/constants';
 import { EXTERNAL_LINKS } from '@/app/constants/externalLinks';
 import { useBugReporting } from '@/app/composables/useBugReporting';
 import type { CommandGroup, CommandBarItem } from '../types';
@@ -75,7 +80,7 @@ export function useGenericCommands(): CommandGroup {
 					},
 				]
 			: []),
-		...(projectsStore.canViewProjects
+		...(projectsStore.canViewProjects && settingsStore.isTemplatesEnabled
 			? [
 					{
 						id: ITEM_ID.TEMPLATES,
@@ -98,7 +103,8 @@ export function useGenericCommands(): CommandGroup {
 					},
 				]
 			: []),
-		...(projectsStore.canViewProjects
+		...(projectsStore.canViewProjects &&
+		settingsStore.isEnterpriseFeatureEnabled[EnterpriseEditionFeature.Variables]
 			? [
 					{
 						id: ITEM_ID.VARIABLES,

@@ -84,10 +84,10 @@ describe('SettingsPersonalView', () => {
 		});
 
 		it('should enable save button when theme is changed', async () => {
-			const { getByTestId, getByPlaceholderText, findByText } = renderComponent({ pinia });
+			const { getByTestId, findByText } = renderComponent({ pinia });
 			await waitAllPromises();
 
-			getByPlaceholderText('Select').click();
+			getByTestId('theme-select').click();
 			const darkThemeOption = await findByText('Dark theme');
 			darkThemeOption.click();
 
@@ -96,10 +96,10 @@ describe('SettingsPersonalView', () => {
 		});
 
 		it('should not update theme after changing the selected theme', async () => {
-			const { getByPlaceholderText, findByText } = renderComponent({ pinia });
+			const { getByTestId, findByText } = renderComponent({ pinia });
 			await waitAllPromises();
 
-			getByPlaceholderText('Select').click();
+			getByTestId('theme-select').click();
 			const darkThemeOption = await findByText('Dark theme');
 			darkThemeOption.click();
 
@@ -111,10 +111,10 @@ describe('SettingsPersonalView', () => {
 			vi.spyOn(usersStore, 'updateUser').mockReturnValue(
 				Promise.resolve({ id: '123', isPending: false }),
 			);
-			const { getByPlaceholderText, findByText, getByTestId } = renderComponent({ pinia });
+			const { getByTestId, findByText } = renderComponent({ pinia });
 			await waitAllPromises();
 
-			getByPlaceholderText('Select').click();
+			getByTestId('theme-select').click();
 			const darkThemeOption = await findByText('Dark theme');
 			darkThemeOption.click();
 
@@ -125,6 +125,38 @@ describe('SettingsPersonalView', () => {
 			await waitAllPromises();
 
 			expect(uiStore.theme).toBe('dark');
+		});
+	});
+
+	describe('when changing language', () => {
+		it('should enable save button when locale is changed', async () => {
+			const { getByTestId, findByText } = renderComponent({ pinia });
+			await waitAllPromises();
+
+			getByTestId('locale-select').click();
+			const vietnameseOption = await findByText('Vietnamese');
+			vietnameseOption.click();
+
+			await waitAllPromises();
+			expect(getByTestId('save-settings-button')).toBeEnabled();
+		});
+
+		it('should commit the locale change after clicking save', async () => {
+			vi.spyOn(usersStore, 'updateUser').mockReturnValue(
+				Promise.resolve({ id: '123', isPending: false }),
+			);
+			const { getByTestId, findByText } = renderComponent({ pinia });
+			await waitAllPromises();
+
+			getByTestId('locale-select').click();
+			const vietnameseOption = await findByText('Vietnamese');
+			vietnameseOption.click();
+
+			await waitAllPromises();
+			getByTestId('save-settings-button').click();
+			await waitAllPromises();
+
+			expect(uiStore.locale).toBe('vi');
 		});
 	});
 

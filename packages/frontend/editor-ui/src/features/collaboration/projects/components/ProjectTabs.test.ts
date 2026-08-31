@@ -5,6 +5,8 @@ import ProjectTabs from './ProjectTabs.vue';
 import { createPinia, setActivePinia } from 'pinia';
 import { useProjectsStore } from '../projects.store';
 import type { Project } from '../projects.types';
+import { EnterpriseEditionFeature } from '@/app/constants';
+import { useSettingsStore } from '@n8n/stores/settings.store';
 
 vi.mock('vue-router', async () => {
 	const actual = await vi.importActual('vue-router');
@@ -28,10 +30,24 @@ const renderComponent = createComponentRenderer(ProjectTabs, {
 
 describe('ProjectTabs', () => {
 	let projectsStore: MockedStore<typeof useProjectsStore>;
+	let settingsStore: MockedStore<typeof useSettingsStore>;
 	beforeEach(() => {
 		setActivePinia(createPinia());
 		projectsStore = mockedStore(useProjectsStore);
+		settingsStore = mockedStore(useSettingsStore);
 		vi.spyOn(projectsStore, 'currentProject', 'get').mockReturnValue(null);
+		settingsStore.isEnterpriseFeatureEnabled[EnterpriseEditionFeature.Variables] = true;
+	});
+
+	it('should render home tabs without variables when the feature is disabled', async () => {
+		settingsStore.isEnterpriseFeatureEnabled[EnterpriseEditionFeature.Variables] = false;
+		const { getByText, queryByText } = renderComponent();
+
+		expect(getByText('Workflows')).toBeInTheDocument();
+		expect(getByText('Credentials')).toBeInTheDocument();
+		expect(getByText('Executions')).toBeInTheDocument();
+		expect(queryByText('Project settings')).not.toBeInTheDocument();
+		expect(queryByText('Variables')).not.toBeInTheDocument();
 	});
 
 	it('should render home tabs, keeping variables while the project is still loading', async () => {

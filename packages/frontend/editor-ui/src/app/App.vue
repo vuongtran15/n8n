@@ -19,7 +19,8 @@ import { useNDVStore } from '@/features/ndv/shared/ndv.store';
 import { useSettingsStore } from '@n8n/stores/settings.store';
 import LoadingView from '@/app/views/LoadingView.vue';
 import { locale } from '@n8n/design-system';
-import { setLanguage } from '@n8n/i18n';
+import { useUIStore } from '@/app/stores/ui.store';
+import { isValidUiLocale, getLocaleOverride } from '@/app/stores/locale.utils';
 // Note: no need to import en.json here; default 'en' is handled via setLanguage
 import { useRootStore } from '@n8n/stores/useRootStore';
 import axios from 'axios';
@@ -39,6 +40,7 @@ const route = useRoute();
 const router = useRouter();
 const rootStore = useRootStore();
 const settingsStore = useSettingsStore();
+const uiStore = useUIStore();
 
 const workflowId = useWorkflowId();
 const currentWorkflowDocumentStore = shallowRef<WorkflowDocumentStore | null>(null);
@@ -105,13 +107,21 @@ watch(route, (r) => {
 });
 
 watch(
-	defaultLocale,
+	() => uiStore.locale,
 	async (newLocale) => {
-		setLanguage(newLocale);
-
 		axios.defaults.headers.common['Accept-Language'] = newLocale;
-
 		void locale.use(newLocale);
+	},
+	{ immediate: true },
+);
+
+watch(
+	defaultLocale,
+	(serverLocale) => {
+		if (getLocaleOverride() !== null) return;
+		if (isValidUiLocale(serverLocale)) {
+			uiStore.setLocale(serverLocale);
+		}
 	},
 	{ immediate: true },
 );

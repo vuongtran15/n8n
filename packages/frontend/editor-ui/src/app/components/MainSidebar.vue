@@ -3,17 +3,14 @@ import { computed, onBeforeUnmount, onMounted, ref, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router';
 import { useI18n } from '@n8n/i18n';
 import { N8nScrollArea, N8nResizeWrapper, type IMenuItem } from '@n8n/design-system';
-import { ABOUT_MODAL_KEY, VIEWS, WHATS_NEW_MODAL_KEY } from '@/app/constants';
-import { EXTERNAL_LINKS } from '@/app/constants/externalLinks';
+import { ABOUT_MODAL_KEY, VIEWS } from '@/app/constants';
 import { hasPermission } from '@/app/utils/rbac/permissions';
 import { useRootStore } from '@n8n/stores/useRootStore';
 import { useCloudPlanStore } from '@n8n/stores/cloudPlan.store';
 import { useSettingsStore } from '@n8n/stores/settings.store';
 import { useTemplatesStore } from '@/features/workflows/templates/templates.store';
 import { useUIStore } from '@/app/stores/ui.store';
-import { useVersionsStore } from '@n8n/stores/versions.store';
 import { useTelemetry } from '@n8n/composables/useTelemetry';
-import { useBugReporting } from '@/app/composables/useBugReporting';
 import { usePageRedirectionHelper } from '@/app/composables/usePageRedirectionHelper';
 import { useKeybindings } from '@/app/composables/useKeybindings';
 import {
@@ -38,7 +35,6 @@ const rootStore = useRootStore();
 const settingsStore = useSettingsStore();
 const templatesStore = useTemplatesStore();
 const uiStore = useUIStore();
-const versionsStore = useVersionsStore();
 const workflowDocumentStore = injectWorkflowDocumentStore();
 const resourceCenterStore = useResourceCenterStore();
 
@@ -46,7 +42,6 @@ const i18n = useI18n();
 const router = useRouter();
 const telemetry = useTelemetry();
 const pageRedirectionHelper = usePageRedirectionHelper();
-const { getReportingURL } = useBugReporting();
 
 const { applyExperiment: applySidebarExpandedExperiment } = useSidebarExpandedExperiment();
 applySidebarExpandedExperiment();
@@ -79,14 +74,6 @@ const scrollAreaRef = ref<InstanceType<typeof N8nScrollArea>>();
 const hasOverflow = ref(false);
 const hasScrolledFromTop = ref(false);
 let resizeObserver: ResizeObserver | null = null;
-
-const showWhatsNewNotification = computed(
-	() =>
-		versionsStore.hasVersionUpdates ||
-		versionsStore.whatsNewArticles.some(
-			(article) => !versionsStore.isWhatsNewArticleRead(article.id),
-		),
-);
 
 const isResourceCenterEnabled = computed(() => resourceCenterStore.isFeatureEnabled());
 
@@ -143,66 +130,6 @@ const mainMenuItems = computed<IMenuItem[]>(() => [
 		available:
 			settingsStore.isModuleActive('insights') &&
 			hasPermission(['rbac'], { rbac: { scope: 'insights:list' } }),
-	},
-	{
-		id: 'help',
-		icon: 'circle-help',
-		label: i18n.baseText('mainSidebar.help'),
-		notification: showWhatsNewNotification.value,
-		position: 'bottom',
-		children: [
-			{
-				id: 'quickstart',
-				icon: 'video',
-				label: i18n.baseText('mainSidebar.helpMenuItems.quickstart'),
-				link: {
-					href: EXTERNAL_LINKS.QUICKSTART_VIDEO,
-					target: '_blank',
-				},
-			},
-			{
-				id: 'docs',
-				icon: 'book',
-				label: i18n.baseText('mainSidebar.helpMenuItems.documentation'),
-				link: {
-					href: EXTERNAL_LINKS.DOCUMENTATION,
-					target: '_blank',
-				},
-			},
-			{
-				id: 'forum',
-				icon: 'users',
-				label: i18n.baseText('mainSidebar.helpMenuItems.forum'),
-				link: {
-					href: EXTERNAL_LINKS.FORUM,
-					target: '_blank',
-				},
-			},
-			{
-				id: 'examples',
-				icon: 'graduation-cap',
-				label: i18n.baseText('mainSidebar.helpMenuItems.course'),
-				link: {
-					href: EXTERNAL_LINKS.COURSES,
-					target: '_blank',
-				},
-			},
-			{
-				id: 'report-bug',
-				icon: 'bug',
-				label: i18n.baseText('mainSidebar.helpMenuItems.reportBug'),
-				link: {
-					href: getReportingURL(),
-					target: '_blank',
-				},
-			},
-			{
-				id: 'about',
-				icon: 'info',
-				label: i18n.baseText('mainSidebar.aboutN8n'),
-				position: 'bottom',
-			},
-		],
 	},
 	{
 		id: 'settings',
@@ -264,13 +191,6 @@ onBeforeUnmount(() => {
 	window.removeEventListener('resize', checkOverflow);
 });
 
-const trackHelpItemClick = (itemType: string) => {
-	telemetry.track('User clicked help resource', {
-		type: itemType,
-		workflow_id: workflowDocumentStore.value.workflowId,
-	});
-};
-
 function openCommandBar(event: MouseEvent) {
 	event.stopPropagation();
 
@@ -289,7 +209,10 @@ function openCommandBar(event: MouseEvent) {
 const handleSelect = (key: string) => {
 	switch (key) {
 		case 'about': {
-			trackHelpItemClick('about');
+			telemetry.track('User clicked help resource', {
+				type: 'about',
+				workflow_id: workflowDocumentStore.value.workflowId,
+			});
 			uiStore.openModal(ABOUT_MODAL_KEY);
 			break;
 		}
@@ -301,13 +224,6 @@ const handleSelect = (key: string) => {
 			void handleSettingsItemSelect(key);
 			break;
 		}
-		case 'quickstart':
-		case 'docs':
-		case 'forum':
-		case 'examples': {
-			trackHelpItemClick(key);
-			break;
-		}
 		case 'templates':
 			trackTemplatesClick(TemplateClickSource.sidebarButton);
 			break;
@@ -315,20 +231,6 @@ const handleSelect = (key: string) => {
 			telemetry.track('User clicked insights link from side menu');
 			break;
 		default:
-			if (key.startsWith('whats-new-article-')) {
-				const articleId = Number(key.replace('whats-new-article-', ''));
-
-				telemetry.track("User clicked on what's new section", {
-					article_id: articleId,
-				});
-				uiStore.openModalWithData({
-					name: WHATS_NEW_MODAL_KEY,
-					data: {
-						articleId,
-					},
-				});
-			}
-
 			break;
 	}
 };

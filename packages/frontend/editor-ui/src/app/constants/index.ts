@@ -9,6 +9,7 @@ export * from './events';
 export * from './experiments';
 export * from './injectionKeys';
 export * from './limits';
+export * from './locale';
 export * from './localStorage';
 export * from './modals';
 export * from './navigation';

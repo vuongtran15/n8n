@@ -2,8 +2,9 @@
 import { ref, watch, computed } from 'vue';
 import type { RouteRecordName } from 'vue-router';
 import { useRoute } from 'vue-router';
-import { VIEWS } from '@/app/constants';
+import { EnterpriseEditionFeature, VIEWS } from '@/app/constants';
 import { useI18n } from '@n8n/i18n';
+import { useSettingsStore } from '@n8n/stores/settings.store';
 import type { BaseTextKey } from '@n8n/i18n';
 import type { TabOptions } from '@n8n/design-system';
 import type { DynamicTabOptions } from '@n8n/frontend-module-sdk';
@@ -30,7 +31,12 @@ const props = withDefaults(defineProps<Props>(), {
 const locale = useI18n();
 const route = useRoute();
 const projectStore = useProjectsStore();
+const settingsStore = useSettingsStore();
 const telemetry = useTelemetry();
+
+const showVariablesTab = computed(
+	() => settingsStore.isEnterpriseFeatureEnabled[EnterpriseEditionFeature.Variables],
+);
 
 const selectedTab = ref<RouteRecordName | null | undefined>('');
 
@@ -111,9 +117,10 @@ const options = computed<Array<TabOptions<string>>>(() => {
 		tabs.push(createTab('mainSidebar.executions', 'executions', routes));
 	}
 
-	// Optimistic while currentProject loads — hiding the tab until the fetch
-	// resolves would shift the tab strip on every overview → project navigation
-	if (props.pageType === 'overview' || (props.pageType === 'project' && !isPublicProject.value)) {
+	if (
+		showVariablesTab.value &&
+		(props.pageType === 'overview' || (props.pageType === 'project' && !isPublicProject.value))
+	) {
 		tabs.push(createTab('mainSidebar.variables', 'variables', routes));
 	}
 

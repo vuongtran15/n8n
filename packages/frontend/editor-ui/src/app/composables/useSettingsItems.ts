@@ -8,15 +8,25 @@ import { useI18n } from '@n8n/i18n';
 import { VIEWS } from '../constants';
 import { useUIStore } from '../stores/ui.store';
 import { useSettingsStore } from '@n8n/stores/settings.store';
+import { useUsersStore } from '@n8n/stores/users.store';
 import { hasPermission } from '../utils/rbac/permissions';
 import { MIGRATION_REPORT_TARGET_VERSION } from '@n8n/api-types';
 import { useEnvFeatureFlag } from '@/features/shared/envFeatureFlag/useEnvFeatureFlag';
+
+// Kito: hide billing, public API, MCP, and AI Assistant from the settings menu for members.
+const HIDDEN_SETTINGS_ITEM_IDS = new Set([
+	'settings-usage-and-plan',
+	'settings-api',
+	'settings-mcp',
+	'settings-instance-ai',
+]);
 
 export function useSettingsItems() {
 	const router = useRouter();
 	const i18n = useI18n();
 	const uiStore = useUIStore();
 	const settingsStore = useSettingsStore();
+	const usersStore = useUsersStore();
 	const { canUserAccessRouteByName } = useUserHelpers(router);
 	const { balance } = useAiGateway();
 	const { openTopUp } = useAiGatewayTopUp();
@@ -205,7 +215,9 @@ export function useSettingsItems() {
 		// Append module-registered settings sidebar items.
 		const moduleItems = uiStore.settingsSidebarItems;
 
-		return menuItems.concat(moduleItems.filter((item) => !menuItems.some((m) => m.id === item.id)));
+		return menuItems
+			.concat(moduleItems.filter((item) => !menuItems.some((m) => m.id === item.id)))
+			.filter((item) => usersStore.isAdminOrOwner || !HIDDEN_SETTINGS_ITEM_IDS.has(item.id));
 	});
 
 	const visibleSettingsItems = computed(() => settingsItems.value.filter((item) => item.available));

@@ -1,4 +1,9 @@
-import { VIEWS, LOCAL_STORAGE_THEME, LOCAL_STORAGE_SIDEBAR_WIDTH } from '@/app/constants';
+import {
+	VIEWS,
+	LOCAL_STORAGE_THEME,
+	LOCAL_STORAGE_LOCALE,
+	LOCAL_STORAGE_SIDEBAR_WIDTH,
+} from '@/app/constants';
 import { CREDENTIAL_EDIT_MODAL_KEY } from '@/features/credentials/credentials.constants';
 import { DELETE_USER_MODAL_KEY } from '@/features/settings/users/users.constants';
 import {
@@ -26,6 +31,8 @@ import type {
 import { defineStore } from 'pinia';
 import { useSettingsStore } from '@n8n/stores/settings.store';
 import { applyThemeToBody, getThemeOverride, isValidTheme } from './ui.utils';
+import { applyUiLocale, getLocaleOverride, isValidUiLocale } from './locale.utils';
+import type { UiLocaleOption } from '@/app/constants/locale';
 import { SHELL_MODAL_INITIAL_STATE } from './defaults/modals';
 import { computed, ref, watch } from 'vue';
 import type { IMenuItem } from '@n8n/design-system';
@@ -45,6 +52,13 @@ try {
 		savedTheme = value;
 		applyThemeToBody(value);
 	}
+} catch (e) {}
+
+let savedLocale: UiLocaleOption = getLocaleOverride() ?? 'en';
+
+try {
+	// Always apply — registerUiLocales ends on the last loaded locale (vi).
+	applyUiLocale(savedLocale);
 } catch (e) {}
 
 type UiStore = ReturnType<typeof useUIStore>;
@@ -105,6 +119,14 @@ export const useUIStore = defineStore(STORES.UI, () => {
 		writeDefaults: false,
 		serializer: {
 			read: (value) => (isValidTheme(value) ? value : savedTheme),
+			write: identity,
+		},
+	});
+
+	const uiLocale = useLocalStorage<UiLocaleOption>(LOCAL_STORAGE_LOCALE, savedLocale, {
+		writeDefaults: false,
+		serializer: {
+			read: (value) => (isValidUiLocale(value) ? value : savedLocale),
 			write: identity,
 		},
 	});
@@ -328,6 +350,11 @@ export const useUIStore = defineStore(STORES.UI, () => {
 	const setTheme = (newTheme: ThemeOption): void => {
 		theme.value = newTheme;
 		applyThemeToBody(newTheme);
+	};
+
+	const setLocale = (newLocale: UiLocaleOption): void => {
+		uiLocale.value = newLocale;
+		applyUiLocale(newLocale);
 	};
 
 	/**
@@ -629,6 +656,7 @@ export const useUIStore = defineStore(STORES.UI, () => {
 		sidebarMenuCollapsed,
 		sidebarWidth,
 		theme: computed(() => theme.value),
+		locale: computed(() => uiLocale.value),
 		modalsById,
 		modalStateById,
 		currentView,
@@ -636,6 +664,7 @@ export const useUIStore = defineStore(STORES.UI, () => {
 		activeModals,
 		isProcessingExecutionResults,
 		setTheme,
+		setLocale,
 		setModalData,
 		openModalWithData,
 		openModal,

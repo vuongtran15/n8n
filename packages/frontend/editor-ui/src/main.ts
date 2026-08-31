@@ -14,6 +14,7 @@ import '@/main.scss';
 import '@/features/ai/assistant/aiBuilderDiff.scss';
 // Ensure i18n HMR owner is evaluated as early as possible in dev
 import '@/app/dev/i18nHmr';
+import '@/app/registerUiLocales';
 
 import App from '@/app/App.vue';
 import router from '@/app/router';

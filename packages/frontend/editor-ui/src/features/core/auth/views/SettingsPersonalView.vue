@@ -5,6 +5,7 @@ import { useI18n } from '@n8n/i18n';
 import { useToast } from '@n8n/composables/useToast';
 import { useDocumentTitle } from '@/app/composables/useDocumentTitle';
 import type { IFormInputs, ThemeOption } from '@/Interface';
+import type { UiLocaleOption } from '@/app/constants/locale';
 import type { IUser } from '@n8n/rest-api-client/api/users';
 import { MFA_DOCS_URL } from '@/app/constants';
 import {
@@ -67,6 +68,7 @@ const formInputs = ref<null | IFormInputs>(null);
 const formBus = createFormEventBus();
 const readyToSubmit = ref(false);
 const currentSelectedTheme = ref(useUIStore().theme);
+const currentSelectedLocale = ref(useUIStore().locale);
 const themeOptions = ref<Array<{ name: ThemeOption; label: BaseTextKey }>>([
 	{
 		name: 'system',
@@ -80,6 +82,12 @@ const themeOptions = ref<Array<{ name: ThemeOption; label: BaseTextKey }>>([
 		name: 'dark',
 		label: 'settings.personal.theme.dark',
 	},
+]);
+
+const localeOptions = ref<Array<{ name: UiLocaleOption; label: BaseTextKey }>>([
+	{ name: 'en', label: 'settings.personal.language.en' },
+	{ name: 'zh', label: 'settings.personal.language.zh' },
+	{ name: 'vi', label: 'settings.personal.language.vi' },
 ]);
 
 const uiStore = useUIStore();
@@ -137,7 +145,9 @@ const isSecuritySectionVisible = computed((): boolean => {
 });
 
 const hasAnyPersonalisationChanges = computed((): boolean => {
-	return currentSelectedTheme.value !== uiStore.theme;
+	return (
+		currentSelectedTheme.value !== uiStore.theme || currentSelectedLocale.value !== uiStore.locale
+	);
 });
 
 const hasAnyChanges = computed(() => {
@@ -312,6 +322,7 @@ async function updatePersonalisationSettings() {
 	}
 
 	uiStore.setTheme(currentSelectedTheme.value);
+	uiStore.setLocale(currentSelectedLocale.value);
 }
 
 function onSaveClick() {
@@ -475,13 +486,32 @@ onBeforeUnmount(() => {
 				<N8nInputLabel :label="i18n.baseText('settings.personal.theme')">
 					<N8nSelect
 						v-model="currentSelectedTheme"
-						:class="$style.themeSelect"
+						:class="$style.personalisationSelect"
 						data-test-id="theme-select"
 						size="small"
 						filterable
 					>
 						<N8nOption
 							v-for="item in themeOptions"
+							:key="item.name"
+							:label="i18n.baseText(item.label)"
+							:value="item.name"
+						>
+						</N8nOption>
+					</N8nSelect>
+				</N8nInputLabel>
+			</div>
+			<div :class="$style.personalisationField">
+				<N8nInputLabel :label="i18n.baseText('settings.personal.language')">
+					<N8nSelect
+						v-model="currentSelectedLocale"
+						:class="$style.personalisationSelect"
+						data-test-id="locale-select"
+						size="small"
+						filterable
+					>
+						<N8nOption
+							v-for="item in localeOptions"
 							:key="item.name"
 							:label="i18n.baseText(item.label)"
 							:value="item.name"
@@ -565,7 +595,12 @@ onBeforeUnmount(() => {
 	color: var(--color--text--tint-1);
 }
 
-.themeSelect {
+.themeSelect,
+.personalisationSelect {
 	max-width: 50%;
+}
+
+.personalisationField {
+	margin-top: var(--spacing--md);
 }
 </style>

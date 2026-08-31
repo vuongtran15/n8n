@@ -71,10 +71,28 @@ Dùng **`NODES_INCLUDE`** (whitelist). Trong `docker/kito-n8n/n8n.env` đã ch�
 - File: Read/Write File, Convert/Extract File, Spreadsheet, PDF, Compression  
 - Transform: Item Lists, Aggregate, Sort, Limit, …  
 - Utils: HTTP Request, Date & Time, Crypto, HTML, XML, Sticky Note  
+- Data: **Postgres** (`n8n-nodes-base.postgres`) — Select / Insert / Update / Delete / Execute Query  
 
 Sau khi sửa `.env` → **restart** `pnpm dev:be` + hard refresh browser.
 
 Muốn thêm 1 node built-in: thêm `"n8n-nodes-base.<tenNode>"` vào mảng `NODES_INCLUDE`.
+
+## Postgres (đọc / ghi dữ liệu)
+
+Node built-in **`Postgres`** (`n8n-nodes-base.postgres`) — không cần custom package.
+
+1. Tạo **Credential → Postgres** trong n8n UI (Settings hoặc khi add node)
+2. Host `localhost`, port `5432`, database/user/pass theo Docker kito (xem [custom.md](./custom.md))
+3. Operation: **Select** (đọc), **Insert** / **Update** / **Upsert** (ghi), hoặc **Execute Query** (SQL tùy ý)
+
+> Postgres Docker kito (`n8n_db`) là DB **metadata n8n**. Nên dùng DB/schema riêng cho dữ liệu app nếu tránh lẫn bảng hệ thống.
+
+Sau khi bật trong `NODES_INCLUDE`:
+
+```powershell
+copy docker\kito-n8n\n8n.env packages\cli\bin\.env
+# restart pnpm dev:be
+```
 
 ## RM Workflow (custom package — không nằm trong nodes-base)
 

@@ -1,0 +1,898 @@
+[10:01:21] Total strings: 8325, pending: 8226
+[10:01:21] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:01:26] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:01:31] Batch error (TranslationNotFound()) — wait 19.2s retry 5
+[10:01:52] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:02:23] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:02:25] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:02:28] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:02:34] Batch error (TranslationNotFound()) — wait 9.6s retry 4
+[10:02:34] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:02:37] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:02:45] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:02:46] Batch error (TranslationNotFound()) — wait 19.2s retry 5
+[10:03:11] Batch error (TranslationNotFound()) — wait 38.4s retry 6
+[10:03:30] Progress: 100/8226
+[10:03:42] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:03:45] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:03:48] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:03:50] Batch error (TranslationNotFound()) — wait 76.8s retry 7
+[10:03:53] Batch error (TranslationNotFound()) — wait 9.6s retry 4
+[10:04:05] Batch error (TranslationNotFound()) — wait 19.2s retry 5
+[10:04:38] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:04:53] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:04:55] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:04:58] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:05:03] Batch error (TranslationNotFound()) — wait 9.6s retry 4
+[10:05:07] Batch error (TranslationNotFound()) — wait 153.6s retry 8
+[10:05:13] Batch error (TranslationNotFound()) — wait 19.2s retry 5
+[10:05:33] Batch error (TranslationNotFound()) — wait 38.4s retry 6
+[10:06:12] Batch error (TranslationNotFound()) — wait 76.8s retry 7
+[10:07:30] Batch error (TranslationNotFound()) — wait 153.6s retry 8
+[10:07:41] Giving up on batch at generic.project: Batch failed after retries
+[10:07:42] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:07:44] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:07:47] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:07:52] Batch error (TranslationNotFound()) — wait 9.6s retry 4
+[10:08:03] Batch error (TranslationNotFound()) — wait 19.2s retry 5
+[10:08:22] Batch error (TranslationNotFound()) — wait 38.4s retry 6
+[10:09:02] Batch error (TranslationNotFound()) — wait 76.8s retry 7
+[10:09:17] --- resume ---
+[10:09:17] Total strings: 8325, pending: 8127
+[10:09:19] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:09:24] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:09:30] Single error (TranslationNotFound()) — wait 0.4s
+[10:09:33] Single error (TranslationNotFound()) — wait 0.4s
+[10:09:34] Single error (TranslationNotFound()) — wait 0.8s
+[10:09:36] Single error (TranslationNotFound()) — wait 1.6s
+[10:09:38] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:09:41] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:09:42] Single error (TranslationNotFound()) — wait 0.4s
+[10:09:45] Single error (TranslationNotFound()) — wait 0.4s
+[10:09:46] Single error (TranslationNotFound()) — wait 0.8s
+[10:09:48] Single error (TranslationNotFound()) — wait 0.4s
+[10:09:53] Single error (TranslationNotFound()) — wait 0.4s
+[10:09:59] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:10:01] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:10:03] Single error (TranslationNotFound()) — wait 0.4s
+[10:10:05] Single error (TranslationNotFound()) — wait 0.4s
+[10:10:13] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:10:15] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:10:16] Single error (TranslationNotFound()) — wait 0.4s
+[10:10:18] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:10:18] Single error (TranslationNotFound()) — wait 0.4s
+[10:10:23] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:10:27] Single error (TranslationNotFound()) — wait 0.4s
+[10:10:29] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:10:29] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:10:31] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:10:32] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:10:35] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:10:37] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:10:37] Batch error (TranslationNotFound()) — wait 9.6s retry 4
+[10:10:41] Batch error (TranslationNotFound()) — wait 9.6s retry 4
+[10:10:47] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:10:48] Batch error (TranslationNotFound()) — wait 19.2s retry 5
+[10:10:49] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:10:50] Single error (TranslationNotFound()) — wait 0.4s
+[10:10:51] Single error (TranslationNotFound()) — wait 0.8s
+[10:10:52] Batch error (TranslationNotFound()) — wait 19.2s retry 5
+[10:10:53] Single error (TranslationNotFound()) — wait 1.6s
+[10:10:55] Single error (TranslationNotFound()) — wait 0.4s
+[10:10:56] Single error (TranslationNotFound()) — wait 0.8s
+[10:10:57] Single error (TranslationNotFound()) — wait 1.6s
+[10:11:01] Single error (TranslationNotFound()) — wait 0.4s
+[10:11:02] Single error (TranslationNotFound()) — wait 0.8s
+[10:11:03] Single error (TranslationNotFound()) — wait 1.6s
+[10:11:06] Single error (TranslationNotFound()) — wait 0.4s
+[10:11:07] Single error (TranslationNotFound()) — wait 0.4s
+[10:11:08] Batch error (TranslationNotFound()) — wait 38.4s retry 6
+[10:11:08] Single error (TranslationNotFound()) — wait 0.8s
+[10:11:12] Single error (TranslationNotFound()) — wait 0.4s
+[10:11:13] Batch error (TranslationNotFound()) — wait 38.4s retry 6
+[10:11:21] Progress: 56/8127
+[10:11:24] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:11:28] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:11:36] Single error (TranslationNotFound()) — wait 0.4s
+[10:11:37] Single error (TranslationNotFound()) — wait 0.8s
+[10:11:45] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:11:47] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:11:49] Single error (TranslationNotFound()) — wait 0.4s
+[10:11:52] Batch error (TranslationNotFound()) — wait 76.8s retry 7
+[10:11:54] Batch error (TranslationNotFound()) — wait 76.8s retry 7
+[10:12:03] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:12:14] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:12:18] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:12:21] Single error (TranslationNotFound()) — wait 0.4s
+[10:12:23] --- resume ---
+[10:12:23] Total strings: 8325, pending: 8077
+[10:12:26] Single error (TranslationNotFound()) — wait 0.4s
+[10:12:27] Single error (TranslationNotFound()) — wait 0.8s
+[10:12:30] Single error (TranslationNotFound()) — wait 0.4s
+[10:12:33] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:12:34] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:12:35] Single error (TranslationNotFound()) — wait 0.4s
+[10:12:36] Single error (TranslationNotFound()) — wait 0.8s
+[10:12:37] Single error (TranslationNotFound()) — wait 1.6s
+[10:12:40] Single error (TranslationNotFound()) — wait 0.4s
+[10:12:41] Single error (TranslationNotFound()) — wait 0.8s
+[10:12:42] Single error (TranslationNotFound()) — wait 1.6s
+[10:12:46] Single error (TranslationNotFound()) — wait 0.4s
+[10:12:56] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:13:04] Progress: 104/8127
+[10:13:09] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:13:12] Batch error (TranslationNotFound()) — wait 153.6s retry 8
+[10:13:15] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:13:16] Batch error (TranslationNotFound()) — wait 153.6s retry 8
+[10:13:18] Single error (TranslationNotFound()) — wait 0.4s
+[10:13:30] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:13:39] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:13:41] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:13:48] Single error (TranslationNotFound()) — wait 0.4s
+[10:13:53] Single error (TranslationNotFound()) — wait 0.4s
+[10:13:57] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:14:03] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:14:07] Single error (TranslationNotFound()) — wait 0.4s
+[10:14:09] Single error (TranslationNotFound()) — wait 0.4s
+[10:14:10] Single error (TranslationNotFound()) — wait 0.8s
+[10:14:14] Single error (TranslationNotFound()) — wait 0.4s
+[10:14:15] Single error (TranslationNotFound()) — wait 0.8s
+[10:14:17] Single error (TranslationNotFound()) — wait 0.4s
+[10:14:19] Single error (TranslationNotFound()) — wait 0.4s
+[10:14:23] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:14:24] Progress: 56/8077
+[10:14:34] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:14:35] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:14:38] Single error (TranslationNotFound()) — wait 0.4s
+[10:14:39] Single error (TranslationNotFound()) — wait 0.8s
+[10:14:40] Single error (TranslationNotFound()) — wait 1.6s
+[10:14:44] Single error (TranslationNotFound()) — wait 0.4s
+[10:14:46] Single error (TranslationNotFound()) — wait 0.4s
+[10:14:47] Single error (TranslationNotFound()) — wait 0.8s
+[10:14:49] Single error (TranslationNotFound()) — wait 0.4s
+[10:14:52] Single error (TranslationNotFound()) — wait 0.4s
+[10:14:53] Single error (TranslationNotFound()) — wait 0.8s
+[10:14:54] Single error (TranslationNotFound()) — wait 1.6s
+[10:14:57] Single error (TranslationNotFound()) — wait 0.4s
+[10:14:58] Single error (TranslationNotFound()) — wait 0.8s
+[10:14:59] Single error (TranslationNotFound()) — wait 1.6s
+[10:15:01] Progress: 152/8127
+[10:15:02] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:15:04] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:15:09] Single error (TranslationNotFound()) — wait 0.4s
+[10:15:14] Single error (TranslationNotFound()) — wait 0.4s
+[10:15:29] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:15:39] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:15:40] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:15:43] Single error (TranslationNotFound()) — wait 0.4s
+[10:15:44] Single error (TranslationNotFound()) — wait 0.8s
+[10:15:45] Single error (TranslationNotFound()) — wait 1.6s
+[10:15:46] Single error (TranslationNotFound()) — wait 1.2s
+[10:15:48] Single error (TranslationNotFound()) — wait 0.4s
+[10:15:48] Single error (TranslationNotFound()) — wait 2.4s
+[10:15:50] Giving up on batch at about.debug.message: Batch failed after retries
+[10:15:51] Single error (TranslationNotFound()) — wait 0.4s
+[10:15:52] Single error (TranslationNotFound()) — wait 1.2s
+[10:15:52] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:15:52] Single error (TranslationNotFound()) — wait 0.8s
+[10:15:53] Single error (TranslationNotFound()) — wait 1.6s
+[10:15:54] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:15:54] Single error (TranslationNotFound()) — wait 1.2s
+[10:15:56] Single error (TranslationNotFound()) — wait 0.4s
+[10:15:56] Single error (TranslationNotFound()) — wait 2.4s
+[10:15:57] Single error (TranslationNotFound()) — wait 0.8s
+[10:15:57] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:15:58] Single error (TranslationNotFound()) — wait 1.6s
+[10:16:00] Single error (TranslationNotFound()) — wait 1.2s
+[10:16:01] Single error (TranslationNotFound()) — wait 0.4s
+[10:16:02] Single error (TranslationNotFound()) — wait 2.4s
+[10:16:02] Single error (TranslationNotFound()) — wait 0.8s
+[10:16:02] Batch error (TranslationNotFound()) — wait 9.6s retry 4
+[10:16:03] Single error (TranslationNotFound()) — wait 1.6s
+[10:16:05] Single error (TranslationNotFound()) — wait 4.8s
+[10:16:06] Single error (TranslationNotFound()) — wait 0.4s
+[10:16:08] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:16:09] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:16:10] Progress: 104/8077
+[10:16:11] Single error (TranslationNotFound()) — wait 0.4s
+[10:16:12] Single error (TranslationNotFound()) — wait 0.8s
+[10:16:13] Batch error (TranslationNotFound()) — wait 19.2s retry 5
+[10:16:13] Single error (TranslationNotFound()) — wait 1.6s
+[10:16:14] Single error (TranslationNotFound()) — wait 1.2s
+[10:16:17] Single error (TranslationNotFound()) — wait 1.2s
+[10:16:22] Single error (TranslationNotFound()) — wait 0.4s
+[10:16:23] Single error (TranslationNotFound()) — wait 0.8s
+[10:16:24] Single error (TranslationNotFound()) — wait 1.6s
+[10:16:24] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:16:26] Single error (TranslationNotFound()) — wait 0.4s
+[10:16:27] Single error (TranslationNotFound()) — wait 0.8s
+[10:16:30] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:16:34] Batch error (TranslationNotFound()) — wait 38.4s retry 6
+[10:16:37] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:16:39] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:16:44] Batch error (TranslationNotFound()) — wait 9.6s retry 4
+[10:16:46] Progress: 200/8127
+[10:16:47] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:16:48] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:16:50] Single error (TranslationNotFound()) — wait 0.4s
+[10:16:51] Single error (TranslationNotFound()) — wait 0.8s
+[10:16:52] Single error (TranslationNotFound()) — wait 1.6s
+[10:16:54] Batch error (TranslationNotFound()) — wait 19.2s retry 5
+[10:16:54] Single error (TranslationNotFound()) — wait 0.4s
+[10:16:58] Single error (TranslationNotFound()) — wait 0.4s
+[10:16:59] Single error (TranslationNotFound()) — wait 0.8s
+[10:17:00] Single error (TranslationNotFound()) — wait 1.6s
+[10:17:02] Single error (TranslationNotFound()) — wait 0.4s
+[10:17:03] Single error (TranslationNotFound()) — wait 0.8s
+[10:17:15] Batch error (TranslationNotFound()) — wait 38.4s retry 6
+[10:17:19] Batch error (TranslationNotFound()) — wait 76.8s retry 7
+[10:17:23] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:17:29] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:17:40] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:17:45] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:17:47] Single error (TranslationNotFound()) — wait 0.4s
+[10:17:54] Progress: 152/8077
+[10:17:54] Batch error (TranslationNotFound()) — wait 76.8s retry 7
+[10:17:57] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:17:59] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:18:01] Single error (TranslationNotFound()) — wait 0.4s
+[10:18:03] Single error (TranslationNotFound()) — wait 0.4s
+[10:18:06] Single error (TranslationNotFound()) — wait 0.4s
+[10:18:07] Single error (TranslationNotFound()) — wait 0.8s
+[10:18:08] Single error (TranslationNotFound()) — wait 1.6s
+[10:18:11] Single error (TranslationNotFound()) — wait 0.4s
+[10:18:12] Single error (TranslationNotFound()) — wait 0.8s
+[10:18:13] Single error (TranslationNotFound()) — wait 1.6s
+[10:18:16] Single error (TranslationNotFound()) — wait 0.4s
+[10:18:17] Single error (TranslationNotFound()) — wait 0.4s
+[10:18:18] Single error (TranslationNotFound()) — wait 0.8s
+[10:18:22] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:18:24] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:18:26] Single error (TranslationNotFound()) — wait 0.4s
+[10:18:27] Single error (TranslationNotFound()) — wait 0.8s
+[10:18:28] Single error (TranslationNotFound()) — wait 1.6s
+[10:18:32] Single error (TranslationNotFound()) — wait 0.4s
+[10:18:35] Single error (TranslationNotFound()) — wait 0.4s
+[10:18:36] Single error (TranslationNotFound()) — wait 0.8s
+[10:18:36] Batch error (TranslationNotFound()) — wait 153.6s retry 8
+[10:18:40] Single error (TranslationNotFound()) — wait 0.4s
+[10:18:41] Single error (TranslationNotFound()) — wait 0.8s
+[10:18:42] Single error (TranslationNotFound()) — wait 1.6s
+[10:18:46] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:18:47] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:18:50] Single error (TranslationNotFound()) — wait 0.4s
+[10:18:51] Single error (TranslationNotFound()) — wait 0.8s
+[10:18:58] Single error (TranslationNotFound()) — wait 0.4s
+[10:19:00] Single error (TranslationNotFound()) — wait 0.4s
+[10:19:01] Single error (TranslationNotFound()) — wait 0.8s
+[10:19:02] Progress: 256/8127
+[10:19:03] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:19:05] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:19:09] Single error (TranslationNotFound()) — wait 0.4s
+[10:19:11] Single error (TranslationNotFound()) — wait 0.4s
+[10:19:12] Single error (TranslationNotFound()) — wait 0.8s
+[10:19:14] Batch error (TranslationNotFound()) — wait 153.6s retry 8
+[10:19:17] Single error (TranslationNotFound()) — wait 0.4s
+[10:19:20] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:19:28] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:19:30] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:19:35] Single error (TranslationNotFound()) — wait 0.4s
+[10:19:36] Single error (TranslationNotFound()) — wait 0.4s
+[10:19:42] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:19:43] Progress: 200/8077
+[10:19:44] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:19:45] Single error (TranslationNotFound()) — wait 0.4s
+[10:19:47] Single error (TranslationNotFound()) — wait 0.4s
+[10:19:48] Single error (TranslationNotFound()) — wait 0.8s
+[10:19:49] Single error (TranslationNotFound()) — wait 1.6s
+[10:19:52] Single error (TranslationNotFound()) — wait 0.4s
+[10:19:53] Single error (TranslationNotFound()) — wait 0.8s
+[10:19:55] Single error (TranslationNotFound()) — wait 0.4s
+[10:19:57] Single error (TranslationNotFound()) — wait 0.4s
+[10:19:58] Single error (TranslationNotFound()) — wait 0.8s
+[10:19:59] Single error (TranslationNotFound()) — wait 1.6s
+[10:20:03] Single error (TranslationNotFound()) — wait 0.4s
+[10:20:07] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:20:20] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:20:23] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:20:26] Single error (TranslationNotFound()) — wait 0.4s
+[10:20:27] Single error (TranslationNotFound()) — wait 0.4s
+[10:20:32] Progress: 304/8127
+[10:20:48] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:20:59] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:21:00] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:21:02] Single error (TranslationNotFound()) — wait 0.4s
+[10:21:02] Single error (TranslationNotFound()) — wait 0.8s
+[10:21:04] Single error (TranslationNotFound()) — wait 1.6s
+[10:21:07] Single error (TranslationNotFound()) — wait 0.4s
+[10:21:08] Single error (TranslationNotFound()) — wait 0.8s
+[10:21:09] Single error (TranslationNotFound()) — wait 1.6s
+[10:21:09] Giving up on batch at appSelection.continue: Batch failed after retries
+[10:21:11] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:21:12] Single error (TranslationNotFound()) — wait 0.4s
+[10:21:13] Single error (TranslationNotFound()) — wait 0.8s
+[10:21:14] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:21:14] Single error (TranslationNotFound()) — wait 1.6s
+[10:21:17] Single error (TranslationNotFound()) — wait 0.4s
+[10:21:17] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:21:18] Single error (TranslationNotFound()) — wait 0.8s
+[10:21:19] Single error (TranslationNotFound()) — wait 1.6s
+[10:21:21] Single error (TranslationNotFound()) — wait 0.4s
+[10:21:22] Batch error (TranslationNotFound()) — wait 9.6s retry 4
+[10:21:32] Batch error (TranslationNotFound()) — wait 19.2s retry 5
+[10:21:33] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:21:36] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:21:40] Single error (TranslationNotFound()) — wait 0.4s
+[10:21:48] Progress: 256/8077
+[10:21:51] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:21:53] Batch error (TranslationNotFound()) — wait 38.4s retry 6
+[10:21:54] Single error (TranslationNotFound()) — wait 1.2s
+[10:21:58] Progress: 352/8127
+[10:22:08] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:22:10] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:22:14] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:22:18] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:22:22] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:22:22] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:22:24] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:22:29] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:22:29] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:22:30] Single error (TranslationNotFound()) — wait 0.4s
+[10:22:32] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:22:32] Batch error (TranslationNotFound()) — wait 76.8s retry 7
+[10:22:34] Single error (TranslationNotFound()) — wait 0.4s
+[10:22:38] Single error (TranslationNotFound()) — wait 0.4s
+[10:22:41] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:22:43] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:22:47] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:22:48] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:22:50] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:22:53] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:22:54] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:22:57] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:22:58] Single error (TranslationNotFound()) — wait 0.4s
+[10:22:59] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:23:00] Single error (TranslationNotFound()) — wait 0.4s
+[10:23:01] Single error (TranslationNotFound()) — wait 0.8s
+[10:23:02] Single error (TranslationNotFound()) — wait 1.6s
+[10:23:03] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:23:03] Batch error (TranslationNotFound()) — wait 9.6s retry 4
+[10:23:05] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:23:05] Single error (TranslationNotFound()) — wait 0.4s
+[10:23:06] Single error (TranslationNotFound()) — wait 0.8s
+[10:23:07] GoogleTranslator batch error (TranslationNotFound()) — wait 1.6s
+[10:23:08] Single error (TranslationNotFound()) — wait 1.6s
+[10:23:11] Single error (TranslationNotFound()) — wait 0.4s
+[10:23:12] Single error (TranslationNotFound()) — wait 0.8s
+[10:23:13] Single error (TranslationNotFound()) — wait 1.6s
+[10:23:13] Batch error (TranslationNotFound()) — wait 19.2s retry 5
+[10:23:16] Single error (TranslationNotFound()) — wait 0.4s
+[10:23:17] Single error (TranslationNotFound()) — wait 0.8s
+[10:23:20] Single error (TranslationNotFound()) — wait 0.4s
+[10:23:21] Single error (TranslationNotFound()) — wait 0.8s
+[10:23:22] Single error (TranslationNotFound()) — wait 1.6s
+[10:23:24] Progress: 400/8127
+[10:23:38] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:23:39] Batch error (TranslationNotFound()) — wait 38.4s retry 6
+[10:23:42] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:23:44] Single error (TranslationNotFound()) — wait 0.4s
+[10:23:45] Single error (TranslationNotFound()) — wait 0.8s
+[10:23:46] Single error (TranslationNotFound()) — wait 1.6s
+[10:23:50] Batch error (TranslationNotFound()) — wait 153.6s retry 8
+[10:23:52] Single error (TranslationNotFound()) — wait 0.4s
+[10:23:53] Single error (TranslationNotFound()) — wait 0.8s
+[10:23:54] Single error (TranslationNotFound()) — wait 1.6s
+[10:24:06] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:24:07] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:24:10] Single error (TranslationNotFound()) — wait 0.4s
+[10:24:11] Single error (TranslationNotFound()) — wait 0.8s
+[10:24:17] Some strings kept in English after errors (TooManyRequests())
+[10:24:19] Batch error (TranslationNotFound()) — wait 76.8s retry 7
+[10:24:20] Single error (TranslationNotFound()) — wait 0.4s
+[10:24:21] Single error (TranslationNotFound()) — wait 0.8s
+[10:24:21] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:24:24] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:24:24] Single error (TranslationNotFound()) — wait 0.4s
+[10:24:28] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:24:29] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:24:30] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:24:32] Single error (TranslationNotFound()) — wait 0.4s
+[10:24:33] GoogleTranslator batch error (TranslationNotFound()) — wait 1.6s
+[10:24:40] Single error (TranslationNotFound()) — wait 0.4s
+[10:24:46] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:24:56] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:24:58] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:25:00] Single error (TranslationNotFound()) — wait 0.4s
+[10:25:03] Single error (TranslationNotFound()) — wait 0.4s
+[10:25:12] Progress: 456/8127
+[10:25:13] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:25:15] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:25:26] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:25:29] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:25:32] Single error (TranslationNotFound()) — wait 0.4s
+[10:25:32] Some strings kept in English after errors (TooManyRequests())
+[10:25:35] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:25:36] Batch error (TranslationNotFound()) — wait 153.6s retry 8
+[10:25:38] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:25:44] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:25:46] GoogleTranslator batch error (TranslationNotFound()) — wait 1.6s
+[10:25:49] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:25:50] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:25:53] Single error (TranslationNotFound()) — wait 0.4s
+[10:25:57] Single error (TranslationNotFound()) — wait 0.4s
+[10:26:07] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:26:15] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:26:20] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:26:22] Single error (TranslationNotFound()) — wait 0.4s
+[10:26:23] Single error (TranslationNotFound()) — wait 0.8s
+[10:26:24] Giving up on batch at activationModal.butYouCanSeeThem: Batch failed after retries
+[10:26:26] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:26:28] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:26:31] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:26:32] Single error (TranslationNotFound()) — wait 0.4s
+[10:26:33] Single error (TranslationNotFound()) — wait 0.8s
+[10:26:34] Single error (TranslationNotFound()) — wait 1.6s
+[10:26:36] Batch error (TranslationNotFound()) — wait 9.6s retry 4
+[10:26:39] Single error (TranslationNotFound()) — wait 0.4s
+[10:26:41] Progress: 504/8127
+[10:26:42] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:26:50] Some strings kept in English after errors (TooManyRequests())
+[10:26:50] Progress: 304/8077
+[10:26:52] Progress: 200/8325
+[10:26:52] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:26:55] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:26:56] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:27:07] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:27:08] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:27:11] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:27:11] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:27:11] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:27:15] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:27:16] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:27:20] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:27:20] Single error (TranslationNotFound()) — wait 0.4s
+[10:27:23] Single error (TranslationNotFound()) — wait 0.4s
+[10:27:24] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:27:26] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:27:28] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:27:30] Batch error (TranslationNotFound()) — wait 9.6s retry 4
+[10:27:33] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:27:37] Single error (TranslationNotFound()) — wait 0.4s
+[10:27:38] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:27:41] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:27:42] Single error (TranslationNotFound()) — wait 0.4s
+[10:27:45] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:27:47] GoogleTranslator batch error (TranslationNotFound()) — wait 1.6s
+[10:27:49] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:27:51] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:27:59] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:28:05] Progress: 552/8127
+[10:28:07] Batch error (TranslationNotFound()) — wait 9.6s retry 4
+[10:28:07] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:28:08] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:28:12] Single error (TranslationNotFound()) — wait 1.2s
+[10:28:14] Single error (TranslationNotFound()) — wait 2.4s
+[10:28:17] Single error (TranslationNotFound()) — wait 4.8s
+[10:28:17] Batch error (TranslationNotFound()) — wait 19.2s retry 5
+[10:28:17] Single error (TranslationNotFound()) — wait 0.4s
+[10:28:23] Single error (TranslationNotFound()) — wait 1.2s
+[10:28:23] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:28:24] Single error (TranslationNotFound()) — wait 2.4s
+[10:28:25] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:28:26] Single error (TranslationNotFound()) — wait 0.4s
+[10:28:27] Single error (TranslationNotFound()) — wait 0.8s
+[10:28:27] Single error (TranslationNotFound()) — wait 4.8s
+[10:28:29] Single error (TranslationNotFound()) — wait 0.4s
+[10:28:31] Single error (TranslationNotFound()) — wait 0.8s
+[10:28:32] Single error (TranslationNotFound()) — wait 1.6s
+[10:28:36] Single error (TranslationNotFound()) — wait 1.2s
+[10:28:38] Batch error (TranslationNotFound()) — wait 38.4s retry 6
+[10:28:38] Single error (TranslationNotFound()) — wait 2.4s
+[10:28:41] Single error (TranslationNotFound()) — wait 0.4s
+[10:28:41] Single error (TranslationNotFound()) — wait 4.8s
+[10:28:42] Single error (TranslationNotFound()) — wait 0.8s
+[10:28:43] Single error (TranslationNotFound()) — wait 1.6s
+[10:28:47] Single error (TranslationNotFound()) — wait 0.4s
+[10:28:47] Single error (TranslationNotFound()) — wait 1.2s
+[10:28:48] Single error (TranslationNotFound()) — wait 0.8s
+[10:28:49] Single error (TranslationNotFound()) — wait 2.4s
+[10:28:50] Single error (TranslationNotFound()) — wait 1.6s
+[10:28:52] Single error (TranslationNotFound()) — wait 4.8s
+[10:28:53] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:28:57] Progress: 200/8226
+[10:28:58] Some strings kept in English after errors (TooManyRequests())
+[10:28:59] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:29:01] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:29:03] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:29:04] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:29:06] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:29:06] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:29:10] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:29:17] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:29:18] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:29:21] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:29:21] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:29:21] Batch error (TranslationNotFound()) — wait 76.8s retry 7
+[10:29:22] Batch error (TranslationNotFound()) — wait 9.6s retry 4
+[10:29:29] Progress: 352/8077
+[10:29:33] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:29:35] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:29:35] Batch error (TranslationNotFound()) — wait 19.2s retry 5
+[10:29:45] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:29:47] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:29:48] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:29:49] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:29:52] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:29:53] Single error (TranslationNotFound()) — wait 0.4s
+[10:29:54] Single error (TranslationNotFound()) — wait 0.4s
+[10:29:55] Single error (TranslationNotFound()) — wait 0.8s
+[10:29:56] Batch error (TranslationNotFound()) — wait 38.4s retry 6
+[10:30:00] Single error (TranslationNotFound()) — wait 0.4s
+[10:30:02] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:30:05] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:30:05] Progress: 600/8127
+[10:30:11] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:30:12] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:30:13] GoogleTranslator batch error (TranslationNotFound()) — wait 1.6s
+[10:30:15] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:30:16] Single error (TranslationNotFound()) — wait 0.4s
+[10:30:18] Single error (TranslationNotFound()) — wait 0.4s
+[10:30:19] Single error (TranslationNotFound()) — wait 0.8s
+[10:30:20] Single error (TranslationNotFound()) — wait 1.6s
+[10:30:25] Single error (TranslationNotFound()) — wait 0.4s
+[10:30:35] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:30:35] Batch error (TranslationNotFound()) — wait 76.8s retry 7
+[10:30:39] Batch error (TranslationNotFound()) — wait 153.6s retry 8
+[10:30:57] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:31:06] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:31:07] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:31:12] Single error (TranslationNotFound()) — wait 0.4s
+[10:31:15] Some strings kept in English after errors (TranslationNotFound())
+[10:31:16] Single error (TranslationNotFound()) — wait 0.4s
+[10:31:17] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:31:18] Single error (TranslationNotFound()) — wait 0.4s
+[10:31:20] Single error (TranslationNotFound()) — wait 0.8s
+[10:31:20] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:31:21] Single error (TranslationNotFound()) — wait 1.6s
+[10:31:22] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:31:24] Single error (TranslationNotFound()) — wait 0.4s
+[10:31:24] GoogleTranslator batch error (TranslationNotFound()) — wait 1.6s
+[10:31:26] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:31:29] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:31:32] Single error (TranslationNotFound()) — wait 0.4s
+[10:31:37] Single error (TranslationNotFound()) — wait 0.4s
+[10:31:43] Single error (TranslationNotFound()) — wait 0.4s
+[10:31:55] Progress: 656/8127
+[10:31:56] Batch error (TranslationNotFound()) — wait 153.6s retry 8
+[10:32:01] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:32:02] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:32:22] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:32:27] Some strings kept in English after errors (TooManyRequests())
+[10:32:30] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:32:31] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:32:33] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:32:42] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:32:45] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:32:45] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:32:47] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:32:49] GoogleTranslator batch error (TranslationNotFound()) — wait 1.6s
+[10:32:50] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:32:51] Single error (TranslationNotFound()) — wait 0.4s
+[10:32:52] Single error (TranslationNotFound()) — wait 0.8s
+[10:32:57] Single error (TranslationNotFound()) — wait 0.4s
+[10:32:58] Single error (TranslationNotFound()) — wait 0.8s
+[10:33:00] Single error (TranslationNotFound()) — wait 0.4s
+[10:33:01] Single error (TranslationNotFound()) — wait 0.8s
+[10:33:13] Giving up on batch at auth.signin.sessionExpired: Batch failed after retries
+[10:33:15] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:33:17] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:33:17] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:33:20] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:33:21] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:33:26] Batch error (TranslationNotFound()) — wait 9.6s retry 4
+[10:33:40] Batch error (TranslationNotFound()) — wait 19.2s retry 5
+[10:33:41] Progress: 704/8127
+[10:33:58] Some strings kept in English after errors (TooManyRequests())
+[10:33:58] Progress: 400/8077
+[10:33:58] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:34:00] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:34:01] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:34:02] Single error (TranslationNotFound()) — wait 0.4s
+[10:34:03] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:34:03] Batch error (TranslationNotFound()) — wait 38.4s retry 6
+[10:34:04] Single error (TranslationNotFound()) — wait 0.4s
+[10:34:10] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:34:12] Single error (TranslationNotFound()) — wait 0.4s
+[10:34:14] GoogleTranslator batch error (TranslationNotFound()) — wait 1.6s
+[10:34:19] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:34:20] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:34:21] Single error (TranslationNotFound()) — wait 0.4s
+[10:34:26] Single error (TranslationNotFound()) — wait 0.4s
+[10:34:29] Single error (TranslationNotFound()) — wait 0.4s
+[10:34:30] Single error (TranslationNotFound()) — wait 1.2s
+[10:34:31] Single error (TranslationNotFound()) — wait 0.4s
+[10:34:32] Single error (TranslationNotFound()) — wait 2.4s
+[10:34:35] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:34:36] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:34:45] Batch error (TranslationNotFound()) — wait 76.8s retry 7
+[10:34:48] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:34:54] Progress: 752/8127
+[10:34:54] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:34:56] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:35:02] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:35:08] Batch error (TranslationNotFound()) — wait 9.6s retry 4
+[10:35:17] Some strings kept in English after errors (TooManyRequests())
+[10:35:18] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:35:20] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:35:23] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:35:32] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:35:35] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:35:40] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:35:46] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:35:46] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:35:48] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:35:48] Progress: 800/8127
+[10:35:49] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:35:51] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:35:52] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:35:55] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:35:59] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:36:01] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:36:02] Batch error (TranslationNotFound()) — wait 9.6s retry 4
+[10:36:05] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:36:06] Batch error (TranslationNotFound()) — wait 153.6s retry 8
+[10:36:10] GoogleTranslator batch error (TranslationNotFound()) — wait 1.6s
+[10:36:17] Batch error (TranslationNotFound()) — wait 19.2s retry 5
+[10:36:45] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:36:49] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:36:53] Progress: 856/8127
+[10:37:02] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:37:06] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:37:14] Single error (TranslationNotFound()) — wait 0.4s
+[10:37:14] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:37:15] Some strings kept in English after errors (TranslationNotFound())
+[10:37:20] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:37:22] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:37:25] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:37:30] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:37:34] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:37:34] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:37:37] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:37:44] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:37:48] GoogleTranslator batch error (TranslationNotFound()) — wait 1.6s
+[10:37:50] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:37:52] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:37:54] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:37:55] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:38:00] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:38:04] Progress: 904/8127
+[10:38:05] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:38:07] Batch error (TranslationNotFound()) — wait 9.6s retry 4
+[10:38:18] Batch error (TranslationNotFound()) — wait 19.2s retry 5
+[10:38:19] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:38:39] Giving up on batch at aiAssistant.tabs.ask: Batch failed after retries
+[10:38:41] Batch error (TranslationNotFound()) — wait 38.4s retry 6
+[10:38:48] Some strings kept in English after errors (TooManyRequests())
+[10:38:48] Progress: 456/8077
+[10:38:51] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:38:53] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:38:56] Progress: 952/8127
+[10:38:59] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:39:00] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:39:00] GoogleTranslator batch error (TranslationNotFound()) — wait 1.6s
+[10:39:00] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:39:03] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:39:06] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:39:09] Single error (TranslationNotFound()) — wait 0.4s
+[10:39:12] Single error (TranslationNotFound()) — wait 0.4s
+[10:39:17] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:39:18] Single error (TranslationNotFound()) — wait 0.4s
+[10:39:26] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:39:33] Progress: 300/8325
+[10:39:36] Progress: 300/8226
+[10:39:56] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:39:57] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:40:00] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:40:01] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:40:04] Some strings kept in English after errors (TooManyRequests())
+[10:40:07] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:40:08] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:40:11] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:40:11] Progress: 1000/8127
+[10:40:14] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:40:15] Batch error (TranslationNotFound()) — wait 9.6s retry 4
+[10:40:19] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:40:21] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:40:24] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:40:26] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:40:27] Batch error (TranslationNotFound()) — wait 19.2s retry 5
+[10:40:31] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:40:34] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:40:37] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:40:42] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:40:49] GoogleTranslator batch error (TranslationNotFound()) — wait 1.6s
+[10:40:56] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:41:01] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:41:04] Single error (TranslationNotFound()) — wait 0.4s
+[10:41:05] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:41:05] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:41:09] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:41:12] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:41:16] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:41:20] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:41:24] Progress: 1056/8127
+[10:41:40] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:41:40] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:41:46] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:41:48] Progress: 400/8226
+[10:41:49] Some strings kept in English after errors (TooManyRequests())
+[10:41:52] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:41:54] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:42:00] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:42:04] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:42:07] GoogleTranslator batch error (TranslationNotFound()) — wait 1.6s
+[10:42:07] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:42:09] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:42:18] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:42:21] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:42:28] Progress: 400/8325
+[10:42:28] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:42:34] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:42:36] Progress: 1104/8127
+[10:42:48] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:42:52] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:42:57] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:42:58] Single error (TranslationNotFound()) — wait 0.4s
+[10:43:00] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:43:02] Single error (TranslationNotFound()) — wait 0.4s
+[10:43:04] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:43:05] Some strings kept in English after errors (TranslationNotFound())
+[10:43:08] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:43:09] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:43:11] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:43:11] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:43:12] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:43:13] Batch error (TranslationNotFound()) — wait 9.6s retry 4
+[10:43:13] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:43:16] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:43:18] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:43:18] Single error (TranslationNotFound()) — wait 0.4s
+[10:43:20] Single error (TranslationNotFound()) — wait 0.4s
+[10:43:22] GoogleTranslator batch error (TranslationNotFound()) — wait 1.6s
+[10:43:39] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:43:46] Progress: 500/8226
+[10:43:49] Progress: 1152/8127
+[10:44:01] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:44:09] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:44:23] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:44:23] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:44:30] Some strings kept in English after errors (TooManyRequests())
+[10:44:30] Progress: 504/8077
+[10:44:33] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:44:34] Progress: 500/8325
+[10:44:34] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:44:36] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:44:36] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:44:38] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:44:41] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:44:42] Single error (TranslationNotFound()) — wait 0.4s
+[10:44:44] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:44:45] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:44:48] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:44:51] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:44:51] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:44:53] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:44:53] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:44:56] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:44:59] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:45:05] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:45:07] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:45:08] Progress: 1200/8127
+[10:45:13] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:45:19] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:45:21] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:45:22] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:45:22] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:45:24] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:45:24] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:45:26] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:45:27] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:45:27] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:45:28] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:45:29] GoogleTranslator batch error (TranslationNotFound()) — wait 1.6s
+[10:45:29] Batch error (TranslationNotFound()) — wait 9.6s retry 4
+[10:45:30] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:45:33] Single error (TranslationNotFound()) — wait 0.4s
+[10:45:34] Single error (TranslationNotFound()) — wait 0.8s
+[10:45:39] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:45:44] Batch error (TranslationNotFound()) — wait 19.2s retry 5
+[10:45:47] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:45:49] Progress: 600/8226
+[10:45:51] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:45:54] Single error (TranslationNotFound()) — wait 0.4s
+[10:45:55] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:45:56] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:45:58] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:45:58] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:46:06] Batch error (TranslationNotFound()) — wait 9.6s retry 4
+[10:46:09] Batch error (TranslationNotFound()) — wait 38.4s retry 6
+[10:46:18] Batch error (TranslationNotFound()) — wait 19.2s retry 5
+[10:46:28] Some strings kept in English after errors (TooManyRequests())
+[10:46:28] Progress: 1256/8127
+[10:46:30] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:46:35] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:46:38] Batch error (TranslationNotFound()) — wait 38.4s retry 6
+[10:46:40] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:46:51] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:46:55] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:47:01] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:47:02] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:47:02] Progress: 552/8077
+[10:47:05] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:47:07] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:47:07] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:47:07] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:47:10] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:47:10] Single error (TranslationNotFound()) — wait 0.4s
+[10:47:11] Single error (TranslationNotFound()) — wait 0.8s
+[10:47:14] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:47:15] Batch error (TranslationNotFound()) — wait 9.6s retry 4
+[10:47:17] GoogleTranslator batch error (TranslationNotFound()) — wait 1.6s
+[10:47:18] Single error (TranslationNotFound()) — wait 0.4s
+[10:47:19] Batch error (TranslationNotFound()) — wait 76.8s retry 7
+[10:47:25] Progress: 1304/8127
+[10:47:32] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:47:41] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:47:45] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:47:52] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:48:12] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:48:15] Progress: 600/8325
+[10:48:21] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:48:22] Some strings kept in English after errors (TooManyRequests())
+[10:48:22] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:48:24] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:48:25] Single error (TranslationNotFound()) — wait 0.4s
+[10:48:26] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:48:26] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:48:27] Single error (TranslationNotFound()) — wait 0.4s
+[10:48:29] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:48:29] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:48:30] Single error (TranslationNotFound()) — wait 0.4s
+[10:48:31] Single error (TranslationNotFound()) — wait 0.8s
+[10:48:33] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:48:33] Single error (TranslationNotFound()) — wait 1.6s
+[10:48:34] GoogleTranslator batch error (TranslationNotFound()) — wait 1.6s
+[10:48:34] Batch error (TranslationNotFound()) — wait 9.6s retry 4
+[10:48:36] Batch error (TranslationNotFound()) — wait 153.6s retry 8
+[10:48:37] Progress: 1352/8127
+[10:48:39] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:48:44] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:48:48] Single error (TranslationNotFound()) — wait 0.4s
+[10:48:57] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:49:13] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:49:17] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:49:19] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:49:20] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:49:24] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:49:37] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:49:40] Some strings kept in English after errors (TooManyRequests())
+[10:49:43] MyMemoryTranslator batch error (TooManyRequests()) — wait 0.8s
+[10:49:45] MyMemoryTranslator batch error (TooManyRequests()) — wait 1.6s
+[10:49:47] Progress: 1400/8127
+[10:49:53] GoogleTranslator batch error (TranslationNotFound()) — wait 0.8s
+[10:49:56] Batch error (TranslationNotFound()) — wait 1.2s retry 1
+[10:49:56] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:49:57] Batch error (TranslationNotFound()) — wait 0.8s retry 2
+[10:49:59] Batch error (TranslationNotFound()) — wait 2.4s retry 2
+[10:49:59] Single error (TranslationNotFound()) — wait 0.4s
+[10:50:00] GoogleTranslator batch error (TranslationNotFound()) — wait 1.6s
+[10:50:02] Batch error (TranslationNotFound()) — wait 4.8s retry 3
+[10:50:03] Single error (TranslationNotFound()) — wait 0.4s
+[10:50:06] Single error (TranslationNotFound()) — wait 0.4s
+[10:50:07] Single error (TranslationNotFound()) — wait 0.8s
+[10:50:07] Batch error (TranslationNotFound()) — wait 9.6s retry 4
+[10:50:10] Single error (TranslationNotFound()) — wait 0.4s
+[10:50:18] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:50:22] Batch error (TranslationNotFound()) — wait 19.2s retry 5
+[10:50:29] Batch error (TranslationNotFound()) — wait 0.4s retry 1
+[10:50:31] Batch error (TranslationNotFound()) — wait 0.8s retry 2

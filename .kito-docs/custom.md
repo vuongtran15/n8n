@@ -39,6 +39,11 @@ postgresql://ktuser:kt123qwe***@localhost:5432/n8n_db
 | 2026-08-30 | Thêm AI Agent stack (langchain) vào `NODES_INCLUDE`, mở lại mục AI |
 | 2026-08-30 | Thêm nhóm RM Workflow + node `rmCallSubworkflow` |
 | 2026-08-30 | Tách RM nodes sang `custom/n8n-nodes-rm-workflow` (`CUSTOM.*`, `N8N_CUSTOM_EXTENSIONS`) |
+| 2026-08-31 | Thêm `n8n-nodes-base.postgres` vào `NODES_INCLUDE` (đọc/ghi Postgres) |
+| 2026-08-31 | Settings Personal: chọn ngôn ngữ EN / 中文 / VI (`N8N_LOCALE` localStorage) |
+| 2026-08-31 | Ẩn tab Variables khi không có license Enterprise |
+| 2026-08-31 | Ẩn Templates (`N8N_TEMPLATES_ENABLED=false`) và Help khỏi sidebar |
+| 2026-08-31 | Ẩn Usage/API/MCP/AI Assistant trong Settings (chỉ member; admin/owner vẫn thấy) |
 
 ## Ghi chú thêm
 

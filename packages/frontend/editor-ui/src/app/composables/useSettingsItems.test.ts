@@ -6,6 +6,7 @@ import { VIEWS } from '../constants';
 const isAiGatewayCloudUbbEnabled = ref(false);
 const isAiGatewayEnabled = ref(true);
 const balance = ref<number>();
+const isAdminOrOwner = ref(false);
 const openTopUpMock = vi.hoisted(() => vi.fn());
 
 vi.mock('vue-router', () => ({ useRouter: vi.fn(() => ({})) }));
@@ -22,16 +23,23 @@ vi.mock('@n8n/i18n', () => ({ useI18n: vi.fn(() => ({ baseText: (key: string) =>
 vi.mock('../stores/ui.store', () => ({ useUIStore: vi.fn(() => ({ settingsSidebarItems: [] })) }));
 vi.mock('@n8n/stores/settings.store', () => ({
 	useSettingsStore: vi.fn(() => ({
-		isAiAssistantEnabled: false,
+		isAiAssistantEnabled: true,
 		get isAiGatewayEnabled() {
 			return isAiGatewayEnabled.value;
 		},
 		get isAiGatewayCloudUbbEnabled() {
 			return isAiGatewayCloudUbbEnabled.value;
 		},
-		isPublicApiEnabled: false,
+		isPublicApiEnabled: true,
 		isQueueModeEnabled: false,
 		isModuleActive: vi.fn(() => false),
+	})),
+}));
+vi.mock('@n8n/stores/users.store', () => ({
+	useUsersStore: vi.fn(() => ({
+		get isAdminOrOwner() {
+			return isAdminOrOwner.value;
+		},
 	})),
 }));
 vi.mock('../utils/rbac/permissions', () => ({ hasPermission: vi.fn(() => false) }));
@@ -42,6 +50,7 @@ vi.mock('@/features/shared/envFeatureFlag/useEnvFeatureFlag', () => ({
 describe('useSettingsItems', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
+		isAdminOrOwner.value = false;
 		isAiGatewayEnabled.value = true;
 		isAiGatewayCloudUbbEnabled.value = false;
 		balance.value = undefined;
@@ -96,5 +105,25 @@ describe('useSettingsItems', () => {
 
 		await handleSettingsItemSelect('settings-n8n-connect');
 		expect(openTopUpMock).toHaveBeenCalledWith({ source: 'settings_page' });
+	});
+
+	it('hides usage, API, MCP, and AI Assistant settings items for members', () => {
+		const ids = useSettingsItems().settingsItems.value.map((item) => item.id);
+
+		expect(ids).not.toContain('settings-usage-and-plan');
+		expect(ids).not.toContain('settings-api');
+		expect(ids).not.toContain('settings-mcp');
+		expect(ids).not.toContain('settings-instance-ai');
+		expect(ids).toContain('settings-personal');
+	});
+
+	it('keeps usage, API, MCP, and AI Assistant settings items for admins and owners', () => {
+		isAdminOrOwner.value = true;
+
+		const ids = useSettingsItems().settingsItems.value.map((item) => item.id);
+
+		expect(ids).toContain('settings-usage-and-plan');
+		expect(ids).toContain('settings-api');
+		expect(ids).toContain('settings-personal');
 	});
 });
