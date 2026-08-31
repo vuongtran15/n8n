@@ -18,21 +18,21 @@ import { getWorkflowInfo } from '../../helpers/getWorkflowInfo';
 import { getCurrentWorkflowInputData, loadSubWorkflowInputs } from '../../helpers/workflowInputs';
 
 /**
- * RM Workflow — Call Subworkflow (custom package)
+ * RM Workflow — Widget (custom package)
  * Pick from authorized workflows or enter ID only — no create / no open-sub-workflow link.
  */
-export class RmCallSubworkflow implements INodeType {
+export class RMWidget implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'RM Call Subworkflow',
-		name: 'rmCallSubworkflow',
+		displayName: 'RM Widget',
+		name: 'rmWidget',
 		icon: 'fa:sitemap',
 		iconColor: 'blue',
 		group: ['transform'],
 		version: 1.2,
 		subtitle: '={{"RM → " + $parameter["workflowId"]}}',
-		description: 'Call an authorized sub-workflow by ID and map its declared inputs',
+		description: 'Call an RM Widget',
 		defaults: {
-			name: 'RM Call Subworkflow',
+			name: 'RM Widget',
 		},
 		inputs: [NodeConnectionTypes.Main],
 		outputs: [NodeConnectionTypes.Main],

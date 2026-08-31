@@ -7,7 +7,7 @@ Package riêng ngoài `nodes-base`: `custom/n8n-nodes-rm-workflow/`
 
 | Node | Type | Mô tả |
 |------|------|--------|
-| RM Call Subworkflow | `CUSTOM.rmCallSubworkflow` | Chọn workflow được cấp / nhập ID → map inputs (resourceMapper). Không tạo / không mở sub-workflow |
+| RM Workflow | `CUSTOM.rmWidget` | Chọn workflow được cấp / nhập ID → map inputs (resourceMapper). Không tạo / không mở sub-workflow |
 
 Cơ chế fields: giống Execute Sub-workflow — đọc schema từ **Execute Workflow Trigger** của child. Child phải khai báo inputs (không phải “Accept all data”) thì panel mới có trường.
 
@@ -23,7 +23,7 @@ Trong `docker/kito-n8n/n8n.env` (copy sang `packages/cli/bin/.env`):
 N8N_CUSTOM_EXTENSIONS=E:/CODE/N8N/n8n/custom/n8n-nodes-rm-workflow
 ```
 
-Và trong `NODES_INCLUDE` có `"CUSTOM.rmCallSubworkflow"`.
+Và trong `NODES_INCLUDE` có `"CUSTOM.rmWidget"`.
 
 Đổi path cho máy bạn nếu repo không nằm ở `E:/CODE/N8N/n8n`.
 

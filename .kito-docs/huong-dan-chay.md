@@ -108,7 +108,7 @@ copy docker\kito-n8n\n8n.env packages\cli\bin\.env
 
 ## RM Workflow (custom package — không nằm trong nodes-base)
 
-Package: `custom/n8n-nodes-rm-workflow/` → type id `CUSTOM.rmCallSubworkflow`.
+Package: `custom/n8n-nodes-rm-workflow/` → type id `CUSTOM.rmWidget`.
 
 ```powershell
 cd custom\n8n-nodes-rm-workflow
@@ -116,7 +116,7 @@ pnpm install
 pnpm build
 ```
 
-Env cần `N8N_CUSTOM_EXTENSIONS` trỏ tới folder package đó + `"CUSTOM.rmCallSubworkflow"` trong `NODES_INCLUDE`. Chi tiết: [custom-nodes-rm-workflow.md](./custom-nodes-rm-workflow.md).
+Env cần `N8N_CUSTOM_EXTENSIONS` trỏ tới folder package đó + `"CUSTOM.rmWidget"` trong `NODES_INCLUDE`. Chi tiết: [custom-nodes-rm-workflow.md](./custom-nodes-rm-workflow.md).
 
 ## Ẩn mục AI / Action in an app / Human review
 

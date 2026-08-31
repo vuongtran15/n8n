@@ -1,7 +1,7 @@
 import type { INodeListSearchItems } from 'n8n-workflow';
 
 /**
- * Workflows the current user is allowed to call via RM Call Subworkflow.
+ * Workflows the current user is allowed to call via RM Widget.
  *
  * Stub for now — replace with an API that returns workflows granted to the account.
  * Do not put workflow URLs here (keeps the NDV from showing an “open workflow” link).
