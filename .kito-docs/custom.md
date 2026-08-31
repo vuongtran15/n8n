@@ -43,7 +43,7 @@ postgresql://ktuser:kt123qwe***@localhost:5432/n8n_db
 | 2026-08-31 | Settings Personal: chọn ngôn ngữ EN / 中文 / VI (`N8N_LOCALE` localStorage) |
 | 2026-08-31 | Ẩn tab Variables khi không có license Enterprise |
 | 2026-08-31 | Ẩn Templates (`N8N_TEMPLATES_ENABLED=false`) và Help khỏi sidebar |
-| 2026-08-31 | Ẩn Usage/API/MCP/AI Assistant trong Settings (chỉ member; admin/owner vẫn thấy) |
+| 2026-08-31 | Bật Memory (Simple + Postgres Chat), MSSQL; hiện Simple Memory dù queue mode |
 
 ## Ghi chú thêm
 

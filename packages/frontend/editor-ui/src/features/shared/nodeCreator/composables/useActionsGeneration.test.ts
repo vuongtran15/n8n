@@ -612,25 +612,25 @@ describe('useActionsGenerator', () => {
 			expect(nodeNames).toContain('n8n-nodes-base.regularNode');
 		});
 
-		it('should filter out Simple Memory node when queue mode is enabled', () => {
+		it('should include Simple Memory node when queue mode is enabled', () => {
 			settingsStore.isQueueModeEnabled = true;
 			settingsStore.isMultiMain = false;
 
 			const { mergedNodes } = generateMergedNodesAndActions([simpleMemoryNode, regularNode], []);
 
 			const nodeNames = mergedNodes.map((n) => n.name);
-			expect(nodeNames).not.toContain(SIMPLE_MEMORY_NODE_TYPE);
+			expect(nodeNames).toContain(SIMPLE_MEMORY_NODE_TYPE);
 			expect(nodeNames).toContain('n8n-nodes-base.regularNode');
 		});
 
-		it('should filter out Simple Memory node when multi-main is enabled', () => {
+		it('should include Simple Memory node when multi-main is enabled', () => {
 			settingsStore.isQueueModeEnabled = false;
 			settingsStore.isMultiMain = true;
 
 			const { mergedNodes } = generateMergedNodesAndActions([simpleMemoryNode, regularNode], []);
 
 			const nodeNames = mergedNodes.map((n) => n.name);
-			expect(nodeNames).not.toContain(SIMPLE_MEMORY_NODE_TYPE);
+			expect(nodeNames).toContain(SIMPLE_MEMORY_NODE_TYPE);
 			expect(nodeNames).toContain('n8n-nodes-base.regularNode');
 		});
 	});

@@ -5,7 +5,6 @@ import {
 	AI_SUBCATEGORY,
 	CUSTOM_API_CALL_KEY,
 	HTTP_REQUEST_NODE_TYPE,
-	SIMPLE_MEMORY_NODE_TYPE,
 } from '@/app/constants';
 import memoize from 'lodash/memoize';
 import startCase from 'lodash/startCase';
@@ -23,7 +22,6 @@ import {
 import { i18n } from '@n8n/i18n';
 
 import { getCredentialOnlyNodeType } from '@/app/utils/credentialOnlyNodes';
-import { useSettingsStore } from '@n8n/stores/settings.store';
 import { formatTriggerActionName } from '../nodeCreator.utils';
 import { useEvaluationStore } from '@/features/ai/evaluation.ee/evaluation.store';
 
@@ -394,7 +392,6 @@ export function useActionsGenerator() {
 		httpOnlyCredentials: ICredentialType[],
 	) {
 		const evaluationStore = useEvaluationStore();
-		const settingsStore = useSettingsStore();
 
 		const visibleNodeTypes = nodeTypes.filter((node) => {
 			// Filter out evaluation nodes if evaluation is not enabled
@@ -404,13 +401,8 @@ export function useActionsGenerator() {
 				}
 			}
 
-			// Filter out Simple Memory node in queue mode or multi-main setup
-			// because it stores memory in-process which doesn't work with multiple workers
-			if (settingsStore.isQueueModeEnabled || settingsStore.isMultiMain) {
-				if (node.name === SIMPLE_MEMORY_NODE_TYPE) {
-					return false;
-				}
-			}
+			// Kito: keep Simple Memory visible in queue/multi-main (dev/single-worker);
+			// Postgres Chat Memory is the safe default for scaled setups.
 
 			return true;
 		});
