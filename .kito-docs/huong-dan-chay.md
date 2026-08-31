@@ -36,6 +36,18 @@ pnpm run dev:worker
 
 **Không** dùng `pnpm dev` ở root (đã bỏ).
 
+> Chạy **production** (build + main + nhiều worker, PM2): xem [huong-dan-chay-prod.md](./huong-dan-chay-prod.md).
+
+## Nhiều worker (dev)
+
+Khi `pnpm dev:be` đang chạy, gom 3 worker trong **1 terminal**:
+
+```powershell
+cd packages\cli
+pnpm exec concurrently -n "w1,w2,w3" "node bin/n8n worker" "node bin/n8n worker" "node bin/n8n worker"
+```
+
+
 ## Tài khoản admin (owner)
 
 - **Lần đầu:** mở http://localhost:5678 → màn hình setup Owner (email + mật khẩu).

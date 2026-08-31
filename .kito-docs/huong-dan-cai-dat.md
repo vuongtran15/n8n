@@ -150,4 +150,5 @@ Network `kito-n8n-net` dùng subnet cố định để không đụng bridge m�
 | `spawn pnpm ENOENT` với `agent:setup` | Dùng `pnpm install` / `pnpm build` thủ công |
 | PowerShell: `--services=postgres,redis` bị lỗi | Bọc quotes: `--services='postgres,redis'` |
 | Workflow không chạy | Thiếu `pnpm run dev:worker` khi queue mode |
+| Chạy production | [huong-dan-chay-prod.md](./huong-dan-chay-prod.md) |
 | Không thấy `.kito-docs` trong Explorer | Bật “Show hidden items” (folder bắt đầu bằng `.`) |

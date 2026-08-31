@@ -46,6 +46,7 @@ postgresql://ktuser:kt123qwe***@localhost:5432/n8n_db
 | 2026-08-31 | Bật Memory (Simple + Postgres Chat), MSSQL; hiện Simple Memory dù queue mode |
 | 2026-08-31 | Rebrand UI: sidebar + tab title → **RMVN N8N** |
 | 2026-08-31 | Ẩn Insights khỏi sidebar và command bar |
+| 2026-08-31 | Docs: [huong-dan-chay-prod.md](./huong-dan-chay-prod.md) — chạy prod + worker |
 
 ## Ghi chú thêm
 
