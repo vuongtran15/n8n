@@ -1,1 +1,1 @@
-export const APP_BRAND_NAME = 'RMVN N8N';
+export const APP_BRAND_NAME = 'RM N8N';
