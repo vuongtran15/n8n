@@ -16,10 +16,11 @@ const props = defineProps<
 		  }
 	) & {
 		releaseChannel?: 'stable' | 'beta' | 'nightly' | 'dev' | 'rc';
+		wordmark?: string;
 	}
 >();
 
-const { size, releaseChannel } = props;
+const { size, releaseChannel, wordmark } = props;
 
 const showLogoText = computed(() => {
 	if (size === 'large') return true;
@@ -59,7 +60,8 @@ onMounted(() => {
 <template>
 	<div :class="containerClasses" data-test-id="n8n-logo">
 		<LogoIcon ref="logo" :class="$style.logo" />
-		<LogoText v-if="showLogoText" :class="$style.logoText" />
+		<span v-if="showLogoText && wordmark" :class="$style.wordmark">{{ wordmark }}</span>
+		<LogoText v-else-if="showLogoText" :class="$style.logoText" />
 		<slot />
 	</div>
 </template>
@@ -78,16 +80,26 @@ onMounted(() => {
 	}
 }
 
+.wordmark {
+	margin-left: var(--spacing--5xs);
+	font-size: var(--font-size--sm);
+	font-weight: var(--font-weight--bold);
+	color: var(--color--text--shade-1);
+	white-space: nowrap;
+}
+
 .large {
 	transform: scale(2);
 	margin-bottom: var(--spacing--xl);
 
 	.logo,
-	.logoText {
+	.logoText,
+	.wordmark {
 		transform: scale(1.3) translateY(-2px);
 	}
 
-	.logoText {
+	.logoText,
+	.wordmark {
 		margin-left: var(--spacing--xs);
 		margin-right: var(--spacing--3xs);
 	}

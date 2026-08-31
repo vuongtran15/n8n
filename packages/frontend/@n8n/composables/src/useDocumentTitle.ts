@@ -13,9 +13,14 @@ export type WorkflowTitleStatus =
 
 export interface UseDocumentTitleOptions {
 	/**
+	 * Application name shown in the browser tab suffix.
+	 * Defaults to `DEFAULT_TITLE` when omitted.
+	 */
+	appName?: string;
+	/**
 	 * The release channel (e.g., 'stable', 'beta', 'dev').
-	 * If not provided or 'stable', the title will be 'n8n'.
-	 * Otherwise, it will be 'n8n[CHANNEL]'.
+	 * If not provided or 'stable', the title suffix is the app name only.
+	 * Otherwise, it will be '{appName}[CHANNEL]'.
 	 */
 	releaseChannel?: string;
 	/**
@@ -26,11 +31,11 @@ export interface UseDocumentTitleOptions {
 }
 
 export function useDocumentTitle(options: UseDocumentTitleOptions = {}) {
-	const { releaseChannel, windowRef } = options;
+	const { releaseChannel, windowRef, appName = DEFAULT_TITLE } = options;
 	const suffix =
 		!releaseChannel || releaseChannel === 'stable'
-			? DEFAULT_TITLE
-			: `${DEFAULT_TITLE}[${releaseChannel.toUpperCase()}]`;
+			? appName
+			: `${appName}[${releaseChannel.toUpperCase()}]`;
 
 	const currentState = ref<WorkflowTitleStatus | undefined>(undefined);
 

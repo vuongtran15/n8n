@@ -44,6 +44,8 @@ postgresql://ktuser:kt123qwe***@localhost:5432/n8n_db
 | 2026-08-31 | Ẩn tab Variables khi không có license Enterprise |
 | 2026-08-31 | Ẩn Templates (`N8N_TEMPLATES_ENABLED=false`) và Help khỏi sidebar |
 | 2026-08-31 | Bật Memory (Simple + Postgres Chat), MSSQL; hiện Simple Memory dù queue mode |
+| 2026-08-31 | Rebrand UI: sidebar + tab title → **RMVN N8N** |
+| 2026-08-31 | Ẩn Insights khỏi sidebar và command bar |
 
 ## Ghi chú thêm
 

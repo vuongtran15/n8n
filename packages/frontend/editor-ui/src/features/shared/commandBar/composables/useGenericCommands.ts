@@ -24,7 +24,6 @@ const ITEM_ID = {
 	SIGN_OUT: 'sign-out',
 	TEMPLATES: 'templates',
 	VARIABLES: 'variables',
-	INSIGHTS: 'insights',
 	QUICKSTART: 'quickstart',
 	DOCUMENTATION: 'documentation',
 	FORUM: 'forum',
@@ -120,25 +119,6 @@ export function useGenericCommands(): CommandGroup {
 							},
 						},
 						keywords: [i18n.baseText('mainSidebar.variables').toLowerCase()],
-					},
-				]
-			: []),
-		...(projectsStore.canViewProjects
-			? [
-					{
-						id: ITEM_ID.INSIGHTS,
-						title: 'Insights',
-						section: i18n.baseText('commandBar.sections.general'),
-						handler: () => {
-							void router.push({ name: VIEWS.INSIGHTS });
-						},
-						icon: {
-							component: N8nIcon,
-							props: {
-								icon: 'chart-column-decreasing',
-							},
-						},
-						keywords: ['insights'],
 					},
 				]
 			: []),

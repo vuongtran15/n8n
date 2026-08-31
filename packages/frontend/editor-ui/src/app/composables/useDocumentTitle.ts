@@ -2,6 +2,7 @@ import {
 	useDocumentTitle as useDocumentTitleBase,
 	type WorkflowTitleStatus,
 } from '@n8n/composables/useDocumentTitle';
+import { APP_BRAND_NAME } from '@/app/constants/branding';
 import { useSettingsStore } from '@n8n/stores/settings.store';
 import { onScopeDispose, ref, type Ref } from 'vue';
 
@@ -23,7 +24,7 @@ export function claimDocumentTitle() {
 export function useDocumentTitle(windowRef?: Ref<Window | undefined>) {
 	const settingsStore = useSettingsStore();
 	const { releaseChannel } = settingsStore.settings;
-	const base = useDocumentTitleBase({ releaseChannel, windowRef });
+	const base = useDocumentTitleBase({ appName: APP_BRAND_NAME, releaseChannel, windowRef });
 
 	return {
 		...base,

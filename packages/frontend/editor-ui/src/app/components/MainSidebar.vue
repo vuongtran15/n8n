@@ -127,9 +127,7 @@ const mainMenuItems = computed<IMenuItem[]>(() => [
 		label: 'Insights',
 		position: 'bottom',
 		route: { to: { name: VIEWS.INSIGHTS } },
-		available:
-			settingsStore.isModuleActive('insights') &&
-			hasPermission(['rbac'], { rbac: { scope: 'insights:list' } }),
+		available: false,
 	},
 	{
 		id: 'settings',
@@ -226,9 +224,6 @@ const handleSelect = (key: string) => {
 		}
 		case 'templates':
 			trackTemplatesClick(TemplateClickSource.sidebarButton);
-			break;
-		case 'insights':
-			telemetry.track('User clicked insights link from side menu');
 			break;
 		default:
 			break;

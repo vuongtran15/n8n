@@ -14,6 +14,7 @@ import {
 } from '@n8n/design-system';
 import { useI18n } from '@n8n/i18n';
 import { VIEWS } from '@/app/constants';
+import { APP_BRAND_NAME } from '@/app/constants/branding';
 import { useSourceControlStore } from '@/features/integrations/sourceControl.ee/sourceControl.store';
 import KeyboardShortcutTooltip from '@/app/components/KeyboardShortcutTooltip.vue';
 import { useSettingsStore } from '@n8n/stores/settings.store';
@@ -70,6 +71,7 @@ const {
 				size="small"
 				:collapsed="isCollapsed"
 				:release-channel="settingsStore.settings.releaseChannel"
+				:wordmark="APP_BRAND_NAME"
 			>
 				<N8nTooltip
 					v-if="sourceControlStore.preferences.branchReadOnly && !isCollapsed"
