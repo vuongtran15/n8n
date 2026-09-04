@@ -12,6 +12,7 @@ import { useUsersStore } from '@n8n/stores/users.store';
 import { hasPermission } from '../utils/rbac/permissions';
 import { MIGRATION_REPORT_TARGET_VERSION } from '@n8n/api-types';
 import { useEnvFeatureFlag } from '@/features/shared/envFeatureFlag/useEnvFeatureFlag';
+import { RM_WORKFLOW_SETTINGS_VIEW } from '@/features/rmWorkflow/constants';
 
 // Kito: hide billing, public API, MCP, and AI Assistant from the settings menu for members.
 const HIDDEN_SETTINGS_ITEM_IDS = new Set([
@@ -199,6 +200,15 @@ export function useSettingsItems() {
 			position: 'top',
 			available: canUserAccessRouteByName(VIEWS.COMMUNITY_NODES),
 			route: { to: { name: VIEWS.COMMUNITY_NODES } },
+		});
+
+		menuItems.push({
+			id: 'settings-rm-workflow',
+			icon: 'layers',
+			label: i18n.baseText('rmWorkflow.settings.menu'),
+			position: 'top',
+			available: usersStore.isAdminOrOwner,
+			route: { to: { name: RM_WORKFLOW_SETTINGS_VIEW } },
 		});
 
 		if (MIGRATION_REPORT_TARGET_VERSION) {

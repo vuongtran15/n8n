@@ -14,7 +14,7 @@ import type {
 	ResourceMapperValue,
 } from 'n8n-workflow';
 import { deepCopy, NodeHelpers } from 'n8n-workflow';
-import { computed, inject, onMounted, reactive, watch } from 'vue';
+import { computed, inject, onBeforeUnmount, onMounted, reactive, watch } from 'vue';
 import {
 	ExpressionLocalResolveContextSymbol,
 	ResourceMapperRefreshEmptySchemaKey,
@@ -40,6 +40,8 @@ import ParameterInputFull from '../ParameterInputFull.vue';
 
 import { N8nButton, N8nCallout, N8nIcon, N8nNotice, N8nText } from '@n8n/design-system';
 import { injectWorkflowDocumentStore } from '@/app/stores/workflowDocument.store';
+import { RM_WIDGET_NODE_TYPE } from '@/features/rmWorkflow/constants';
+import { ndvEventBus } from '@/features/ndv/shared/ndv.eventBus';
 type Props = {
 	parameter: INodeProperties;
 	node: INode | null;
@@ -257,7 +259,28 @@ onMounted(async () => {
 	updateNodeIssues();
 });
 
+function onRefreshRmWidgetConfig({ nodeName }: { nodeName: string }) {
+	if (
+		props.node?.name !== nodeName ||
+		props.node?.type !== RM_WIDGET_NODE_TYPE ||
+		props.parameter.name !== 'workflowInputs'
+	) {
+		return;
+	}
+
+	void initFetching(true);
+}
+
+onMounted(() => {
+	ndvEventBus.on('refreshRmWidgetConfig', onRefreshRmWidgetConfig);
+});
+
+onBeforeUnmount(() => {
+	ndvEventBus.off('refreshRmWidgetConfig', onRefreshRmWidgetConfig);
+});
+
 const resourceMapperMode = computed<string | undefined>(() => {
+
 	return props.parameter.typeOptions?.resourceMapper?.mode;
 });
 

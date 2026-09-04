@@ -11,7 +11,16 @@ Package riêng ngoài `nodes-base`: `custom/n8n-nodes-rm-workflow/`
 
 Cơ chế fields: giống Execute Sub-workflow — đọc schema từ **Execute Workflow Trigger** của child. Child phải khai báo inputs (không phải “Accept all data”) thì panel mới có trường.
 
-Chọn workflow: `resourceLocator` — **From granted list** (popup danh sách cấp sẵn) hoặc **By ID**. Danh sách stub: `custom/n8n-nodes-rm-workflow/src/helpers/authorizedWorkflows.ts` (sau này thay API theo tài khoản). Không dùng `workflowSelector` → không nút tạo / mở sub-workflow.
+Chọn workflow: **Widget store** (popup kho widget) hoặc **By ID**.
+
+**API portal** (proxy qua n8n):
+- `GET /rest/rm-workflow/catalogs` → `{base}/api/portal/workflow/catalogs`
+- `GET /rest/rm-workflow/workflows?search=&page=&pageSize=&catalogId=` → `{base}/api/portal/workflow?...` (gửi kèm `email` user đăng nhập)
+
+Cấu hình **Settings → RM Workflow** (admin): `apiBaseUrl` = `http://172.19.137.206:200`  
+Hoặc env: `RM_WORKFLOW_PORTAL_API_BASE_URL`.
+
+Stub cũ `authorizedWorkflows.ts` chỉ dùng khi fallback `listSearch` — UI store không dùng stub nữa.
 
 Loader: `N8N_CUSTOM_EXTENSIONS` → package name luôn là **`CUSTOM`**.
 
@@ -20,12 +29,12 @@ Loader: `N8N_CUSTOM_EXTENSIONS` → package name luôn là **`CUSTOM`**.
 Trong `docker/kito-n8n/n8n.env` (copy sang `packages/cli/bin/.env`):
 
 ```env
-N8N_CUSTOM_EXTENSIONS=E:/CODE/N8N/n8n/custom/n8n-nodes-rm-workflow
+N8N_CUSTOM_EXTENSIONS=D:/CODE/N8N/n8n/custom/n8n-nodes-rm-workflow
 ```
 
 Và trong `NODES_INCLUDE` có `"CUSTOM.rmWidget"`.
 
-Đổi path cho máy bạn nếu repo không nằm ở `E:/CODE/N8N/n8n`.
+Đổi path cho máy bạn nếu repo không nằm ở `D:/CODE/N8N/n8n`.
 
 ## Thêm node tiếp theo vào nhóm
 

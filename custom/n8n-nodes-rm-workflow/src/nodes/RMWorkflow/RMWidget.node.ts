@@ -28,7 +28,7 @@ export class RMWidget implements INodeType {
 		icon: 'fa:sitemap',
 		iconColor: 'blue',
 		group: ['transform'],
-		version: 1.2,
+		version: 1.3,
 		subtitle: '={{"RM → " + $parameter["workflowId"]}}',
 		description: 'Call an RM Widget',
 		defaults: {
@@ -44,13 +44,13 @@ export class RMWidget implements INodeType {
 				default: { mode: 'list', value: '' },
 				required: true,
 				description:
-					'Choose from workflows granted to this account, or enter a workflow ID. Sub-workflows cannot be opened or created from this node.',
+					'Browse the widget store for workflows granted to this account, or enter a workflow ID. Sub-workflows cannot be opened or created from this node.',
 				modes: [
 					{
-						displayName: 'From granted list',
+						displayName: 'Widget store',
 						name: 'list',
 						type: 'list',
-						placeholder: 'Select an authorized workflow',
+						placeholder: 'Select a widget',
 						typeOptions: {
 							searchListMethod: 'searchAuthorizedWorkflows',
 							searchable: true,

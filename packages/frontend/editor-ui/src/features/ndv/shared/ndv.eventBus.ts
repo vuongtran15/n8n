@@ -20,6 +20,9 @@ export interface NdvEventBusEvents {
 	updateInputNodeName: string | undefined;
 
 	setInputBranchIndex: number;
+
+	/** Reload RM Widget workflow inputs after the selected widget changes on the server */
+	refreshRmWidgetConfig: { nodeName: string };
 }
 
 export const ndvEventBus = createEventBus<NdvEventBusEvents>();

@@ -42,6 +42,8 @@ import SqlEditor from '@/features/shared/editors/components/SqlEditor/SqlEditor.
 import TextEdit from './TextEdit.vue';
 import WorkflowSelectorParameterInput from './WorkflowSelectorParameterInput/WorkflowSelectorParameterInput.vue';
 import AgentSelectorParameterInput from './AgentSelectorParameterInput/AgentSelectorParameterInput.vue';
+import RMWidgetStoreInput from '@/features/rmWorkflow/components/RMWidgetStoreInput.vue';
+import { RM_WIDGET_NODE_TYPE } from '@/features/rmWorkflow/constants';
 
 import {
 	formatAsExpression,
@@ -1523,8 +1525,29 @@ onUpdated(async () => {
 			:style="parameterInputWrapperStyle"
 			:data-parameter-path="path"
 		>
+			<RMWidgetStoreInput
+				v-if="
+					parameter.type === 'resourceLocator' &&
+					node?.type === RM_WIDGET_NODE_TYPE &&
+					parameter.name === 'workflowId'
+				"
+				ref="resourceLocator"
+				:parameter="parameter"
+				:model-value="modelValueResourceLocator"
+				:expression-display-value="expressionDisplayValue"
+				:is-value-expression="isModelValueExpression"
+				:is-read-only="isReadOnly"
+				:parameter-issues="getIssues"
+				:node="node"
+				:path="path"
+				:event-bus="eventBus"
+				@update:model-value="valueChangedDebounced"
+				@modal-opener-click="openExpressionEditorModal"
+				@focus="setFocus"
+				@blur="onBlur"
+			/>
 			<ResourceLocator
-				v-if="parameter.type === 'resourceLocator'"
+				v-else-if="parameter.type === 'resourceLocator'"
 				ref="resourceLocator"
 				:parameter="parameter"
 				:model-value="modelValueResourceLocator"

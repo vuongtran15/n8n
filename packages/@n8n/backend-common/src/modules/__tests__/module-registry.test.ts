@@ -74,6 +74,7 @@ describe('eligibleModules', () => {
 			'runtime-credentials',
 			'mcp-registry',
 			'workflow-reviews',
+			'rm-workflow',
 			'instance-ai',
 		]);
 	});
@@ -110,6 +111,7 @@ describe('eligibleModules', () => {
 			'runtime-credentials',
 			'mcp-registry',
 			'workflow-reviews',
+			'rm-workflow',
 			'instance-ai',
 			'agents',
 		]);
