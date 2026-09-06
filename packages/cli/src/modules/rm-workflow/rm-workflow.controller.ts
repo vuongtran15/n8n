@@ -6,6 +6,7 @@ import type { Response } from 'express';
 import { ForbiddenError } from '@/errors/response-errors/forbidden.error';
 
 import { UpdateRmWorkflowSettingsDto } from './dto/update-rm-workflow-settings.dto';
+import { normalizePortalCatalogs } from './rm-workflow-catalog.utils';
 import { RmWorkflowPortalService } from './rm-workflow-portal.service';
 import { RmWorkflowSettingsService } from './rm-workflow-settings.service';
 
@@ -46,7 +47,7 @@ export class RmWorkflowController {
 	@Get('/catalogs')
 	async getCatalogs(_req: AuthenticatedRequest) {
 		const response = await this.portalService.getCatalogs();
-		return { catalogs: response.value ?? [] };
+		return { catalogs: normalizePortalCatalogs(response) };
 	}
 
 	@GlobalScope('workflow:read')
@@ -75,12 +76,20 @@ export class RmWorkflowController {
 			email: req.user.email,
 		});
 
+		const items = response.items ?? [];
+		const currentPage = response.page ?? page;
+		const currentPageSize = response.pageSize ?? pageSize;
+		const total = response.total ?? 0;
+
 		return {
-			items: response.items ?? [],
-			total: response.total ?? 0,
-			page: response.page ?? page,
-			pageSize: response.pageSize ?? pageSize,
-			hasNextPage: (response.page ?? page) * (response.pageSize ?? pageSize) < (response.total ?? 0),
+			items,
+			total,
+			page: currentPage,
+			pageSize: currentPageSize,
+			hasNextPage:
+				items.length > 0 &&
+				currentPage * currentPageSize < total &&
+				items.length >= currentPageSize,
 			tagFacets: response.tagFacets ?? [],
 			catalogFacets: response.catalogFacets ?? [],
 		};

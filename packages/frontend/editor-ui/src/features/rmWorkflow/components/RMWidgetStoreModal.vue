@@ -1,915 +1,781 @@
 <script setup lang="ts">
-
 import { computed, onMounted, ref, watch } from 'vue';
-
 import Modal from '@/app/components/Modal.vue';
-
 import { createEventBus } from '@n8n/utils/event-bus';
-
 import { useI18n } from '@n8n/i18n';
-
 import { useDebounceFn } from '@vueuse/core';
-
 import { useToast } from '@n8n/composables/useToast';
-
 import {
-
 	N8nButton,
-
 	N8nHeading,
-
 	N8nIcon,
-
 	N8nInput,
-
 	N8nLoading,
-
-	N8nOption,
-
-	N8nSelect,
-
 	N8nText,
-
 } from '@n8n/design-system';
-
 import { RM_WIDGET_STORE_MODAL_KEY } from '../constants';
-
 import { useRmWorkflowStore } from '../rmWorkflow.store';
-
 import type { RmWorkflowListItem } from '../rmWorkflow.types';
-
-import { getCatalogDisplayName } from '../rmWorkflow.utils';
-
-
+import { filterWidgetItems, getCatalogDisplayName, mergeCatalogSources } from '../rmWorkflow.utils';
 
 const props = defineProps<{
-
 	modalName: string;
-
 	data: {
-
 		selectedValue: string | null;
-
 		onSelect: (workflowId: string, name: string) => void;
-
 	};
-
 }>();
 
-
-
 const modalBus = ref(createEventBus());
-
 const i18n = useI18n();
-
 const toast = useToast();
-
 const rmWorkflowStore = useRmWorkflowStore();
 
-
-
 const searchQuery = ref('');
-
 const selectedCatalogId = ref<string>('all');
-
 const page = ref(1);
-
 const pageSize = 24;
-
-
+const bulkFetchPageSize = 100;
+const maxBulkFetchPages = 10;
 
 const items = ref<RmWorkflowListItem[]>([]);
-
+const allWorkflowItems = ref<RmWorkflowListItem[] | null>(null);
 const total = ref(0);
-
 const hasNextPage = ref(false);
-
 const isLoading = ref(false);
-
 const isLoadingMore = ref(false);
-
 const loadError = ref<string | null>(null);
-
-
+const loadRequestId = ref(0);
+const catalogFacets = ref<
+	Array<{
+		catalogId: number;
+		name: string;
+		nameVi: string;
+		nameZh: string;
+		count: number;
+	}>
+>([]);
 
 const locale = computed(() => i18n.locale);
 
+const allCatalogCount = computed(() => {
+	if (catalogFacets.value.length > 0) {
+		return catalogFacets.value.reduce((sum, facet) => sum + facet.count, 0);
+	}
+	return total.value;
+});
 
+const catalogNavItems = computed(() => {
+	const mergedCatalogs = mergeCatalogSources({
+		catalogs: rmWorkflowStore.catalogs,
+		facets: catalogFacets.value,
+		items: [],
+	});
 
-const categoryOptions = computed(() => {
-
-	const options = [
-
+	const navItems = [
 		{
-
-			value: 'all' as const,
-
-			label: i18n.baseText('rmWorkflow.widgetStore.categories.all'),
-
+			value: 'all',
+			label: i18n.baseText('rmWorkflow.widgetStore.catalogs.all'),
+			count: allCatalogCount.value,
 		},
-
 	];
 
-
-
-	const sortedCatalogs = [...rmWorkflowStore.catalogs].sort(
-
-		(a, b) => a.sortOrder - b.sortOrder || a.id - b.id,
-
-	);
-
-
-
-	for (const catalog of sortedCatalogs) {
-
-		options.push({
-
+	for (const catalog of mergedCatalogs) {
+		navItems.push({
 			value: String(catalog.id),
-
 			label: getCatalogDisplayName(catalog, locale.value),
-
+			count: catalog.count,
 		});
-
 	}
 
-
-
-	return options;
-
+	return navItems;
 });
 
+const selectedCatalogNumericId = computed(() => {
+	if (selectedCatalogId.value === 'all') {
+		return undefined;
+	}
 
+	const catalogId = Number.parseInt(selectedCatalogId.value, 10);
+	return Number.isFinite(catalogId) ? catalogId : undefined;
+});
+
+const selectedCatalog = computed(() =>
+	rmWorkflowStore.catalogs.find((catalog) => catalog.id === selectedCatalogNumericId.value),
+);
+
+const filteredItems = computed(() => applyClientFilters(items.value));
+
+const resultShownCount = computed(() => filteredItems.value.length);
+
+const resultTotalCount = computed(() => {
+	if (needsFullDataset()) {
+		return filteredItems.value.length;
+	}
+
+	return total.value;
+});
+
+const canLoadMore = computed(
+	() => hasNextPage.value && selectedCatalogId.value === 'all' && !searchQuery.value.trim(),
+);
 
 function getWidgetCatalogName(widget: RmWorkflowListItem): string {
-
 	return getCatalogDisplayName(
-
 		{
-
 			name: widget.catalogName,
-
 			nameVi: widget.catalogNameVi,
-
 			nameZh: widget.catalogNameZh,
-
 		},
-
 		locale.value,
-
 	);
-
 }
 
+function needsFullDataset(): boolean {
+	return selectedCatalogNumericId.value !== undefined || Boolean(searchQuery.value.trim());
+}
 
+function applyClientFilters(sourceItems: RmWorkflowListItem[]): RmWorkflowListItem[] {
+	return filterWidgetItems(sourceItems, {
+		catalogId: selectedCatalogNumericId.value,
+		catalog: selectedCatalog.value,
+		search: searchQuery.value,
+	});
+}
 
-async function loadPage(nextPage: number, append: boolean) {
+async function fetchWorkflowPage(
+	nextPage: number,
+	requestPageSize: number,
+	catalogId?: number,
+	search?: string,
+) {
+	return await rmWorkflowStore.loadWorkflows({
+		search: search?.trim() || undefined,
+		page: nextPage,
+		pageSize: requestPageSize,
+		catalogId,
+	});
+}
 
-	if (append) {
+async function loadAllWorkflowPages(requestId: number) {
+	const aggregated: RmWorkflowListItem[] = [];
+	let currentPage = 1;
+	let serverTotal = 0;
 
-		isLoadingMore.value = true;
+	while (currentPage <= maxBulkFetchPages) {
+		const response = await fetchWorkflowPage(currentPage, bulkFetchPageSize);
 
-	} else {
-
-		isLoading.value = true;
-
-		loadError.value = null;
-
-	}
-
-
-
-	try {
-
-		const response = await rmWorkflowStore.loadWorkflows({
-
-			search: searchQuery.value.trim() || undefined,
-
-			page: nextPage,
-
-			pageSize,
-
-			catalogId:
-
-				selectedCatalogId.value === 'all'
-
-					? undefined
-
-					: Number.parseInt(selectedCatalogId.value, 10),
-
-		});
-
-
-
-		items.value = append ? [...items.value, ...response.items] : response.items;
-
-		total.value = response.total;
-
-		hasNextPage.value = response.hasNextPage;
-
-		page.value = response.page;
-
-	} catch (error) {
-
-		loadError.value = (error as Error).message;
-
-		if (!append) {
-
-			items.value = [];
-
-			total.value = 0;
-
-			hasNextPage.value = false;
-
+		if (requestId !== loadRequestId.value) {
+			return null;
 		}
 
-		toast.showError(error as Error, i18n.baseText('rmWorkflow.widgetStore.loadError'));
+		if (response.items.length === 0) {
+			break;
+		}
 
-	} finally {
+		aggregated.push(...response.items);
+		serverTotal = response.total;
 
-		isLoading.value = false;
+		if (response.catalogFacets?.length) {
+			catalogFacets.value = response.catalogFacets;
+		}
 
-		isLoadingMore.value = false;
+		if (response.items.length < bulkFetchPageSize) {
+			break;
+		}
 
+		if (serverTotal > 0 && aggregated.length >= serverTotal) {
+			break;
+		}
+
+		if (!response.hasNextPage) {
+			break;
+		}
+
+		currentPage += 1;
 	}
 
+	return { items: aggregated, total: serverTotal || aggregated.length };
 }
 
+async function ensureAllWorkflowItems(requestId: number) {
+	if (allWorkflowItems.value !== null) {
+		return allWorkflowItems.value;
+	}
 
+	const fullDataset = await loadAllWorkflowPages(requestId);
+	if (!fullDataset) {
+		return null;
+	}
 
-const reloadFromStart = useDebounceFn(async () => {
+	allWorkflowItems.value = fullDataset.items;
+	return allWorkflowItems.value;
+}
 
-	page.value = 1;
+async function loadCatalogSourceItems(requestId: number) {
+	const catalogId = selectedCatalogNumericId.value;
+	if (catalogId === undefined) {
+		return null;
+	}
 
-	await loadPage(1, false);
+	if (allWorkflowItems.value !== null) {
+		return allWorkflowItems.value;
+	}
 
-}, 300);
+	const expectedCount =
+		catalogFacets.value.find((facet) => facet.catalogId === catalogId)?.count ?? pageSize;
 
+	const response = await fetchWorkflowPage(
+		1,
+		Math.min(Math.max(expectedCount, pageSize), bulkFetchPageSize),
+		catalogId,
+	);
 
+	if (requestId !== loadRequestId.value) {
+		return null;
+	}
 
-watch([searchQuery, selectedCatalogId], () => {
+	if (applyClientFilters(response.items).length >= expectedCount) {
+		return response.items;
+	}
 
-	void reloadFromStart();
+	return await ensureAllWorkflowItems(requestId);
+}
 
-});
+async function loadPage(nextPage: number, append: boolean) {
+	const requestId = ++loadRequestId.value;
 
-
-
-onMounted(async () => {
+	if (append) {
+		isLoadingMore.value = true;
+	} else {
+		isLoading.value = true;
+		loadError.value = null;
+	}
 
 	try {
+		if (needsFullDataset() && !append) {
+			if (searchQuery.value.trim()) {
+				const cached = await ensureAllWorkflowItems(requestId);
+				if (!cached) {
+					return;
+				}
 
-		await rmWorkflowStore.loadCatalogs();
+				items.value = cached;
+				total.value = cached.length;
+			} else {
+				const sourceItems = await loadCatalogSourceItems(requestId);
+				if (!sourceItems) {
+					return;
+				}
 
+				items.value = sourceItems;
+				total.value = applyClientFilters(sourceItems).length;
+			}
+
+			hasNextPage.value = false;
+			page.value = 1;
+			return;
+		}
+
+		const response = await fetchWorkflowPage(nextPage, pageSize);
+
+		if (requestId !== loadRequestId.value) {
+			return;
+		}
+
+		items.value = append ? [...items.value, ...response.items] : response.items;
+		total.value = response.total;
+		hasNextPage.value = response.hasNextPage;
+		page.value = response.page;
+
+		if (response.catalogFacets?.length) {
+			catalogFacets.value = response.catalogFacets;
+		}
 	} catch (error) {
+		if (requestId !== loadRequestId.value) {
+			return;
+		}
 
-		toast.showError(error as Error, i18n.baseText('rmWorkflow.widgetStore.catalogLoadError'));
-
+		loadError.value = (error as Error).message;
+		if (!append) {
+			items.value = [];
+			total.value = 0;
+			hasNextPage.value = false;
+		}
+		toast.showError(error as Error, i18n.baseText('rmWorkflow.widgetStore.loadError'));
+	} finally {
+		if (requestId === loadRequestId.value) {
+			isLoading.value = false;
+			isLoadingMore.value = false;
+		}
 	}
+}
 
+const reloadSearch = useDebounceFn(async () => {
+	page.value = 1;
 	await loadPage(1, false);
+}, 300);
 
+watch(searchQuery, () => {
+	void reloadSearch();
 });
 
+function selectCatalog(catalogId: string) {
+	if (selectedCatalogId.value === catalogId) {
+		return;
+	}
 
+	selectedCatalogId.value = catalogId;
+	page.value = 1;
+	items.value = [];
+	if (catalogId === 'all') {
+		allWorkflowItems.value = null;
+	}
+	void loadPage(1, false);
+}
+
+onMounted(async () => {
+	try {
+		await rmWorkflowStore.loadCatalogs();
+	} catch (error) {
+		toast.showError(error as Error, i18n.baseText('rmWorkflow.widgetStore.catalogLoadError'));
+	}
+	await loadPage(1, false);
+});
 
 function onSelect(widget: RmWorkflowListItem) {
-
 	props.data.onSelect(widget.n8nWorkflowId, widget.name);
-
 	modalBus.value.emit('close');
-
 }
-
-
-
-function onCancel() {
-
-	modalBus.value.emit('close');
-
-}
-
-
 
 async function loadMore() {
-
 	if (!hasNextPage.value || isLoadingMore.value) return;
-
 	await loadPage(page.value + 1, true);
-
 }
-
 </script>
 
-
-
 <template>
-
 	<Modal
-
 		:name="RM_WIDGET_STORE_MODAL_KEY"
-
 		:event-bus="modalBus"
-
 		width="94%"
-
 		:center="true"
-
 		max-width="1320px"
-
-		min-height="420px"
-
+		min-height="480px"
 		max-height="88vh"
-
-		:scrollable="true"
-
+		:scrollable="false"
+		:custom-class="$style.modal"
 	>
-
 		<template #header>
-
 			<div :class="$style.header">
-
 				<N8nHeading size="medium" tag="h2">
-
 					{{ i18n.baseText('rmWorkflow.widgetStore.title') }}
-
 				</N8nHeading>
-
 				<N8nText size="small" color="text-light">
-
 					{{ i18n.baseText('rmWorkflow.widgetStore.subtitle') }}
-
 				</N8nText>
-
 			</div>
-
 		</template>
 
 		<template #content>
+			<div :class="$style.layout">
+				<aside :class="$style.sidebar">
+					<div :class="$style.sidebarTitle">
+						{{ i18n.baseText('rmWorkflow.widgetStore.catalogSidebarTitle') }}
+					</div>
+					<nav :class="$style.catalogNav">
+						<button
+							v-for="item in catalogNavItems"
+							:key="item.value"
+							type="button"
+							:class="[
+								$style.catalogNavItem,
+								{ [$style.catalogNavItemActive]: selectedCatalogId === item.value },
+							]"
+							@click="selectCatalog(item.value)"
+						>
+							<span :class="$style.catalogNavLabel">{{ item.label }}</span>
+							<span :class="$style.catalogCount">{{ item.count }}</span>
+						</button>
+					</nav>
+				</aside>
 
-			<div :class="$style.toolbar">
+				<div :class="$style.mainPanel">
+					<div :class="$style.searchRow">
+						<N8nInput
+							v-model="searchQuery"
+							size="small"
+							:placeholder="i18n.baseText('rmWorkflow.widgetStore.searchPlaceholder')"
+							clearable
+							:class="$style.searchInput"
+						>
+							<template #prefix>
+								<N8nIcon icon="search" />
+							</template>
+						</N8nInput>
+					</div>
 
-				<N8nInput
-
-					v-model="searchQuery"
-
-					size="small"
-
-					:placeholder="i18n.baseText('rmWorkflow.widgetStore.searchPlaceholder')"
-
-					clearable
-
-					:class="$style.searchInput"
-
-				>
-
-					<template #prefix>
-
-						<N8nIcon icon="search" />
-
-					</template>
-
-				</N8nInput>
-
-				<N8nSelect
-
-					v-model="selectedCatalogId"
-
-					size="small"
-
-					:class="$style.categorySelect"
-
-					:placeholder="i18n.baseText('rmWorkflow.widgetStore.categories.all')"
-
-				>
-
-					<N8nOption
-
-						v-for="option in categoryOptions"
-
-						:key="String(option.value)"
-
-						:value="option.value"
-
-						:label="option.label"
-
-					/>
-
-				</N8nSelect>
-
-			</div>
-
-
-
-			<div v-if="isLoading" :class="$style.loading">
-
-				<N8nLoading :loading="true" :rows="1" />
-
-			</div>
-
-
-
-			<div v-else-if="loadError && items.length === 0" :class="$style.empty">
-
-				<N8nText color="text-light">{{ loadError }}</N8nText>
-
-			</div>
-
-
-
-			<div v-else-if="items.length === 0" :class="$style.empty">
-
-				<N8nText color="text-light">
-
-					{{ i18n.baseText('rmWorkflow.widgetStore.empty') }}
-
-				</N8nText>
-
-			</div>
-
-
-
-			<template v-else>
-
-				<div :class="$style.grid">
-
-					<button
-
-						v-for="widget in items"
-
-						:key="`${widget.id}-${widget.n8nWorkflowId}`"
-
-						type="button"
-
-						:class="[
-
-							$style.widgetCard,
-
-							{ [$style.selected]: widget.n8nWorkflowId === data.selectedValue },
-
-						]"
-
-						@click="onSelect(widget)"
-
-					>
-
-						<div :class="$style.cardTop">
-
-							<span :class="$style.statusBadge">
-
-								{{ i18n.baseText('rmWorkflow.widgetStore.statusActive') }}
-
-							</span>
-
-							<span :class="$style.categoryLabel">{{ getWidgetCatalogName(widget) }}</span>
-
+					<div :class="$style.resultsPanel">
+						<div v-if="isLoading && items.length === 0" :class="$style.loading">
+							<N8nLoading :loading="true" :rows="1" />
 						</div>
 
+						<div v-else-if="loadError && items.length === 0" :class="$style.empty">
+							<N8nText color="text-light">{{ loadError }}</N8nText>
+						</div>
 
-
-						<div :class="$style.cardBody">
-
-							<N8nText size="small" bold tag="div" :class="$style.widgetName">
-
-								{{ widget.name }}
-
+						<div v-else-if="filteredItems.length === 0" :class="$style.empty">
+							<N8nText color="text-light">
+								{{ i18n.baseText('rmWorkflow.widgetStore.empty') }}
 							</N8nText>
-
-							<span :class="$style.workflowId">{{ widget.n8nWorkflowId }}</span>
-
 						</div>
 
+						<template v-else>
+							<div :class="[$style.grid, { [$style.gridLoading]: isLoading }]">
+								<button
+									v-for="widget in filteredItems"
+									:key="`${widget.id}-${widget.n8nWorkflowId}`"
+									type="button"
+									:class="[
+										$style.widgetCard,
+										{ [$style.selected]: widget.n8nWorkflowId === data.selectedValue },
+									]"
+									@click="onSelect(widget)"
+								>
+									<div :class="$style.cardTop">
+										<span :class="$style.statusBadge">
+											{{ i18n.baseText('rmWorkflow.widgetStore.statusActive') }}
+										</span>
+										<span :class="$style.categoryLabel">{{ getWidgetCatalogName(widget) }}</span>
+									</div>
 
+									<div :class="$style.cardBody">
+										<N8nText size="small" bold tag="div" :class="$style.widgetName">
+											{{ widget.name }}
+										</N8nText>
+									</div>
 
-						<div v-if="widget.tags?.length || widget.description" :class="$style.cardFooter">
+									<div :class="$style.cardFooter">
+										<template v-if="widget.tags?.length">
+											<span
+												v-for="tag in widget.tags.slice(0, 3)"
+												:key="tag"
+												:class="$style.tagPill"
+											>
+												{{ tag }}
+											</span>
+										</template>
+										<span
+											v-else-if="widget.description"
+											:class="$style.tagPill"
+										>
+											{{ widget.description }}
+										</span>
+									</div>
+								</button>
+							</div>
 
-							<span
-
-								v-for="tag in widget.tags?.slice(0, 3) ?? []"
-
-								:key="tag"
-
-								:class="$style.tagPill"
-
-							>
-
-								{{ tag }}
-
-							</span>
-
-							<span v-if="!widget.tags?.length && widget.description" :class="$style.tagPill">
-
-								{{ widget.description }}
-
-							</span>
-
-						</div>
-
-					</button>
-
+							<div :class="$style.pagination">
+								<N8nText size="small" color="text-light">
+									{{
+										i18n.baseText('rmWorkflow.widgetStore.resultCount', {
+											interpolate: {
+												shown: String(resultShownCount),
+												total: String(resultTotalCount),
+											},
+										})
+									}}
+								</N8nText>
+								<N8nButton
+									v-if="canLoadMore"
+									size="small"
+									variant="subtle"
+									:loading="isLoadingMore"
+									@click="loadMore"
+								>
+									{{ i18n.baseText('rmWorkflow.widgetStore.loadMore') }}
+								</N8nButton>
+							</div>
+						</template>
+					</div>
 				</div>
-
-
-
-				<div :class="$style.pagination">
-
-					<N8nText size="small" color="text-light">
-
-						{{
-
-							i18n.baseText('rmWorkflow.widgetStore.resultCount', {
-
-								interpolate: {
-
-									shown: String(items.length),
-
-									total: String(total),
-
-								},
-
-							})
-
-						}}
-
-					</N8nText>
-
-					<N8nButton
-
-						v-if="hasNextPage"
-
-						size="small"
-
-						variant="subtle"
-
-						:loading="isLoadingMore"
-
-						@click="loadMore"
-
-					>
-
-						{{ i18n.baseText('rmWorkflow.widgetStore.loadMore') }}
-
-					</N8nButton>
-
-				</div>
-
-			</template>
-
-		</template>
-
-		<template #footer>
-
-			<div :class="$style.footer">
-
-				<N8nButton variant="subtle" @click="onCancel">
-
-					{{ i18n.baseText('rmWorkflow.widgetStore.cancel') }}
-
-				</N8nButton>
-
 			</div>
-
 		</template>
-
 	</Modal>
-
 </template>
 
-
-
 <style lang="scss" module>
-
 .header {
-
 	display: flex;
-
 	flex-direction: column;
-
 	gap: var(--spacing--5xs);
-
 }
 
-
-
-.toolbar {
-
+.layout {
 	display: flex;
-
-	gap: var(--spacing--xs);
-
-	margin-bottom: var(--spacing--sm);
-
-	align-items: center;
-
+	min-height: 420px;
+	max-height: calc(88vh - 120px);
 }
 
-
-
-.searchInput {
-
-	flex: 1;
-
-	min-width: 0;
-
-}
-
-
-
-.categorySelect {
-
-	width: 200px;
-
-	flex-shrink: 0;
-
-}
-
-
-
-.grid {
-
-	display: grid;
-
-	grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-
-	gap: var(--spacing--sm);
-
-}
-
-
-
-.widgetCard {
-
+.sidebar {
+	flex: 0 0 220px;
 	display: flex;
-
 	flex-direction: column;
+	border-right: 1px solid var(--color--foreground--tint-1);
+	background: var(--color--neutral-white);
+	padding: var(--spacing--sm) 0;
+}
 
+.sidebarTitle {
+	padding: 0 var(--spacing--sm) var(--spacing--xs);
+	color: var(--color--text--tint-1);
+	font-size: var(--font-size--3xs);
+	font-weight: var(--font-weight--bold);
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+
+.catalogNav {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing--5xs);
+	padding: 0 var(--spacing--2xs);
+	overflow-y: auto;
+}
+
+.catalogNavItem {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--spacing--2xs);
 	width: 100%;
-
-	padding: 0;
-
-	border: 1px solid var(--color--foreground--tint-1);
-
+	padding: var(--spacing--2xs) var(--spacing--xs);
+	border: none;
 	border-radius: var(--radius--3xs);
-
-	background: var(--color--background--light-3);
-
+	background: transparent;
+	color: var(--color--text--shade-1);
+	font-size: var(--font-size--2xs);
+	text-align: left;
 	cursor: pointer;
 
-	text-align: left;
-
-	overflow: hidden;
-
-	transition:
-
-		border-color 0.15s ease,
-
-		box-shadow 0.15s ease,
-
-		background-color 0.15s ease;
-
-
-
 	&:hover {
-
-		border-color: var(--color--foreground--shade-1);
-
-		box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
-
+		background: var(--color--foreground--tint-2);
 	}
-
-
 
 	&:focus-visible {
-
 		outline: 2px solid var(--color--primary);
-
 		outline-offset: 1px;
+	}
+}
 
+.catalogNavItemActive {
+	background: var(--background--info);
+	color: var(--color--text--shade-2);
+	font-weight: var(--font-weight--medium);
+}
+
+.catalogNavLabel {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.catalogCount {
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 22px;
+	height: 22px;
+	padding: 0 var(--spacing--4xs);
+	border-radius: var(--radius--pill);
+	background: var(--color--foreground--tint-2);
+	color: var(--color--text--shade-1);
+	font-size: var(--font-size--3xs);
+	font-weight: var(--font-weight--medium);
+	line-height: 1;
+}
+
+.catalogNavItemActive .catalogCount {
+	background: var(--color--neutral-white);
+}
+
+.mainPanel {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	background: var(--color--neutral-white);
+}
+
+.searchRow {
+	padding: var(--spacing--sm);
+	border-bottom: 1px solid var(--color--foreground--tint-1);
+}
+
+.searchInput {
+	width: 100%;
+}
+
+.resultsPanel {
+	flex: 1;
+	overflow-y: auto;
+	padding: var(--spacing--sm);
+}
+
+.grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+	gap: var(--spacing--sm);
+}
+
+.gridLoading {
+	opacity: 0.55;
+	pointer-events: none;
+}
+
+.widgetCard {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	height: 120px;
+	padding: 0;
+	border: 1px solid var(--color--foreground--tint-1);
+	border-radius: var(--radius--3xs);
+	background: var(--color--neutral-white);
+	box-shadow: 0 1px 4px rgb(0 0 0 / 5%);
+	cursor: pointer;
+	text-align: left;
+	overflow: hidden;
+	transition:
+		border-color 0.15s ease,
+		box-shadow 0.15s ease;
+
+	&:hover {
+		border-color: var(--color--foreground--shade-1);
+		box-shadow: 0 4px 12px rgb(0 0 0 / 8%);
 	}
 
+	&:focus-visible {
+		outline: 2px solid var(--color--primary);
+		outline-offset: 1px;
+	}
 }
-
-
 
 .selected {
-
 	border-color: var(--color--primary);
-
 	box-shadow: 0 0 0 1px var(--color--primary);
-
-	background: var(--color--primary--tint-3);
-
 }
 
+.modal {
+	:global(.el-dialog__header) {
+		background: var(--background--info);
+		border-bottom: 1px solid var(--border-color--info);
+		margin: 0;
+		padding: var(--spacing--sm) var(--spacing--md);
+	}
 
+	:global(.el-dialog__body) {
+		padding: 0;
+		background: var(--color--neutral-white);
+	}
+}
 
 .cardTop {
-
 	display: flex;
-
 	align-items: center;
-
 	justify-content: space-between;
-
 	gap: var(--spacing--2xs);
-
-	padding: var(--spacing--3xs) var(--spacing--xs);
-
-	border-bottom: 1px solid var(--color--foreground--tint-1);
-
-	background: var(--color--background--light-2);
-
+	flex-shrink: 0;
+	padding: var(--spacing--2xs) var(--spacing--xs);
+	background: var(--color--neutral-white);
 }
-
-
 
 .statusBadge {
-
 	display: inline-flex;
-
 	align-items: center;
-
 	padding: 0 var(--spacing--3xs);
-
 	height: 20px;
-
+	border: 1px solid var(--color--success);
 	border-radius: var(--radius--3xs);
-
-	background: var(--color--success--tint-2);
-
+	background: var(--color--neutral-white);
 	color: var(--color--success);
-
 	font-size: var(--font-size--3xs);
-
 	font-weight: var(--font-weight--bold);
-
 	line-height: 1;
-
 	white-space: nowrap;
-
 }
-
-
 
 .categoryLabel {
-
-	color: var(--color--text--shade-1);
-
+	color: var(--color--text--tint-1);
 	font-size: var(--font-size--2xs);
-
 	font-weight: var(--font-weight--medium);
-
 	overflow: hidden;
-
 	text-overflow: ellipsis;
-
 	white-space: nowrap;
-
 }
-
-
 
 .cardBody {
-
 	display: flex;
-
 	flex-direction: column;
-
-	gap: var(--spacing--5xs);
-
-	padding: var(--spacing--2xs) var(--spacing--xs);
-
+	flex: 1;
 	min-height: 0;
-
+	padding: 0 var(--spacing--xs);
+	background: var(--color--neutral-white);
 }
-
-
 
 .widgetName {
-
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
 	overflow: hidden;
-
-	text-overflow: ellipsis;
-
-	white-space: nowrap;
-
 	color: var(--color--text--shade-2);
-
+	line-height: 1.35;
 }
-
-
-
-.workflowId {
-
-	font-family: var(--font-family--monospace);
-
-	font-size: var(--font-size--3xs);
-
-	color: var(--color--secondary);
-
-	overflow: hidden;
-
-	text-overflow: ellipsis;
-
-	white-space: nowrap;
-
-}
-
-
 
 .cardFooter {
-
 	display: flex;
-
 	flex-wrap: wrap;
-
 	gap: var(--spacing--4xs);
-
-	padding: var(--spacing--3xs) var(--spacing--xs);
-
+	flex-shrink: 0;
+	padding: var(--spacing--2xs) var(--spacing--xs);
 	border-top: 1px solid var(--color--foreground--tint-1);
-
 	min-height: 32px;
-
 	align-items: center;
-
+	background: var(--color--neutral-white);
 }
-
-
 
 .tagPill {
-
 	display: inline-flex;
-
 	align-items: center;
-
 	padding: 0 var(--spacing--3xs);
-
 	height: 22px;
-
 	border: 1px solid var(--color--foreground--tint-1);
-
 	border-radius: var(--radius--3xs);
-
-	background: var(--color--background--light-3);
-
+	background: var(--color--neutral-white);
 	color: var(--color--text--shade-1);
-
 	font-size: var(--font-size--3xs);
-
 	line-height: 1;
-
 	max-width: 100%;
-
 	overflow: hidden;
-
 	text-overflow: ellipsis;
-
 	white-space: nowrap;
-
 }
-
-
 
 .pagination {
-
 	display: flex;
-
 	align-items: center;
-
 	justify-content: space-between;
-
 	margin-top: var(--spacing--sm);
-
 }
-
-
 
 .loading,
-
 .empty {
-
 	display: flex;
-
 	align-items: center;
-
 	justify-content: center;
-
-	min-height: 160px;
-
+	min-height: 200px;
 }
-
-
-
-.footer {
-
-	display: flex;
-
-	justify-content: flex-end;
-
-	width: 100%;
-
-}
-
 </style>
-
-
