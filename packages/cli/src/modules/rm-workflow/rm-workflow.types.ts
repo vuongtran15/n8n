@@ -9,11 +9,13 @@ export type RmWorkflowSettingsResponse = RmWorkflowSettings & {
 
 export type PortalWorkflowCatalog = {
 	id: number;
+	catalogId?: number;
 	name: string;
 	nameVi: string;
 	nameZh: string;
 	sortOrder: number;
 	description: string;
+	count?: number;
 };
 
 export type PortalWorkflowCatalogsResponse = {

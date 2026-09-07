@@ -38,10 +38,11 @@ export async function fetchRmWorkflowList(
 ): Promise<RmWorkflowListResponse> {
 	const params = new URLSearchParams();
 	if (query.search) params.set('search', query.search);
-	if (query.page) params.set('page', String(query.page));
-	if (query.pageSize) params.set('pageSize', String(query.pageSize));
+	if (query.page !== undefined) params.set('page', String(query.page));
+	if (query.pageSize !== undefined) params.set('pageSize', String(query.pageSize));
 	if (query.catalogId !== undefined) params.set('catalogId', String(query.catalogId));
 
-	const suffix = params.toString() ? `?${params.toString()}` : '';
-	return await makeRestApiRequest(context, 'GET', `/rm-workflow/workflows${suffix}`);
+	const qs = params.toString();
+	const endpoint = qs ? `/rm-workflow/workflows?${qs}` : '/rm-workflow/workflows';
+	return await makeRestApiRequest(context, 'GET', endpoint);
 }

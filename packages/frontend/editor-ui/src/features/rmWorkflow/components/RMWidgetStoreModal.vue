@@ -16,7 +16,12 @@ import {
 import { RM_WIDGET_STORE_MODAL_KEY } from '../constants';
 import { useRmWorkflowStore } from '../rmWorkflow.store';
 import type { RmWorkflowListItem } from '../rmWorkflow.types';
-import { filterWidgetItems, getCatalogDisplayName, mergeCatalogSources } from '../rmWorkflow.utils';
+import {
+	getAllCatalogCount,
+	getCatalogDisplayName,
+	getCatalogId,
+	getSortedCatalogs,
+} from '../rmWorkflow.utils';
 
 const props = defineProps<{
 	modalName: string;
@@ -35,56 +40,31 @@ const searchQuery = ref('');
 const selectedCatalogId = ref<string>('all');
 const page = ref(1);
 const pageSize = 24;
-const bulkFetchPageSize = 100;
-const maxBulkFetchPages = 10;
 
 const items = ref<RmWorkflowListItem[]>([]);
-const allWorkflowItems = ref<RmWorkflowListItem[] | null>(null);
 const total = ref(0);
 const hasNextPage = ref(false);
 const isLoading = ref(false);
 const isLoadingMore = ref(false);
 const loadError = ref<string | null>(null);
 const loadRequestId = ref(0);
-const catalogFacets = ref<
-	Array<{
-		catalogId: number;
-		name: string;
-		nameVi: string;
-		nameZh: string;
-		count: number;
-	}>
->([]);
 
 const locale = computed(() => i18n.locale);
 
-const allCatalogCount = computed(() => {
-	if (catalogFacets.value.length > 0) {
-		return catalogFacets.value.reduce((sum, facet) => sum + facet.count, 0);
-	}
-	return total.value;
-});
-
 const catalogNavItems = computed(() => {
-	const mergedCatalogs = mergeCatalogSources({
-		catalogs: rmWorkflowStore.catalogs,
-		facets: catalogFacets.value,
-		items: [],
-	});
-
 	const navItems = [
 		{
 			value: 'all',
 			label: i18n.baseText('rmWorkflow.widgetStore.catalogs.all'),
-			count: allCatalogCount.value,
+			count: getAllCatalogCount(rmWorkflowStore.catalogs, total.value),
 		},
 	];
 
-	for (const catalog of mergedCatalogs) {
+	for (const catalog of getSortedCatalogs(rmWorkflowStore.catalogs)) {
 		navItems.push({
-			value: String(catalog.id),
+			value: String(getCatalogId(catalog)),
 			label: getCatalogDisplayName(catalog, locale.value),
-			count: catalog.count,
+			count: catalog.count ?? 0,
 		});
 	}
 
@@ -100,26 +80,6 @@ const selectedCatalogNumericId = computed(() => {
 	return Number.isFinite(catalogId) ? catalogId : undefined;
 });
 
-const selectedCatalog = computed(() =>
-	rmWorkflowStore.catalogs.find((catalog) => catalog.id === selectedCatalogNumericId.value),
-);
-
-const filteredItems = computed(() => applyClientFilters(items.value));
-
-const resultShownCount = computed(() => filteredItems.value.length);
-
-const resultTotalCount = computed(() => {
-	if (needsFullDataset()) {
-		return filteredItems.value.length;
-	}
-
-	return total.value;
-});
-
-const canLoadMore = computed(
-	() => hasNextPage.value && selectedCatalogId.value === 'all' && !searchQuery.value.trim(),
-);
-
 function getWidgetCatalogName(widget: RmWorkflowListItem): string {
 	return getCatalogDisplayName(
 		{
@@ -129,117 +89,6 @@ function getWidgetCatalogName(widget: RmWorkflowListItem): string {
 		},
 		locale.value,
 	);
-}
-
-function needsFullDataset(): boolean {
-	return selectedCatalogNumericId.value !== undefined || Boolean(searchQuery.value.trim());
-}
-
-function applyClientFilters(sourceItems: RmWorkflowListItem[]): RmWorkflowListItem[] {
-	return filterWidgetItems(sourceItems, {
-		catalogId: selectedCatalogNumericId.value,
-		catalog: selectedCatalog.value,
-		search: searchQuery.value,
-	});
-}
-
-async function fetchWorkflowPage(
-	nextPage: number,
-	requestPageSize: number,
-	catalogId?: number,
-	search?: string,
-) {
-	return await rmWorkflowStore.loadWorkflows({
-		search: search?.trim() || undefined,
-		page: nextPage,
-		pageSize: requestPageSize,
-		catalogId,
-	});
-}
-
-async function loadAllWorkflowPages(requestId: number) {
-	const aggregated: RmWorkflowListItem[] = [];
-	let currentPage = 1;
-	let serverTotal = 0;
-
-	while (currentPage <= maxBulkFetchPages) {
-		const response = await fetchWorkflowPage(currentPage, bulkFetchPageSize);
-
-		if (requestId !== loadRequestId.value) {
-			return null;
-		}
-
-		if (response.items.length === 0) {
-			break;
-		}
-
-		aggregated.push(...response.items);
-		serverTotal = response.total;
-
-		if (response.catalogFacets?.length) {
-			catalogFacets.value = response.catalogFacets;
-		}
-
-		if (response.items.length < bulkFetchPageSize) {
-			break;
-		}
-
-		if (serverTotal > 0 && aggregated.length >= serverTotal) {
-			break;
-		}
-
-		if (!response.hasNextPage) {
-			break;
-		}
-
-		currentPage += 1;
-	}
-
-	return { items: aggregated, total: serverTotal || aggregated.length };
-}
-
-async function ensureAllWorkflowItems(requestId: number) {
-	if (allWorkflowItems.value !== null) {
-		return allWorkflowItems.value;
-	}
-
-	const fullDataset = await loadAllWorkflowPages(requestId);
-	if (!fullDataset) {
-		return null;
-	}
-
-	allWorkflowItems.value = fullDataset.items;
-	return allWorkflowItems.value;
-}
-
-async function loadCatalogSourceItems(requestId: number) {
-	const catalogId = selectedCatalogNumericId.value;
-	if (catalogId === undefined) {
-		return null;
-	}
-
-	if (allWorkflowItems.value !== null) {
-		return allWorkflowItems.value;
-	}
-
-	const expectedCount =
-		catalogFacets.value.find((facet) => facet.catalogId === catalogId)?.count ?? pageSize;
-
-	const response = await fetchWorkflowPage(
-		1,
-		Math.min(Math.max(expectedCount, pageSize), bulkFetchPageSize),
-		catalogId,
-	);
-
-	if (requestId !== loadRequestId.value) {
-		return null;
-	}
-
-	if (applyClientFilters(response.items).length >= expectedCount) {
-		return response.items;
-	}
-
-	return await ensureAllWorkflowItems(requestId);
 }
 
 async function loadPage(nextPage: number, append: boolean) {
@@ -253,31 +102,12 @@ async function loadPage(nextPage: number, append: boolean) {
 	}
 
 	try {
-		if (needsFullDataset() && !append) {
-			if (searchQuery.value.trim()) {
-				const cached = await ensureAllWorkflowItems(requestId);
-				if (!cached) {
-					return;
-				}
-
-				items.value = cached;
-				total.value = cached.length;
-			} else {
-				const sourceItems = await loadCatalogSourceItems(requestId);
-				if (!sourceItems) {
-					return;
-				}
-
-				items.value = sourceItems;
-				total.value = applyClientFilters(sourceItems).length;
-			}
-
-			hasNextPage.value = false;
-			page.value = 1;
-			return;
-		}
-
-		const response = await fetchWorkflowPage(nextPage, pageSize);
+		const response = await rmWorkflowStore.loadWorkflows({
+			search: searchQuery.value.trim() || undefined,
+			page: nextPage,
+			pageSize,
+			catalogId: selectedCatalogNumericId.value,
+		});
 
 		if (requestId !== loadRequestId.value) {
 			return;
@@ -287,10 +117,6 @@ async function loadPage(nextPage: number, append: boolean) {
 		total.value = response.total;
 		hasNextPage.value = response.hasNextPage;
 		page.value = response.page;
-
-		if (response.catalogFacets?.length) {
-			catalogFacets.value = response.catalogFacets;
-		}
 	} catch (error) {
 		if (requestId !== loadRequestId.value) {
 			return;
@@ -311,13 +137,13 @@ async function loadPage(nextPage: number, append: boolean) {
 	}
 }
 
-const reloadSearch = useDebounceFn(async () => {
+const reloadFromStart = useDebounceFn(async () => {
 	page.value = 1;
 	await loadPage(1, false);
 }, 300);
 
 watch(searchQuery, () => {
-	void reloadSearch();
+	void reloadFromStart();
 });
 
 function selectCatalog(catalogId: string) {
@@ -328,9 +154,6 @@ function selectCatalog(catalogId: string) {
 	selectedCatalogId.value = catalogId;
 	page.value = 1;
 	items.value = [];
-	if (catalogId === 'all') {
-		allWorkflowItems.value = null;
-	}
 	void loadPage(1, false);
 }
 
@@ -424,7 +247,7 @@ async function loadMore() {
 							<N8nText color="text-light">{{ loadError }}</N8nText>
 						</div>
 
-						<div v-else-if="filteredItems.length === 0" :class="$style.empty">
+						<div v-else-if="items.length === 0" :class="$style.empty">
 							<N8nText color="text-light">
 								{{ i18n.baseText('rmWorkflow.widgetStore.empty') }}
 							</N8nText>
@@ -433,7 +256,7 @@ async function loadMore() {
 						<template v-else>
 							<div :class="[$style.grid, { [$style.gridLoading]: isLoading }]">
 								<button
-									v-for="widget in filteredItems"
+									v-for="widget in items"
 									:key="`${widget.id}-${widget.n8nWorkflowId}`"
 									type="button"
 									:class="[
@@ -480,14 +303,14 @@ async function loadMore() {
 									{{
 										i18n.baseText('rmWorkflow.widgetStore.resultCount', {
 											interpolate: {
-												shown: String(resultShownCount),
-												total: String(resultTotalCount),
+												shown: String(items.length),
+												total: String(total),
 											},
 										})
 									}}
 								</N8nText>
 								<N8nButton
-									v-if="canLoadMore"
+									v-if="hasNextPage"
 									size="small"
 									variant="subtle"
 									:loading="isLoadingMore"

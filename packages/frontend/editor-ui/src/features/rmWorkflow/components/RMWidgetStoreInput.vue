@@ -12,14 +12,13 @@ import type {
 } from 'n8n-workflow';
 import { useI18n } from '@n8n/i18n';
 import { useToast } from '@n8n/composables/useToast';
-import { useRootStore } from '@n8n/stores/useRootStore';
 import { useUIStore } from '@/app/stores/ui.store';
 import ExpressionParameterInput from '@/features/ndv/parameters/components/ExpressionParameterInput.vue';
 import ParameterIssues from '@/features/ndv/parameters/components/ParameterIssues.vue';
 import { useResourceLocatorModes } from '@/features/ndv/parameters/composables/useResourceLocatorModes';
 import { ndvEventBus } from '@/features/ndv/shared/ndv.eventBus';
 import { RM_WIDGET_STORE_MODAL_KEY } from '../constants';
-import { fetchRmWorkflowList } from '../rmWorkflow.api';
+import { useRmWorkflowStore } from '../rmWorkflow.store';
 import {
 	N8nIcon,
 	N8nIconButton,
@@ -60,7 +59,7 @@ const emit = defineEmits<{
 
 const i18n = useI18n();
 const toast = useToast();
-const rootStore = useRootStore();
+const rmWorkflowStore = useRmWorkflowStore();
 const uiStore = useUIStore();
 const cachedName = ref(props.modelValue?.cachedResultName ?? '');
 const isRefreshing = ref(false);
@@ -143,7 +142,7 @@ async function refreshConfiguration() {
 
 	isRefreshing.value = true;
 	try {
-		const response = await fetchRmWorkflowList(rootStore.restApiContext, {
+		const response = await rmWorkflowStore.loadWorkflows({
 			search: workflowId,
 			pageSize: 50,
 		});

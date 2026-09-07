@@ -3,9 +3,10 @@ import { Body, Get, GlobalScope, Put, Query, RestController } from '@n8n/decorat
 import { ModuleRegistry } from '@n8n/backend-common';
 import type { Response } from 'express';
 
-import { ForbiddenError } from '@/errors/response-errors/forbidden.error';
+import { ForbiddenError } from '../../errors/response-errors/forbidden.error';
 
 import { UpdateRmWorkflowSettingsDto } from './dto/update-rm-workflow-settings.dto';
+import { ListRmWorkflowsQueryDto } from './dto/list-rm-workflows-query.dto';
 import { normalizePortalCatalogs } from './rm-workflow-catalog.utils';
 import { RmWorkflowPortalService } from './rm-workflow-portal.service';
 import { RmWorkflowSettingsService } from './rm-workflow-settings.service';
@@ -54,25 +55,17 @@ export class RmWorkflowController {
 	@Get('/workflows')
 	async getWorkflows(
 		req: AuthenticatedRequest,
-		@Query query: {
-			search?: string;
-			page?: string;
-			pageSize?: string;
-			catalogId?: string;
-		},
+		_res: Response,
+		@Query query: ListRmWorkflowsQueryDto,
 	) {
-		const page = query.page ? Number.parseInt(query.page, 10) : 1;
-		const pageSize = query.pageSize ? Number.parseInt(query.pageSize, 10) : 20;
-		const catalogId =
-			query.catalogId !== undefined && query.catalogId !== ''
-				? Number.parseInt(query.catalogId, 10)
-				: undefined;
+		const page = query.page ?? 1;
+		const pageSize = query.pageSize ?? 20;
 
 		const response = await this.portalService.getWorkflows({
-			search: query.search?.trim() || undefined,
-			page: Number.isFinite(page) ? page : 1,
-			pageSize: Number.isFinite(pageSize) ? pageSize : 20,
-			catalogId: Number.isFinite(catalogId) ? catalogId : undefined,
+			search: query.search || undefined,
+			page,
+			pageSize,
+			catalogId: query.catalogId,
 			email: req.user.email,
 		});
 
