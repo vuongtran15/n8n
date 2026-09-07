@@ -54,6 +54,17 @@ const badgeStyleData = computed((): Record<string, string> => {
 const supportedIconName = computed((): IconName | NodeIconName | undefined => {
 	return isSupportedIconName(props.name) ? props.name : undefined;
 });
+
+const imageStyleData = computed((): Record<string, string> => {
+	if (!props.size) {
+		return {};
+	}
+
+	return {
+		width: `${props.size}px`,
+		height: `${props.size}px`,
+	};
+});
 </script>
 
 <template>
@@ -63,6 +74,7 @@ const supportedIconName = computed((): IconName | NodeIconName | undefined => {
 			:src="src"
 			referrerpolicy="no-referrer"
 			:class="$style.nodeIconImage"
+			:style="imageStyleData"
 		/>
 		<N8nIcon v-else-if="supportedIconName" :icon="supportedIconName" :style="fontStyleData" />
 		<div v-else :class="$style.nodeIconPlaceholder">
@@ -115,10 +127,11 @@ const supportedIconName = computed((): IconName | NodeIconName | undefined => {
 }
 
 .nodeIconImage {
+	width: 100%;
+	height: 100%;
 	max-width: 100%;
 	max-height: 100%;
-	width: auto;
-	height: auto;
+	object-fit: contain;
 }
 
 .badge {

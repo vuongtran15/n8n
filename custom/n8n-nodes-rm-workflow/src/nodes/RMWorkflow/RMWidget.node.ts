@@ -25,7 +25,7 @@ export class RMWidget implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'RM Widget',
 		name: 'rmWidget',
-		icon: 'fa:sitemap',
+		icon: { light: 'file:rmWidget.svg', dark: 'file:rmWidget.dark.svg' },
 		iconColor: 'blue',
 		group: ['transform'],
 		version: 1.3,

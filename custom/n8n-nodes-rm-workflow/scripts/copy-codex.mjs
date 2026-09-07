@@ -13,7 +13,7 @@ function walk(dir) {
 			walk(full);
 			continue;
 		}
-		if (!name.endsWith('.node.json')) continue;
+		if (!name.endsWith('.node.json') && !name.endsWith('.svg')) continue;
 		const rel = full.slice(srcRoot.length + 1);
 		const dest = join(distRoot, rel);
 		mkdirSync(dirname(dest), { recursive: true });
