@@ -88,6 +88,14 @@ export function getNodeSubtitle(
 		return data.notes;
 	}
 
+	if (nodeType?.name === 'rmWidget') {
+		const workflowId = data.parameters.workflowId;
+		if (isResourceLocatorValue(workflowId) && workflowId.value) {
+			const label = workflowId.cachedResultName || String(workflowId.value);
+			return `RM → ${label}`;
+		}
+	}
+
 	if (nodeType?.subtitle !== undefined) {
 		try {
 			return workflow.expression.getSimpleParameterValue(

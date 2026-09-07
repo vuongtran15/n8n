@@ -25,10 +25,10 @@ export class RMWidget implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'RM Widget',
 		name: 'rmWidget',
-		icon: { light: 'file:rmWidget.svg', dark: 'file:rmWidget.dark.svg' },
-		iconColor: 'blue',
+		icon: { light: 'file:icon.svg', dark: 'file:icon.dark.svg' },
+		iconColor: 'pink-red',
 		group: ['transform'],
-		version: 1.3,
+		version: 1.5,
 		subtitle: '={{"RM → " + $parameter["workflowId"]}}',
 		description: 'Call an RM Widget',
 		defaults: {
