@@ -51,7 +51,12 @@ export class I18nClass {
 	}
 
 	shortNodeType(longNodeType: string) {
-		return longNodeType.replace('n8n-nodes-base.', '');
+		const withoutBase = longNodeType.replace('n8n-nodes-base.', '');
+		if (withoutBase.startsWith('CUSTOM.')) {
+			return withoutBase.slice('CUSTOM.'.length);
+		}
+
+		return withoutBase;
 	}
 
 	get locale() {
@@ -334,6 +339,28 @@ export class I18nClass {
 				return context.dynamicRender({
 					key: `${initialKey}.${middleKey}.options.${optionName}.description`,
 					fallback: description,
+				});
+			},
+
+			/**
+			 * Action label for an option inside an `options` or `multiOptions` param,
+			 * used in the node creator actions panel.
+			 */
+			optionsOptionAction(
+				parameter: INodeProperties,
+				{ value: optionName, action }: INodePropertyOptions,
+				path: string,
+			) {
+				let middleKey = parameter.name;
+
+				if (isNestedInCollectionLike(path)) {
+					const pathSegments = normalize(path).split('.');
+					middleKey = insertOptionsAndValues(pathSegments).join('.');
+				}
+
+				return context.dynamicRender({
+					key: `${initialKey}.${middleKey}.options.${optionName}.action`,
+					fallback: action,
 				});
 			},
 

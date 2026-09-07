@@ -1,0 +1,799 @@
+{
+	"header": {
+		"displayName": "RM SAP",
+		"description": "SAP 自动化"
+	},
+	"nodeView": {
+		"operation": {
+			"displayName": "操作",
+			"options": {
+				"openAndConnect": {
+					"displayName": "打开并连接",
+					"description": "POST /sap-auto/open-and-connect",
+					"action": "打开并连接"
+				},
+				"disconnect": {
+					"displayName": "断开连接",
+					"description": "POST /sap-auto/disconnect — 关闭一个会话 按 sessionId",
+					"action": "断开会话"
+				},
+				"sessionByAccount": {
+					"displayName": "按账户查询会话",
+					"description": "POST /sap-auto/session/by-account — 按 server/client/username 列出 SAP 会话",
+					"action": "按账户获取会话"
+				},
+				"killByAccount": {
+					"displayName": "按账户终止会话",
+					"description": "POST",
+					"action": "按账户终止 SAP 会话"
+				},
+				"killAllSapSessions": {
+					"displayName": "终止所有会话",
+					"description": "POST /sap-auto/session/kill-all — 关闭主机上所有 SAP 会话（不关闭 web/file）",
+					"action": "终止所有 SAP 会话"
+				},
+				"logMessage": {
+					"displayName": "日志",
+					"description": "POST to logUrl",
+					"action": "发送日志"
+				},
+				"rosWecomSendMessage": {
+					"displayName": "ROS 企业微信发消息",
+					"description": "POST https://ros.reginamiracle.com:82/api/msg/text",
+					"action": "发送 ROS 企业微信消息"
+				},
+				"wecomGroupMessage": {
+					"displayName": "企业微信群消息",
+					"description": "POST https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=",
+					"action": "发送企业微信群消息"
+				},
+				"connect": {
+					"displayName": "连接",
+					"description": "Connect()",
+					"action": "连接会话"
+				},
+				"reconnect": {
+					"displayName": "重新连接",
+					"description": "Reconnect()",
+					"action": "重新连接会话"
+				},
+				"isSessionAlive": {
+					"displayName": "会话是否存活",
+					"description": "IsSessionAlive()",
+					"action": "检查会话是否存活"
+				},
+				"exists": {
+					"displayName": "元素是否存在",
+					"description": "Exists(id)",
+					"action": "检查元素是否存在"
+				},
+				"findIds": {
+					"displayName": "查找 ID",
+					"description": "FindIds(idPattern)",
+					"action": "按模式查找元素 ID"
+				},
+				"setText": {
+					"displayName": "设置文本",
+					"description": "SetText(id, value)",
+					"action": "设置文本"
+				},
+				"setTexts": {
+					"displayName": "批量设置文本",
+					"description": "SetTexts(items)",
+					"action": "批量设置文本"
+				},
+				"getText": {
+					"displayName": "获取文本",
+					"description": "GetText(id)",
+					"action": "获取文本"
+				},
+				"clear": {
+					"displayName": "清除",
+					"description": "Clear(id)",
+					"action": "清除字段"
+				},
+				"setTextAndEnter": {
+					"displayName": "设置文本并回车",
+					"description": "SetTextAndEnter(id, value)",
+					"action": "设置文本并回车"
+				},
+				"setFocus": {
+					"displayName": "设置焦点",
+					"description": "SetFocus(id)",
+					"action": "设置焦点"
+				},
+				"getCaretPosition": {
+					"displayName": "获取光标位置",
+					"description": "GetCaretPosition(id)",
+					"action": "获取光标位置"
+				},
+				"setCaretPosition": {
+					"displayName": "设置光标位置",
+					"description": "SetCaretPosition(id, position)",
+					"action": "设置光标位置"
+				},
+				"click": {
+					"displayName": "点击",
+					"description": "Click(id)",
+					"action": "点击"
+				},
+				"doubleClick": {
+					"displayName": "双击",
+					"description": "DoubleClick(id)",
+					"action": "双击元素"
+				},
+				"clickByTooltip": {
+					"displayName": "按工具提示点击",
+					"description": "ClickByTooltip(tooltip)",
+					"action": "按工具提示点击"
+				},
+				"sendEnter": {
+					"displayName": "发送 Enter",
+					"description": "SendEnter()",
+					"action": "发送 Enter"
+				},
+				"sendVKey": {
+					"displayName": "发送虚拟键",
+					"description": "SendVKey(vKey)",
+					"action": "发送虚拟键"
+				},
+				"pressToolbarButton": {
+					"displayName": "按工具栏按钮",
+					"description": "PressToolbarButton(toolbarId, buttonIndex)",
+					"action": "按工具栏按钮"
+				},
+				"pressShellButton": {
+					"displayName": "按 Shell 按钮",
+					"description": "PressShellButton(shellId, buttonId)",
+					"action": "按 Shell 按钮"
+				},
+				"scrollPage": {
+					"displayName": "滚动页面",
+					"description": "ScrollPage(containerId, position?)",
+					"action": "滚动页面（垂直滚动条）"
+				},
+				"resetScroll": {
+					"displayName": "重置滚动",
+					"description": "ResetScroll(containerId)",
+					"action": "重置垂直滚动条到顶部"
+				},
+				"setCheckbox": {
+					"displayName": "设置复选框",
+					"description": "SetCheckbox(id, value)",
+					"action": "设置复选框"
+				},
+				"setCheckboxes": {
+					"displayName": "批量设置复选框",
+					"description": "SetCheckboxes(items)",
+					"action": "批量设置复选框"
+				},
+				"getCheckbox": {
+					"displayName": "获取复选框",
+					"description": "GetCheckbox(id)",
+					"action": "获取复选框"
+				},
+				"selectRadio": {
+					"displayName": "选择单选",
+					"description": "SelectRadio(id)",
+					"action": "选择单选按钮"
+				},
+				"selectByKey": {
+					"displayName": "按键选择",
+					"description": "SelectByKey(id, key)",
+					"action": "按键选择下拉项"
+				},
+				"selectByText": {
+					"displayName": "按文本选择",
+					"description": "SelectByText(id, text)",
+					"action": "按文本选择下拉项"
+				},
+				"getSelectedKey": {
+					"displayName": "获取选中键",
+					"description": "GetSelectedKey(id)",
+					"action": "获取选中键"
+				},
+				"getSelectedText": {
+					"displayName": "获取选中文本",
+					"description": "GetSelectedText(id)",
+					"action": "获取选中文本"
+				},
+				"getOptions": {
+					"displayName": "获取选项",
+					"description": "GetOptions(id)",
+					"action": "获取下拉选项"
+				},
+				"executeTCode": {
+					"displayName": "执行事务码",
+					"description": "ExecuteTCode(tcode)",
+					"action": "执行事务码"
+				},
+				"selectTab": {
+					"displayName": "选择选项卡",
+					"description": "SelectTab(tabStripId, tabId) — tabStripId có thể \"\" khi tabId là path đầy đủ",
+					"action": "选择选项卡"
+				},
+				"resetToMainMenu": {
+					"displayName": "返回主菜单",
+					"description": "ResetToMainMenu()",
+					"action": "返回主菜单"
+				},
+				"goBack": {
+					"displayName": "后退",
+					"description": "GoBack()",
+					"action": "后退"
+				},
+				"openNewSession": {
+					"displayName": "打开新会话",
+					"description": "OpenNewSession()",
+					"action": "打开新会话"
+				},
+				"getAllRows": {
+					"displayName": "网格 — 获取全部行",
+					"description": "GetAllRows(gridId)",
+					"action": "获取全部网格行"
+				},
+				"getGridCellValue": {
+					"displayName": "网格 — 获取单元格",
+					"description": "GetCellValue(gridId, row, columnName)",
+					"action": "获取网格单元格"
+				},
+				"setGridCellValue": {
+					"displayName": "网格 — 设置单元格",
+					"description": "SetCellValue(gridId, row, columnName, value)",
+					"action": "设置网格单元格"
+				},
+				"getGridRowCount": {
+					"displayName": "网格 — 获取行数",
+					"description": "GetRowCount(gridId)",
+					"action": "获取网格行数"
+				},
+				"getColumnNames": {
+					"displayName": "网格 — 获取列名",
+					"description": "GetColumnNames(gridId)",
+					"action": "获取网格列名"
+				},
+				"getColumnHeaders": {
+					"displayName": "网格 — 获取列标题",
+					"description": "GetColumnHeaders(gridId)",
+					"action": "获取网格列标题"
+				},
+				"getAllRowsWithHeaders": {
+					"displayName": "网格 — 获取带标题的行",
+					"description": "GetAllRowsWithHeaders(gridId)",
+					"action": "获取带标题的网格行"
+				},
+				"selectRow": {
+					"displayName": "网格 — 选择行",
+					"description": "SelectRow(gridId, row)",
+					"action": "选择网格行"
+				},
+				"clickCurrentCell": {
+					"displayName": "网格 — 点击单元格",
+					"description": "ClickCurrentCell(gridId, row, columnName)",
+					"action": "点击网格单元格"
+				},
+				"doubleClickRow": {
+					"displayName": "网格 — 双击行",
+					"description": "DoubleClickRow(gridId, row, columnName)",
+					"action": "双击网格行"
+				},
+				"scrollGridToRow": {
+					"displayName": "网格 — 滚动到行",
+					"description": "ScrollToRow(gridId, row)",
+					"action": "滚动网格到指定行"
+				},
+				"pressGridToolbarButton": {
+					"displayName": "网格 — 按工具栏按钮",
+					"description": "PressGridToolbarButton(gridId, buttonId)",
+					"action": "按网格工具栏按钮"
+				},
+				"getGridAsDataTable": {
+					"displayName": "网格 — 获取为 DataTable",
+					"description": "GetGridAsDataTable(gridId)",
+					"action": "获取网格为数据表"
+				},
+				"getGridPage": {
+					"displayName": "网格 — 获取分页",
+					"description": "GetGridPage(gridId, pageIndex, pageSize?)",
+					"action": "获取网格分页"
+				},
+				"exportGridToExcel": {
+					"displayName": "网格 — 导出 Excel",
+					"description": "ExportGridToExcel(gridId, savePath)",
+					"action": "导出网格到 Excel"
+				},
+				"exportGridToText": {
+					"displayName": "网格 — 导出文本",
+					"description": "ExportGridToText(gridId, savePath)",
+					"action": "导出网格到文本"
+				},
+				"getTableRows": {
+					"displayName": "表格 — 获取行",
+					"description": "GetTableRows(tableId)",
+					"action": "获取表格行"
+				},
+				"getTableCellValue": {
+					"displayName": "表格 — 获取单元格",
+					"description": "GetCellValue(tableId, row, col)",
+					"action": "获取表格单元格"
+				},
+				"setTableCellValue": {
+					"displayName": "表格 — 设置单元格",
+					"description": "SetCellValue(tableId, row, col, value)",
+					"action": "设置表格单元格"
+				},
+				"scrollTableToRow": {
+					"displayName": "表格 — 滚动到行",
+					"description": "ScrollToRow(tableId, row) — overload table",
+					"action": "滚动表格到指定行"
+				},
+				"fillMultipleSelectionValues": {
+					"displayName": "多选 — 填充（弹窗已打开）",
+					"description": "FillMultipleSelectionValues(cellIdBase, items, ...) — popup đã mở sẵn",
+					"action": "填充多选（弹窗已打开）"
+				},
+				"openAndFillMultipleSelectionValues": {
+					"displayName": "多选 — 打开、填充并确认",
+					"description": "OpenAndFillMultipleSelectionValues(openButtonId, cellIdBase, items, ...)",
+					"action": "打开并填充多选"
+				},
+				"selectTreeNode": {
+					"displayName": "树 — 选择节点",
+					"description": "SelectTreeNode(treeId, nodeKey) — recorder selectedNode",
+					"action": "选择树节点"
+				},
+				"getTreeSelectedNode": {
+					"displayName": "树 — 获取选中节点",
+					"description": "GetTreeSelectedNode(treeId)",
+					"action": "获取选中的树节点"
+				},
+				"selectTreeItem": {
+					"displayName": "树 — 选择项",
+					"description": "SelectTreeItem(treeId, nodeKey, columnName)",
+					"action": "选择树项"
+				},
+				"ensureTreeItemVisible": {
+					"displayName": "树 — 确保可见",
+					"description": "EnsureTreeItemVisible(treeId, nodeKey, columnName)",
+					"action": "确保树项可见"
+				},
+				"doubleClickTreeItem": {
+					"displayName": "树 — 双击项",
+					"description": "DoubleClickTreeItem(treeId, nodeKey, columnName)",
+					"action": "双击树项"
+				},
+				"getTreeItemText": {
+					"displayName": "树 — 获取项文本",
+					"description": "GetTreeItemText(treeId, nodeKey, columnName)",
+					"action": "获取树项文本"
+				},
+				"waitForElement": {
+					"displayName": "等待元素",
+					"description": "WaitForElement(id, timeoutSeconds?)",
+					"action": "等待元素"
+				},
+				"waitUntilGone": {
+					"displayName": "等待消失",
+					"description": "WaitUntilGone(id, timeoutSeconds?)",
+					"action": "等待元素消失"
+				},
+				"waitForSap": {
+					"displayName": "等待 SAP",
+					"description": "WaitForSap(timeoutSeconds?)",
+					"action": "等待 SAP"
+				},
+				"sleep": {
+					"displayName": "休眠",
+					"description": "Sleep(milliseconds)",
+					"action": "休眠"
+				},
+				"isPopupOpen": {
+					"displayName": "弹窗 — 是否打开",
+					"description": "IsPopupOpen()",
+					"action": "弹窗是否打开"
+				},
+				"getPopupTitle": {
+					"displayName": "弹窗 — 获取标题",
+					"description": "GetPopupTitle()",
+					"action": "获取弹窗标题"
+				},
+				"getPopupMessage": {
+					"displayName": "弹窗 — 获取消息",
+					"description": "GetPopupMessage()",
+					"action": "获取弹窗消息"
+				},
+				"handlePopup": {
+					"displayName": "弹窗 — 处理",
+					"description": "HandlePopup(action)",
+					"action": "处理弹窗"
+				},
+				"confirmPopup": {
+					"displayName": "弹窗 — 确认",
+					"description": "ConfirmPopup()",
+					"action": "确认弹窗"
+				},
+				"cancelPopup": {
+					"displayName": "弹窗 — 取消",
+					"description": "CancelPopup()",
+					"action": "取消弹窗"
+				},
+				"continuePopup": {
+					"displayName": "弹窗 — 继续",
+					"description": "ContinuePopup()",
+					"action": "继续弹窗"
+				},
+				"getStatusText": {
+					"displayName": "获取状态栏文本",
+					"description": "GetStatusText()",
+					"action": "获取状态栏文本"
+				},
+				"getStatusType": {
+					"displayName": "获取状态栏类型",
+					"description": "GetStatusType()",
+					"action": "获取状态栏类型"
+				},
+				"hasError": {
+					"displayName": "是否有错误",
+					"description": "HasError()",
+					"action": "状态栏是否有错误"
+				},
+				"isSuccess": {
+					"displayName": "是否成功",
+					"description": "IsSuccess()",
+					"action": "状态栏是否成功"
+				},
+				"throwIfError": {
+					"displayName": "有错误则抛出",
+					"description": "ThrowIfError()",
+					"action": "有错误则抛出"
+				},
+				"handleSaveFileDialog": {
+					"displayName": "处理保存文件对话框",
+					"description": "HandleSaveFileDialog(savePath)",
+					"action": "处理保存文件对话框"
+				},
+				"selectLocalFileExport": {
+					"displayName": "选择本地文件导出",
+					"description": "SelectLocalFileExport(savePath, fileType?)",
+					"action": "选择本地文件导出"
+				},
+				"containsText": {
+					"displayName": "包含文本",
+					"description": "ContainsText(text)",
+					"action": "包含文本"
+				},
+				"captureScreen": {
+					"displayName": "截屏",
+					"description": "CaptureScreen(savePath)",
+					"action": "截屏"
+				},
+				"getWindowTitle": {
+					"displayName": "获取窗口标题",
+					"description": "GetWindowTitle()",
+					"action": "获取窗口标题"
+				},
+				"getCurrentTCode": {
+					"displayName": "获取当前事务码",
+					"description": "GetCurrentTCode()",
+					"action": "获取当前事务码"
+				},
+				"dumpElementTree": {
+					"displayName": "导出元素树",
+					"description": "DumpElementTree()",
+					"action": "导出元素树"
+				},
+				"dumpElementTreeBasic": {
+					"displayName": "导出元素树（基础）",
+					"description": "DumpElementTreeBasic()",
+					"action": "导出元素树（基础）"
+				},
+				"dumpUserAreaTexts": {
+					"displayName": "导出用户区域文本",
+					"description": "DumpUserAreaTexts(userAreaId?)",
+					"action": "导出用户区域文本"
+				}
+			}
+		},
+		"branchOnSuccess": {
+			"displayName": "成功时分支",
+			"description": "启用时: 节点有 2 个输出 — Success（response.Success === true） và Failed（其余情况）. Khi tắt: 一个输出 như hiện tại, mọi item đi nhánh chính."
+		},
+		"branchOnSuccessInfo": {
+			"displayName": "成功分支说明",
+			"description": "Output Success: item có Success = true. Output Failed: Success = false, thiếu field Success, hoặc lỗi được trả về khi bật Continue On Fail."
+		},
+		"connectionFieldsSourceInfo": {
+			"displayName": "连接字段来源",
+			"description": "必填：来自输入项 JSON: baseUrl, apiKey, sessionId (trừ Session By Account / Kill By Account / Kill All Sessions). 可选: requestTimeoutSeconds (giây, 默认 600), logUrl."
+		},
+		"server": {
+			"displayName": "服务器",
+			"description": "SAP Logon 连接名 (Open and Connect, Session By Account, Kill By Account)"
+		},
+		"client": {
+			"displayName": "客户端",
+			"description": "SAP client (ví dụ 800)"
+		},
+		"username": {
+			"displayName": "用户名",
+			"description": "SAP 登录用户名"
+		},
+		"password": {
+			"displayName": "密码"
+		},
+		"multiLogonAction": {
+			"displayName": "多重登录操作",
+			"description": "POST",
+			"placeholder": "opt2",
+			"hint": "opt1, opt2, opt3"
+		},
+		"language": {
+			"displayName": "语言",
+			"description": "Không gửi trong API được coi là EN — 默认 EN"
+		},
+		"idleTimeoutMinutes": {
+			"displayName": "空闲超时（分钟）",
+			"description": "可选. Để trống: không gửi field idleTimeoutMinutes → server không áp idle disconnect theo ô này. Nhập số nguyên > 0 để sau bấy nhiêu phút không có request thì có thể disconnect (tùy server).",
+			"placeholder": "Để trống = không ngắt session theo idle"
+		},
+		"killReason": {
+			"displayName": "原因",
+			"description": "可选备注，随 body 发送（reason） khi đóng session SAP.",
+			"placeholder": "batch cleanup"
+		},
+		"elementId": {
+			"displayName": "SAP 元素 ID",
+			"description": "SAP 控件路径（id 参数）",
+			"placeholder": "wnd[0]/usr/..."
+		},
+		"textValue": {
+			"displayName": "文本值"
+		},
+		"textsJson": {
+			"displayName": "文本（JSON 对象）",
+			"description": "Object map id control -> text. Gửi qua SetTexts — paramObject là map này (không bọc thêm key items).",
+			"placeholder": "{'{'}\"wnd[0]/usr/ctxtMATNR-LOW\":\"10000001\",\"wnd[0]/usr/ctxtWERKS-LOW\":\"1000\",\"wnd[0]/usr/ctxtLGORT-LOW\":\"0001\"{'}'}",
+			"hint": "Map SAP Element ID -> text value."
+		},
+		"checkboxesJson": {
+			"displayName": "复选框（JSON 对象）",
+			"description": "/0",
+			"placeholder": "{'{'}\"wnd[0]/usr/chk[1,49]\":\"true\",\"wnd[0]/usr/chk[1,50]\":\"false\"{'}'}",
+			"hint": "Map SAP Element ID -> true/false."
+		},
+		"caretPosition": {
+			"displayName": "光标位置"
+		},
+		"checkboxValue": {
+			"displayName": "复选框值"
+		},
+		"comboKey": {
+			"displayName": "下拉键"
+		},
+		"comboText": {
+			"displayName": "下拉文本"
+		},
+		"virtualKey": {
+			"displayName": "虚拟键",
+			"description": "Mã SAP VKey (Int32)"
+		},
+		"transactionCode": {
+			"displayName": "事务代码",
+			"placeholder": "MM03"
+		},
+		"tabStripId": {
+			"displayName": "选项卡条 ID",
+			"description": "Đường dẫn TabStrip (tabStripId). Có thể bỏ trống nếu Tab ID là path đầy đủ tới tab (recorder .select trên tabp...).",
+			"placeholder": "wnd[0]/usr/.../tabsHEADER_DETAIL"
+		},
+		"tabId": {
+			"displayName": "选项卡 ID",
+			"description": "Id tab ngắn (kèm Tab Strip ID) hoặc path đầy đủ tới tab — tương đương recorder tabp....select",
+			"placeholder": "tabpTABHDT11 hoặc wnd[0]/usr/.../tabpTABHDT11"
+		},
+		"toolbarId": {
+			"displayName": "工具栏 ID"
+		},
+		"buttonIndex": {
+			"displayName": "按钮索引"
+		},
+		"shellId": {
+			"displayName": "Shell ID",
+			"description": "Đường dẫn GuiShell SAP (tham số shellId)",
+			"placeholder": "wnd[0]/shellcont/shell/shellcont[1]/shell[0]"
+		},
+		"buttonId": {
+			"displayName": "网格按钮 ID",
+			"description": "PressGridToolbarButton — buttonId"
+		},
+		"containerId": {
+			"displayName": "容器 ID",
+			"description": "/usr",
+			"placeholder": "wnd[0]/usr"
+		},
+		"scrollPosition": {
+			"displayName": "滚动位置",
+			"description": "ScrollPage — ≥ 0 đặt tuyệt đối; < 0 (默认 -1) = cuộn thêm PageSize (hoặc +1)."
+		},
+		"tooltip": {
+			"displayName": "工具提示"
+		},
+		"gridId": {
+			"displayName": "网格 ID"
+		},
+		"gridRow": {
+			"displayName": "网格行索引"
+		},
+		"columnName": {
+			"displayName": "列名",
+			"description": "ALV grid hoặc GuiTree: tên cột (string), ví dụ &Hierarchy"
+		},
+		"cellValue": {
+			"displayName": "单元格值"
+		},
+		"pageIndex": {
+			"displayName": "页索引"
+		},
+		"pageSize": {
+			"displayName": "页大小",
+			"description": "GetGridPage — 默认 API 100"
+		},
+		"treeId": {
+			"displayName": "树 ID",
+			"description": "Đường dẫn GuiTree (treeId). SelectTreeNode: recorder selectedNode; SelectTreeItem: shell column tree.",
+			"placeholder": "wnd[0]/.../shell hoặc .../cntlTEXT_TYPES_0100/shell"
+		},
+		"nodeKey": {
+			"displayName": "节点键",
+			"description": "SelectTreeNode: mã node (ví dụ F01). SelectTreeItem: key cột — số có thể gửi \"2\" thay vì pad space.",
+			"placeholder": "F01 hoặc 2"
+		},
+		"tableId": {
+			"displayName": "表格 ID"
+		},
+		"tableRow": {
+			"displayName": "表格行索引"
+		},
+		"tableCol": {
+			"displayName": "表格列索引",
+			"description": "Table control: chỉ số cột (Int32)"
+		},
+		"savePath": {
+			"displayName": "保存路径",
+			"placeholder": "C:\\temp\\export.xlsx"
+		},
+		"fileType": {
+			"displayName": "文件类型",
+			"description": "SelectLocalFileExport — optional (默认 XLSX)"
+		},
+		"userAreaId": {
+			"displayName": "用户区域 ID",
+			"description": "DumpUserAreaTexts — optional (默认 wnd[1]/usr)"
+		},
+		"idPattern": {
+			"displayName": "ID 模式",
+			"description": "FindIds — pattern path SAP (hỗ trợ `...`), trả danh sách id relative bắt đầu bằng wnd[",
+			"placeholder": "wnd[0]/usr/.../cmbEKKO_CI-POADDR"
+		},
+		"containsSearchText": {
+			"displayName": "要查找的文本",
+			"description": "ContainsText — tìm chuỗi trên màn hình"
+		},
+		"handlePopupAction": {
+			"displayName": "弹窗操作",
+			"description": "Tham số action cho HandlePopup (theo ISapPopup)"
+		},
+		"timeoutSeconds": {
+			"displayName": "超时（秒）",
+			"description": "WaitForElement / WaitUntilGone"
+		},
+		"waitSapTimeoutSeconds": {
+			"displayName": "等待 SAP（秒）",
+			"description": "WaitForSap — optional timeoutSeconds (API mặc 30)."
+		},
+		"sleepMs": {
+			"displayName": "休眠（毫秒）"
+		},
+		"botid": {
+			"displayName": "机器人 ID",
+			"description": "POST",
+			"placeholder": "webhook-key"
+		},
+		"msgtype": {
+			"displayName": "消息类型",
+			"description": "Loại tin nhắn webhook WeCom: text, markdown, markdown_v2 hoặc image.",
+			"options": {
+				"text": {
+					"displayName": "文本"
+				},
+				"markdown": {
+					"displayName": "Markdown"
+				},
+				"markdown_v2": {
+					"displayName": "Markdown V2"
+				},
+				"image": {
+					"displayName": "Image"
+				}
+			}
+		},
+		"content": {
+			"displayName": "内容",
+			"description": "Nội dung gửi trong text.content / markdown.content / markdown_v2.content tùy msgtype.",
+			"placeholder": "Noi dung tin nhan..."
+		},
+		"mentionedList": {
+			"displayName": "提及列表",
+			"description": "可选. userid WeCom cần {'@'}mention (text.mentioned_list). Nhiều giá trị: phân tách bằng dấu phẩy. Dùng {'@'}all để mention tất cả.",
+			"placeholder": "wangqing,{'@'}all"
+		},
+		"mentionedMobileList": {
+			"displayName": "提及手机号列表",
+			"description": "可选. Số điện thoại cần {'@'}mention (text.mentioned_mobile_list). Nhiều giá trị: phân tách bằng dấu phẩy. Dùng {'@'}all để mention tất cả.",
+			"placeholder": "13800001111,{'@'}all"
+		},
+		"base64": {
+			"displayName": "图片 Base64",
+			"description": "Ảnh mã hóa base64 (không kèm prefix data:image/...). Dùng khi msgtype = image.",
+			"placeholder": "iVBORw0KGgoAAAANSUhEUgAA..."
+		},
+		"md5": {
+			"displayName": "图片 MD5",
+			"description": "MD5 của nội dung ảnh (trước khi base64). Dùng khi msgtype = image.",
+			"placeholder": "md5-hash-of-image-bytes"
+		},
+		"empids": {
+			"displayName": "员工 ID",
+			"description": "Mã nhân viên nhận tin. Nhiều mã: phân tách bằng dấu | (ví dụ A001|A002).",
+			"placeholder": "A001|A002",
+			"hint": "A001|A002"
+		},
+		"message": {
+			"displayName": "消息",
+			"description": "Nội dung tin nhắn gửi qua ROS Wecom.",
+			"placeholder": "Noi dung tin nhan WeCom..."
+		},
+		"multiSelCellIdBase": {
+			"displayName": "多选单元格 ID 基址",
+			"description": "Path ô nhập Multiple Selection (không kèm [row,col]) — tham số cellIdBase.",
+			"placeholder": "wnd[1]/usr/.../tblSAPLALDBSINGLE/ctxtRSCSEL-SLOW_I"
+		},
+		"multiSelItems": {
+			"displayName": "多选项目",
+			"description": "Danh sách giá trị (items) — phân tách bằng dấu phẩy, chấm phẩy, xuống dòng hoặc tab.",
+			"placeholder": "1,2,3,4,5 hoặc 1;2;3"
+		},
+		"multiSelOpenButtonId": {
+			"displayName": "多选打开按钮 ID",
+			"description": "Nút mở popup Multiple Selection (openButtonId) — chỉ Open, Fill & Confirm.",
+			"placeholder": "wnd[0]/usr/btn%_BA_MATNR_%_APP_%-VALU_PUSH"
+		},
+		"multiSelDataRow": {
+			"displayName": "多选数据行",
+			"description": "Hàng dữ liệu trong bảng popup (dataRow, 默认 1)."
+		},
+		"multiSelWindowIndex": {
+			"displayName": "多选窗口索引",
+			"description": "Chỉ số cửa sổ popup wnd[n] (windowIndex, 默认 1)."
+		},
+		"multiSelSendEnterOnScroll": {
+			"displayName": "滚动时发送 Enter",
+			"description": "Gửi Enter trên wnd[n] khi cuộn sang vùng mới (sendEnterOnScroll)."
+		},
+		"multiSelConfirmButtonIndices": {
+			"displayName": "多选确认按钮索引",
+			"description": "Chỉ số nút xác nhận trên tbar[0] (confirmButtonIndices). Fill: để trống = không bấm. Open: 默认 0,8.",
+			"placeholder": "0,8"
+		},
+		"logCommand": {
+			"displayName": "日志命令",
+			"description": "Gia tri field command trong body POST logUrl.",
+			"placeholder": "Ten lenh hoac buoc workflow..."
+		},
+		"logContent": {
+			"displayName": "日志消息",
+			"description": "Gia tri field message trong body POST logUrl.",
+			"placeholder": "Noi dung log..."
+		}
+	}
+}

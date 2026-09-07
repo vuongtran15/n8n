@@ -115,6 +115,30 @@ function isPropertyForVersion(property: INodeProperties, version: number): boole
 	return checkConditions(versionConditions, [version]);
 }
 
+function getOperationOptionActionLabel(
+	nodeTypeName: string,
+	parameter: INodeProperties,
+	option: INodePropertyOptions,
+): string {
+	const nodeText = i18n.nodeText(nodeTypeName);
+
+	if (option.action) {
+		return nodeText.optionsOptionAction(parameter, option, parameter.name);
+	}
+
+	return nodeText.optionsOptionDisplayName(parameter, option, parameter.name) || startCase(option.name);
+}
+
+function getOperationOptionDescription(
+	nodeTypeName: string,
+	parameter: INodeProperties,
+	option: INodePropertyOptions,
+): string {
+	if (!option.description) return '';
+
+	return i18n.nodeText(nodeTypeName).optionsOptionDescription(parameter, option, parameter.name);
+}
+
 function operationsCategory(nodeTypeDescription: INodeTypeDescription): ActionTypeDescription[] {
 	const defaultVersion = getDefaultNodeVersion(nodeTypeDescription);
 
@@ -159,8 +183,8 @@ function operationsCategory(nodeTypeDescription: INodeTypeDescription): ActionTy
 	const items = filteredOutItems.map((item: INodePropertyOptions) => ({
 		...getNodeTypeBase(nodeTypeDescription),
 		actionKey: item.value as string,
-		displayName: item.action ?? startCase(item.name),
-		description: item.description ?? '',
+		displayName: getOperationOptionActionLabel(nodeTypeDescription.name, matchedProperty, item),
+		description: getOperationOptionDescription(nodeTypeDescription.name, matchedProperty, item),
 		displayOptions: matchedProperty.displayOptions,
 		outputConnectionType: item.outputConnectionType,
 		values: {
@@ -190,8 +214,8 @@ function modeCategory(nodeTypeDescription: INodeTypeDescription): ActionTypeDesc
 	const items = modeOptions.map((item: INodePropertyOptions) => ({
 		...getNodeTypeBase(nodeTypeDescription),
 		actionKey: item.value as string,
-		displayName: item.action ?? startCase(item.name),
-		description: item.description ?? '',
+		displayName: getOperationOptionActionLabel(nodeTypeDescription.name, matchedProperty, item),
+		description: getOperationOptionDescription(nodeTypeDescription.name, matchedProperty, item),
 		displayOptions: matchedProperty.displayOptions,
 		outputConnectionType: item.outputConnectionType,
 		values: {
@@ -288,8 +312,11 @@ function resourceCategories(nodeTypeDescription: INodeTypeDescription): ActionTy
 
 				const items = ((operations.options as INodePropertyOptions[]) || []).map(
 					(operationOption) => {
-						const displayName =
-							operationOption.action ?? `${resourceOption.name} ${startCase(operationOption.name)}`;
+						const displayName = getOperationOptionActionLabel(
+							nodeTypeDescription.name,
+							operations,
+							operationOption,
+						);
 
 						// We need to manually populate displayOptions as they are not present in the node description
 						// if the resource has only one option
@@ -303,7 +330,11 @@ function resourceCategories(nodeTypeDescription: INodeTypeDescription): ActionTy
 								`${resourceOption.name} ${cachedBaseText('nodeCreator.actionsCategory.actions')}`,
 							),
 							actionKey: operationOption.value as string,
-							description: operationOption?.description ?? '',
+							description: getOperationOptionDescription(
+								nodeTypeDescription.name,
+								operations,
+								operationOption,
+							),
 							displayOptions,
 							values: {
 								operation:

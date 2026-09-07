@@ -6,6 +6,14 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const srcRoot = join(root, 'src');
 const distRoot = join(root, 'dist');
 
+function shouldCopy(relativePath, fileName) {
+	if (fileName.endsWith('.node.json') || fileName.endsWith('.svg')) {
+		return true;
+	}
+
+	return relativePath.includes('translations') && fileName.endsWith('.json');
+}
+
 function walk(dir) {
 	for (const name of readdirSync(dir)) {
 		const full = join(dir, name);
@@ -13,8 +21,10 @@ function walk(dir) {
 			walk(full);
 			continue;
 		}
-		if (!name.endsWith('.node.json') && !name.endsWith('.svg')) continue;
+
 		const rel = full.slice(srcRoot.length + 1);
+		if (!shouldCopy(rel, name)) continue;
+
 		const dest = join(distRoot, rel);
 		mkdirSync(dirname(dest), { recursive: true });
 		copyFileSync(full, dest);
@@ -22,4 +32,4 @@ function walk(dir) {
 }
 
 walk(srcRoot);
-console.log('Copied .node.json codex files to dist/');
+console.log('Copied static node assets to dist/');

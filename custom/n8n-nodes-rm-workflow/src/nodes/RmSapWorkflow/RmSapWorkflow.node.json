@@ -1,0 +1,13 @@
+{
+	"node": "CUSTOM.rmSapWorkflow",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["RM Workflow"],
+	"subcategories": {
+		"RM Workflow": ["RM Workflow"]
+	},
+	"alias": ["RMS", "SAP", "RMSAP", "RM SAP"],
+	"resources": {
+		"primaryDocumentation": []
+	}
+}

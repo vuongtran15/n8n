@@ -13,7 +13,7 @@ import {
 } from '@/app/constants';
 import { STORES } from '@n8n/stores';
 import type { NodeTypesByTypeNameAndVersion } from '@/Interface';
-import { addHeaders, addNodeTranslation } from '@n8n/i18n';
+import { addHeaders, addNodeTranslation, i18n, type INodeTranslationHeaders } from '@n8n/i18n';
 import { omit } from '@/app/utils/typesUtils';
 import type {
 	INode,
@@ -379,15 +379,35 @@ export const useNodeTypesStore = defineStore(STORES.NODE_TYPES, () => {
 		// The local DB holds untranslated descriptions, so only read from it for
 		// the English locale; other locales need per-node translations from REST.
 		const nodesInformation =
-			isDataWorkerEnabled() && rootStore.defaultLocale === 'en'
+			isDataWorkerEnabled() && i18n.locale === 'en'
 				? await loadNodesInformationFromLocalDb(nodeInfos)
 				: await nodeTypesApi.getNodesInformation(rootStore.restApiContext, nodeInfos);
 
 		nodesInformation.forEach((nodeInformation) => {
-			if (nodeInformation.translation) {
-				const nodeType = nodeInformation.name.replace('n8n-nodes-base.', '');
+			if (!nodeInformation.translation) return;
 
-				addNodeTranslation({ [nodeType]: nodeInformation.translation }, rootStore.defaultLocale);
+			const translationKey = i18n.shortNodeType(nodeInformation.name);
+			addNodeTranslation(
+				{ [translationKey]: nodeInformation.translation },
+				i18n.locale,
+			);
+
+			const header = (
+				nodeInformation.translation as {
+					header?: { displayName?: string; description?: string };
+				}
+			).header;
+
+			if (header?.displayName && header.description) {
+				addHeaders(
+					{
+						[translationKey]: {
+							displayName: header.displayName,
+							description: header.description,
+						},
+					} as INodeTranslationHeaders,
+					i18n.locale,
+				);
 			}
 		});
 		if (replace) setNodeTypes(nodesInformation);
@@ -419,6 +439,23 @@ export const useNodeTypesStore = defineStore(STORES.NODE_TYPES, () => {
 		}
 	};
 
+	const loadCustomNodeTranslations = async () => {
+		if (i18n.locale === 'en') return;
+
+		const customNodeInfos: INodeTypeNameVersion[] = [];
+
+		for (const [nodeTypeName, versions] of Object.entries(nodeTypes.value)) {
+			if (!nodeTypeName.startsWith('CUSTOM.')) continue;
+
+			const latestVersion = Math.max(...Object.keys(versions).map(Number));
+			customNodeInfos.push({ name: nodeTypeName, version: latestVersion });
+		}
+
+		if (customNodeInfos.length === 0) return;
+
+		await getNodesInformation(customNodeInfos, false);
+	};
+
 	const getNodeTypes = async () => {
 		const fetchedNodeTypes = isDataWorkerEnabled() ? await loadNodeTypesFromLocalDb() : [];
 		const nodeTypes = fetchedNodeTypes.length
@@ -428,6 +465,8 @@ export const useNodeTypesStore = defineStore(STORES.NODE_TYPES, () => {
 		if (nodeTypes.length) {
 			setNodeTypes(nodeTypes);
 		}
+
+		await loadCustomNodeTranslations();
 	};
 
 	const loadNodeTypesIfNotLoaded = async () => {

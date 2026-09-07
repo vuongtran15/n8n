@@ -1,0 +1,467 @@
+{
+	"header": {
+		"displayName": "RM WEB AUTO",
+		"description": "Web 自动化"
+	},
+	"nodeView": {
+		"operation": {
+			"displayName": "操作",
+			"options": {
+				"connect": {
+					"displayName": "连接",
+					"description": "POST /web-auto/connect — 用 sessionId (GUID) 打开 Playwright 浏览器",
+					"action": "连接浏览器"
+				},
+				"disconnect": {
+					"displayName": "断开连接",
+					"description": "POST /web-auto/disconnect — 关闭浏览器并释放会话",
+					"action": "断开会话"
+				},
+				"sessionCheck": {
+					"displayName": "检查会话",
+					"description": "POST /web-auto/session/check — 检查会话是否仍活跃",
+					"action": "检查会话"
+				},
+				"killAllSessions": {
+					"displayName": "终止所有会话",
+					"description": "POST",
+					"action": "终止所有 Web 会话"
+				},
+				"navigate": {
+					"displayName": "导航",
+					"description": "Mở URL đích trong tab đang active. Tham số: url (bắt buộc), timeoutMs (tùy chọn). Trả WebAccessResponse.",
+					"action": "导航到 URL"
+				},
+				"goBack": {
+					"displayName": "后退",
+					"description": "Quay lại trang trước trong lịch sử trình duyệt. Tham số timeoutMs tùy chọn.",
+					"action": "后退"
+				},
+				"goForward": {
+					"displayName": "前进",
+					"description": "Tiến tới trang sau trong lịch sử trình duyệt. Tham số timeoutMs tùy chọn.",
+					"action": "前进"
+				},
+				"reload": {
+					"displayName": "刷新",
+					"description": "Tải lại trang hiện tại. Tham số timeoutMs tùy chọn.",
+					"action": "刷新页面"
+				},
+				"click": {
+					"displayName": "点击",
+					"description": "Click element theo Playwright selector (CSS, text=..., xpath=...). Có thể bật force để click kể cả bị che.",
+					"action": "点击元素"
+				},
+				"doubleClick": {
+					"displayName": "双击",
+					"description": "Double-click element theo selector Playwright.",
+					"action": "双击元素"
+				},
+				"fill": {
+					"displayName": "填充",
+					"description": "/textarea",
+					"action": "填充输入框"
+				},
+				"type": {
+					"displayName": "输入",
+					"description": "Gõ từng ký tự vào element. Có delayMs giữa các ký tự (debug).",
+					"action": "输入文本"
+				},
+				"press": {
+					"displayName": "按键",
+					"description": "Nhấn phím trên element (Enter, Tab, ArrowDown, …).",
+					"action": "按键"
+				},
+				"selectOption": {
+					"displayName": "选择选项",
+					"description": "Chọn option trong thẻ <select> theo value hoặc label.",
+					"action": "选择选项"
+				},
+				"check": {
+					"displayName": "勾选",
+					"description": "Tick checkbox theo selector.",
+					"action": "勾选复选框"
+				},
+				"uncheck": {
+					"displayName": "取消勾选",
+					"description": "Bỏ tick checkbox theo selector.",
+					"action": "取消勾选"
+				},
+				"hover": {
+					"displayName": "悬停",
+					"description": "Di chuột (hover) lên element theo selector.",
+					"action": "悬停元素"
+				},
+				"setInputFiles": {
+					"displayName": "设置上传文件",
+					"description": "Upload file qua input[type=file]. filePath là đường dẫn trên máy worker (RMIV.WF.CLIENT), không phải máy gọi API.",
+					"action": "设置上传文件"
+				},
+				"getText": {
+					"displayName": "获取文本",
+					"description": "Lấy textContent của element. Kết quả trong Result.Value (string).",
+					"action": "获取文本"
+				},
+				"getInnerText": {
+					"displayName": "获取 innerText",
+					"description": "Lấy innerText của element (như hiển thị trên màn hình). Result.Value.",
+					"action": "获取 innerText"
+				},
+				"getInputValue": {
+					"displayName": "获取输入值",
+					"description": "/textarea",
+					"action": "获取输入值"
+				},
+				"getAttribute": {
+					"displayName": "获取属性",
+					"description": "Lấy thuộc tính HTML (href, value, data-*, …). Result.Value.",
+					"action": "获取属性"
+				},
+				"getTitle": {
+					"displayName": "获取标题",
+					"description": "Lấy document.title của tab hiện tại. Không cần selector.",
+					"action": "获取页面标题"
+				},
+				"getUrl": {
+					"displayName": "获取 URL",
+					"description": "Lấy URL hiện tại của tab active. Result.Value.",
+					"action": "获取当前 URL"
+				},
+				"getContent": {
+					"displayName": "获取页面内容",
+					"description": "Lấy toàn bộ HTML nội dung trang (page content). Result.Value.",
+					"action": "获取页面内容"
+				},
+				"downloadFullHtml": {
+					"displayName": "下载完整 HTML",
+					"description": "Lưu HTML trang ra file trên máy worker. filePath bắt buộc; encodingName 默认 utf-8.",
+					"action": "下载完整 HTML"
+				},
+				"findElements": {
+					"displayName": "查找元素",
+					"description": "/class/xpath/css/tag",
+					"action": "查找元素"
+				},
+				"getHtml": {
+					"displayName": "获取 HTML",
+					"description": "/outer",
+					"action": "获取元素 HTML"
+				},
+				"isVisible": {
+					"displayName": "是否可见",
+					"description": "Kiểm tra element có hiển thị không. Result.Value (bool).",
+					"action": "是否可见"
+				},
+				"isChecked": {
+					"displayName": "是否已选",
+					"description": "/radio",
+					"action": "是否已选"
+				},
+				"isEnabled": {
+					"displayName": "是否启用",
+					"description": "Kiểm tra element có enabled không. Result.Value (bool).",
+					"action": "是否启用"
+				},
+				"waitForSelector": {
+					"displayName": "等待选择器",
+					"description": "Chờ selector đạt state (visible, attached, hidden, detached). Mặc định state=visible.",
+					"action": "等待选择器"
+				},
+				"waitForLoadState": {
+					"displayName": "等待加载状态",
+					"description": "Chờ trạng thái tải trang: load, domcontentloaded, networkidle, …",
+					"action": "等待加载状态"
+				},
+				"waitForTimeout": {
+					"displayName": "固定等待",
+					"description": "Chờ cố định milliseconds (sleep Playwright).",
+					"action": "固定等待"
+				},
+				"fetchApi": {
+					"displayName": "Fetch API",
+					"description": "/session",
+					"action": "在会话中 Fetch API"
+				},
+				"screenshot": {
+					"displayName": "截图",
+					"description": "Chụp màn hình tab hiện tại. fullPage=true chụp toàn trang. Result.ContentBase64 (PNG).",
+					"action": "页面截图"
+				},
+				"screenshotElement": {
+					"displayName": "元素截图",
+					"description": "Chụp ảnh một element theo selector. Result.ContentBase64.",
+					"action": "元素截图"
+				},
+				"evaluate": {
+					"displayName": "执行 JavaScript",
+					"description": "Chạy hàm JavaScript trên trang (Playwright Evaluate). script là hàm JS; argJson là JSON đối số.",
+					"action": "执行 JavaScript"
+				},
+				"runJavaScript": {
+					"displayName": "运行 JavaScript",
+					"description": "Alias Evaluate — chạy script JS trên trang. Result.ResultJson.",
+					"action": "运行 JavaScript"
+				},
+				"runJavaScriptFile": {
+					"displayName": "运行 JS 文件",
+					"description": "Chạy file .js trên máy worker. filePath bắt buộc; argJson tùy chọn.",
+					"action": "运行 JS 文件"
+				},
+				"runScript": {
+					"displayName": "运行控制台脚本",
+					"description": "Chạy mã kiểu DevTools Console. Biến __arg từ argJson. Result.ResultJson.",
+					"action": "运行控制台脚本"
+				},
+				"newPage": {
+					"displayName": "新建标签页",
+					"description": "Mở tab mới; url tùy chọn. Tab mới trở thành active.",
+					"action": "打开新标签页"
+				},
+				"closePage": {
+					"displayName": "关闭标签页",
+					"description": "Đóng tab theo chỉ số pageIndex (0-based).",
+					"action": "关闭标签页"
+				},
+				"switchPage": {
+					"displayName": "切换标签页",
+					"description": "Chuyển sang tab theo pageIndex (0-based).",
+					"action": "切换标签页"
+				},
+				"listPages": {
+					"displayName": "列出标签页",
+					"description": "Liệt kê tất cả tab: index, url, active. Result.ResultJson.",
+					"action": "列出标签页"
+				}
+			}
+		},
+		"branchOnSuccess": {
+			"displayName": "成功时分支",
+			"description": "启用时: 节点有 2 个输出 — Success（response.Success === true） và Failed（其余情况）. Khi tắt: 一个输出, mọi item đi nhánh chính dù Success true hay false."
+		},
+		"branchOnSuccessInfo": {
+			"displayName": "成功分支说明",
+			"description": "Output Success: item có Success = true. Output Failed: Success = false, thiếu field Success, hoặc lỗi được trả về khi bật Continue On Fail."
+		},
+		"connectionFieldsSourceInfo": {
+			"displayName": "连接字段来源",
+			"description": "必填：来自输入项 JSON: baseUrl, apiKey. sessionId bắt buộc cho mọi operation trừ Kill All Sessions. 可选: requestTimeoutSeconds (giây, 默认 600 = 10 phút), logUrl."
+		},
+		"browserType": {
+			"displayName": "浏览器类型",
+			"description": "Engine Playwright: chromium, firefox, webkit.",
+			"options": {
+				"chromium": {
+					"displayName": "Chromium"
+				},
+				"firefox": {
+					"displayName": "Firefox"
+				},
+				"webkit": {
+					"displayName": "WebKit"
+				}
+			}
+		},
+		"headless": {
+			"displayName": "无头模式",
+			"description": "/m"
+		},
+		"startUrl": {
+			"displayName": "起始 URL",
+			"description": "URL mở ngay sau khi launch browser (tùy chọn).",
+			"placeholder": "https://example.com/login"
+		},
+		"viewportWidth": {
+			"displayName": "视口宽度",
+			"description": "Chiều rộng viewport (px). Cần cả Width và Height mới áp dụng.",
+			"placeholder": "0 = không gửi"
+		},
+		"viewportHeight": {
+			"displayName": "视口高度",
+			"description": "Chiều cao viewport (px).",
+			"placeholder": "0 = không gửi"
+		},
+		"slowMo": {
+			"displayName": "慢动作（毫秒）",
+			"description": "Làm chậm mỗi thao tác Playwright (ms) — hữu ích khi debug.",
+			"placeholder": "0 = không gửi"
+		},
+		"userAgent": {
+			"displayName": "User-Agent",
+			"description": "User-Agent tùy chỉnh (tùy chọn)."
+		},
+		"defaultTimeoutMs": {
+			"displayName": "默认超时（毫秒）",
+			"description": "/navigation",
+			"placeholder": "0 = không gửi (Playwright default)"
+		},
+		"idleTimeoutMinutes": {
+			"displayName": "空闲超时（分钟）",
+			"description": "Phút không có request thì tự đóng browser. Để trống = server dùng 默认 (5 phút).",
+			"placeholder": "Để trống = server mặc định 5 phút"
+		},
+		"killAllReason": {
+			"displayName": "原因",
+			"description": "可选备注，随 body 发送（reason） khi 关闭全部 session web.",
+			"placeholder": "cleanup"
+		},
+		"selector": {
+			"displayName": "选择器",
+			"description": "Playwright selector: CSS (#id, .class), text=..., xpath=..., v.v. Dùng cho Click, Fill, Wait, …",
+			"placeholder": "#username, text=Đăng nhập, xpath=//button"
+		},
+		"url": {
+			"displayName": "URL",
+			"description": "URL đích (Navigate, Fetch API) hoặc URL mở tab mới (New Page).",
+			"placeholder": "https://example.com/path"
+		},
+		"httpMethod": {
+			"displayName": "HTTP 方法",
+			"description": "GET",
+			"options": {
+				"GET": {
+					"displayName": "GET"
+				},
+				"POST": {
+					"displayName": "POST"
+				},
+				"PUT": {
+					"displayName": "PUT"
+				},
+				"PATCH": {
+					"displayName": "PATCH"
+				},
+				"DELETE": {
+					"displayName": "DELETE"
+				},
+				"HEAD": {
+					"displayName": "HEAD"
+				}
+			}
+		},
+		"headersJson": {
+			"displayName": "Headers JSON",
+			"description": "POST",
+			"placeholder": "{'{'}\"Content-Type\":\"application/json\"{'}'}"
+		},
+		"requestBody": {
+			"displayName": "请求体",
+			"description": "/text",
+			"placeholder": "{'{'}\"keyword\":\"RMIV\",\"page\":1{'}'}"
+		},
+		"failOnHttpError": {
+			"displayName": "HTTP 错误时失败",
+			"description": "/3xx"
+		},
+		"textValue": {
+			"displayName": "值",
+			"description": "/textarea"
+		},
+		"typeText": {
+			"displayName": "文本",
+			"description": "Chuỗi gõ từng ký tự (Type)."
+		},
+		"pressKey": {
+			"displayName": "键",
+			"description": "Tên phím Playwright (Press).",
+			"placeholder": "Enter, Tab, ArrowDown"
+		},
+		"attributeName": {
+			"displayName": "属性名",
+			"description": "Tên thuộc tính HTML cần đọc (Get Attribute).",
+			"placeholder": "href, value, data-id"
+		},
+		"forceClick": {
+			"displayName": "强制点击",
+			"description": "Click kể cả khi element bị che (overlay). Mặc định false."
+		},
+		"queryType": {
+			"displayName": "查询类型",
+			"description": "Kiểu truy vấn element: id, class, xpath, css, tag.",
+			"options": {
+				"id": {
+					"displayName": "ID"
+				},
+				"class": {
+					"displayName": "Class"
+				},
+				"xpath": {
+					"displayName": "XPath"
+				},
+				"css": {
+					"displayName": "CSS"
+				},
+				"tag": {
+					"displayName": "Tag / Element"
+				}
+			}
+		},
+		"queryValue": {
+			"displayName": "查询值",
+			"description": "Giá trị truy vấn tương ứng queryType (Find Elements, Get HTML).",
+			"placeholder": "div.item > a, main-content, //table"
+		},
+		"valueKind": {
+			"displayName": "值类型",
+			"description": "Thuộc tính lấy từ mỗi element tìm được (Find Elements). Mặc định innerText.",
+			"placeholder": "innerText, href, value"
+		},
+		"outerHtml": {
+			"displayName": "外部 HTML",
+			"description": "true = outer HTML; false = inner HTML (Get HTML)."
+		},
+		"filePath": {
+			"displayName": "文件路径",
+			"description": "Đường dẫn file trên máy worker (RMIV.WF.CLIENT), không phải máy gọi API.",
+			"placeholder": "C:\\temp\\page.html"
+		},
+		"encodingName": {
+			"displayName": "编码名称",
+			"description": "Mã hóa khi lưu HTML (Download Full HTML). Mặc định utf-8."
+		},
+		"waitState": {
+			"displayName": "等待状态",
+			"description": "Trạng thái chờ selector (Wait For Selector). Mặc định visible.",
+			"placeholder": "visible, attached, hidden, detached"
+		},
+		"loadState": {
+			"displayName": "加载状态",
+			"description": "Trạng thái tải trang (Wait For Load State). Mặc định load.",
+			"placeholder": "load, domcontentloaded, networkidle"
+		},
+		"waitMs": {
+			"displayName": "等待（毫秒）",
+			"description": "Thời gian chờ cố định (Wait For Timeout), đơn vị millisecond."
+		},
+		"timeoutMs": {
+			"displayName": "超时（毫秒）",
+			"description": "/navigation",
+			"placeholder": "0 = dùng Default Timeout lúc Connect"
+		},
+		"delayMs": {
+			"displayName": "输入延迟（毫秒）",
+			"description": "Độ trễ giữa các ký tự khi Type (ms). 0 = không trễ."
+		},
+		"fullPage": {
+			"displayName": "整页",
+			"description": "true = chụp toàn bộ trang cuộn; false = chỉ viewport (Screenshot)."
+		},
+		"script": {
+			"displayName": "脚本",
+			"description": "Hàm JavaScript chạy trên trang (Evaluate / Run JavaScript).",
+			"placeholder": "() => document.title"
+		},
+		"argJson": {
+			"displayName": "参数 JSON",
+			"description": "JSON đối số truyền vào script (Evaluate, Run JS File, Run Script).",
+			"placeholder": "null hoặc {'{'}\"key\":\"value\"{'}'}"
+		},
+		"scriptCode": {
+			"displayName": "代码",
+			"description": "Mã kiểu DevTools Console (Run Script). Biến __arg từ argJson."
+		},
+		"pageIndex": {
+			"displayName": "页索引",
+			"description": "Chỉ số tab 0-based (Close Page, Switch Page)."
+		}
+	}
+}

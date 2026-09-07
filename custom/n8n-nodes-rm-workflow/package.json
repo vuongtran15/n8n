@@ -5,14 +5,22 @@
   "license": "MIT",
   "keywords": ["n8n-community-node-package", "rm-workflow"],
   "scripts": {
-    "build": "tsc -p tsconfig.json && node scripts/copy-codex.mjs",
+    "build": "tsc -p tsconfig.json && node scripts/generate-translations.mjs && node scripts/copy-codex.mjs",
     "watch": "tsc -p tsconfig.json --watch",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist",
+    "generate:translations": "node scripts/generate-translations.mjs"
   },
   "files": ["dist"],
+  "dependencies": {
+    "axios": "catalog:"
+  },
   "n8n": {
     "n8nNodesApiVersion": 1,
-    "nodes": ["dist/nodes/RMWorkflow/RMWidget.node.js"]
+    "nodes": [
+      "dist/nodes/RMWorkflow/RMWidget.node.js",
+      "dist/nodes/RmSapWorkflow/RmSapWorkflow.node.js",
+      "dist/nodes/RmWebAutoWorkflow/RmWebAutoWorkflow.node.js"
+    ]
   },
   "peerDependencies": {
     "n8n-workflow": "*"

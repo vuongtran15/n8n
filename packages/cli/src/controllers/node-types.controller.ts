@@ -8,6 +8,18 @@ import { coerce } from 'semver';
 
 import { NodeTypes } from '@/node-types';
 
+function resolveNodeTranslationLocale(req: Request, defaultLocale: string): string {
+	const acceptLanguage = req.headers['accept-language'];
+	if (typeof acceptLanguage === 'string') {
+		const primary = acceptLanguage.split(',')[0]?.trim().split('-')[0]?.toLowerCase();
+		if (primary && primary !== 'en') {
+			return primary;
+		}
+	}
+
+	return defaultLocale;
+}
+
 /**
  * Parse a node type identifier string (name@version) into name and version
  * @param identifier - e.g., "n8n-nodes-base.httpRequest@4.2"
@@ -36,11 +48,11 @@ export class NodeTypesController {
 	@Post('/')
 	async getNodeInfo(req: Request) {
 		const nodeInfos = get(req, 'body.nodeInfos', []) as INodeTypeNameVersion[];
-		const defaultLocale = this.globalConfig.defaultLocale;
+		const locale = resolveNodeTranslationLocale(req, this.globalConfig.defaultLocale);
 
 		const descriptions = await Promise.all(
 			nodeInfos.map(async ({ name, version }) => {
-				return await this.nodeTypes.getDescriptionWithTranslation(name, version, defaultLocale);
+				return await this.nodeTypes.getDescriptionWithTranslation(name, version, locale);
 			}),
 		);
 
@@ -53,10 +65,11 @@ export class NodeTypesController {
 	 */
 	@Post('/by-identifier')
 	async getNodeTypesByIdentifier(
+		req: Request,
 		@Body payload: GetNodeTypesByIdentifierRequestDto,
 	): Promise<INodeTypeDescription[]> {
 		const { identifiers = [] } = payload;
-		const defaultLocale = this.globalConfig.defaultLocale;
+		const locale = resolveNodeTranslationLocale(req, this.globalConfig.defaultLocale);
 		const nodeTypes: INodeTypeDescription[] = [];
 
 		for (const identifier of identifiers) {
@@ -67,7 +80,7 @@ export class NodeTypesController {
 				const description = await this.nodeTypes.getDescriptionWithTranslation(
 					parsed.name,
 					parsed.version,
-					defaultLocale,
+					locale,
 				);
 				nodeTypes.push(description);
 			} catch {

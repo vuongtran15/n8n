@@ -203,7 +203,9 @@ export class NodeTypes implements INodeTypes {
 	}) {
 		const nodeDir = dirname(nodeSourcePath);
 		const maxVersion = await this.getMaxVersion(nodeDir);
-		const nodeType = longNodeType.replace('n8n-nodes-base.', '');
+		const nodeType = longNodeType
+			.replace('n8n-nodes-base.', '')
+			.replace(/^CUSTOM\./, '');
 
 		return maxVersion
 			? join(nodeDir, `v${maxVersion}`, 'translations', locale, `${nodeType}.json`)
