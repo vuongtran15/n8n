@@ -58,9 +58,15 @@ const isAiTransformButton = computed(() => {
 	const action = props.parameter.typeOptions?.buttonConfig?.action;
 	return typeof action === 'object' && action?.type === 'askAiCodeGeneration';
 });
+const isGenerateUuidButton = computed(() => {
+	const action = props.parameter.typeOptions?.buttonConfig?.action;
+	return typeof action === 'object' && action?.type === 'generateUuid';
+});
 const isSubmitEnabled = computed(() => {
+	if (props.isReadOnly) return false;
+	if (isGenerateUuidButton.value) return true;
 	if (isAiTransformButton.value && !askAi.value) return false;
-	if (!hasExecutionData.value || !prompt.value || props.isReadOnly) return false;
+	if (!hasExecutionData.value || !prompt.value) return false;
 
 	const maxlength = inputFieldMaxLength.value;
 	if (maxlength && prompt.value.length > maxlength) return false;
@@ -101,12 +107,25 @@ async function onSubmit() {
 		}
 	}
 
+	const { type, target } = action;
+
+	if (type === 'generateUuid') {
+		if (!target) return;
+		emit('valueChanged', {
+			name: getPath(target),
+			value: crypto.randomUUID(),
+		});
+		showMessage({
+			type: 'success',
+			title: 'Session ID đã tạo (GUID)',
+		});
+		return;
+	}
+
 	emit('valueChanged', {
 		name: getPath(props.parameter.name),
 		value: prompt.value,
 	});
-
-	const { type, target } = action;
 
 	startLoading();
 
@@ -274,7 +293,11 @@ async function updateCursorPositionOnMouseMove(event: MouseEvent, activeDrop: bo
 				</div>
 				<template #content>
 					<span
-						v-if="!hasExecutionData"
+						v-if="isGenerateUuidButton"
+						v-text="'Generate a new GUID for Session ID'"
+					/>
+					<span
+						v-else-if="!hasExecutionData"
 						v-text="i18n.baseText('codeNodeEditor.askAi.noInputData')"
 					/>
 					<span

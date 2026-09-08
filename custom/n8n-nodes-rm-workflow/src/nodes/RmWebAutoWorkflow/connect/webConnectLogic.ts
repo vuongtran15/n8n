@@ -49,8 +49,8 @@ export async function executeConnectItem(
 	let browserType = (ctx.getNodeParameter('browserType', itemIndex, 'chromium') as string) || 'chromium';
 	let headless = ctx.getNodeParameter('headless', itemIndex, false) as boolean;
 	let startUrl = ctx.getNodeParameter('startUrl', itemIndex, '') as string;
-	let viewportWidth = ctx.getNodeParameter('viewportWidth', itemIndex, 0) as number;
-	let viewportHeight = ctx.getNodeParameter('viewportHeight', itemIndex, 0) as number;
+	let viewportWidth = ctx.getNodeParameter('viewportWidth', itemIndex, 1920) as number;
+	let viewportHeight = ctx.getNodeParameter('viewportHeight', itemIndex, 1080) as number;
 	let slowMo = ctx.getNodeParameter('slowMo', itemIndex, 0) as number;
 	let userAgent = ctx.getNodeParameter('userAgent', itemIndex, '') as string;
 	let defaultTimeoutMs = ctx.getNodeParameter('defaultTimeoutMs', itemIndex, 0) as number;

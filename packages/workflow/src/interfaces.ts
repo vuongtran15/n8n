@@ -1864,7 +1864,7 @@ export interface ILoadOptions {
 }
 
 export type NodePropertyAction = {
-	type: 'askAiCodeGeneration';
+	type: 'askAiCodeGeneration' | 'generateUuid';
 	handler?: string;
 	target?: string;
 };
