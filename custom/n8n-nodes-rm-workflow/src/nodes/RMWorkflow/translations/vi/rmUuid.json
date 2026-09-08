@@ -1,0 +1,63 @@
+{
+	"header": {
+		"displayName": "RM UUID",
+		"description": "Tạo mã khóa ngẫu nhiên (Session ID) cho workflow — không cần biết UUID/GUID là gì"
+	},
+	"nodeView": {
+		"tips": {
+			"displayName": "Gợi ý",
+			"description": "Mỗi lần chạy node sẽ tạo một mã khóa mới (chuỗi dạng xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx). Dùng làm Session ID cho RM SAP / Web / File / Outlook. Bạn không cần nhớ hay gõ tay — chỉ cần Execute."
+		},
+		"outputField": {
+			"displayName": "Tên field ghi ra",
+			"description": "Tên field trong JSON output. Mặc định sessionId — các node RM khác sẽ đọc field này.",
+			"placeholder": "sessionId"
+		},
+		"alsoWriteUuid": {
+			"displayName": "Ghi thêm field uuid",
+			"description": "Ngoài field trên, ghi thêm uuid với cùng giá trị (tiện dùng biểu thức)."
+		},
+		"format": {
+			"displayName": "Định dạng",
+			"options": {
+				"standard": {
+					"displayName": "Chuẩn (có dấu gạch)",
+					"description": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+				},
+				"upper": {
+					"displayName": "Chữ hoa",
+					"description": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+				},
+				"noDashes": {
+					"displayName": "Không dấu gạch",
+					"description": "32 ký tự liền"
+				},
+				"upperNoDashes": {
+					"displayName": "Chữ hoa, không dấu gạch",
+					"description": "32 ký tự hoa liền"
+				},
+				"braces": {
+					"displayName": "Trong ngoặc nhọn",
+					"description": "{xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}"
+				}
+			}
+		},
+		"perItem": {
+			"displayName": "Mỗi item một mã",
+			"description": "true = mỗi dòng input nhận mã riêng. false = mọi dòng dùng chung một mã (một lần chạy)."
+		},
+		"overwrite": {
+			"displayName": "Ghi đè nếu đã có",
+			"description": "true = luôn tạo mã mới. false = giữ nguyên nếu field đã có giá trị trên input."
+		},
+		"previewUuid": {
+			"displayName": "Xem trước / tạo thử",
+			"description": "Chỉ để xem thử trên form — giá trị Execute mới ghi vào output workflow.",
+			"placeholder": "Bấm nút bên dưới để xem một mã mẫu"
+		},
+		"randomPreview": {
+			"displayName": "Tạo mã mẫu",
+			"description": "Điền một mã ngẫu nhiên vào ô xem trước (không ảnh hưởng Execute)"
+		}
+	}
+}

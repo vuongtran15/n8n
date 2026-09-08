@@ -107,6 +107,11 @@
 					"description": "将附件保存到 worker 磁盘：entryId + attachmentKey + saveDirectory。",
 					"action": "保存附件"
 				},
+				"saveAllAttachments": {
+					"displayName": "保存全部附件",
+					"description": "将邮件全部附件保存到 saveDirectory。skipEmbedded=true（默认）跳过 OLE/签名内嵌图。返回 SavedFiles[]、SavedCount。",
+					"action": "保存全部附件"
+				},
 				"activateOutlook": {
 					"displayName": "激活 Outlook",
 					"description": "将 Outlook 窗口置于前台。无需参数。",
@@ -256,8 +261,12 @@
 		},
 		"saveDirectory": {
 			"displayName": "保存目录",
-			"description": "worker 上的保存目录（保存附件）。",
+			"description": "worker 上的保存目录（保存附件 / 保存全部附件）。",
 			"placeholder": "C:\\temp\\attachments"
+		},
+		"skipEmbedded": {
+			"displayName": "跳过内嵌",
+			"description": "true = Save All 时跳过 OLE/签名内嵌图。false = 一并保存内嵌文件。"
 		},
 		"saveOption": {
 			"displayName": "保存选项",

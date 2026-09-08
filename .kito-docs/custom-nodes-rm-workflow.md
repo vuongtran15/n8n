@@ -8,6 +8,8 @@ Package riêng ngoài `nodes-base`: `custom/n8n-nodes-rm-workflow/`
 | Node | Type | Mô tả |
 |------|------|--------|
 | RM Workflow | `CUSTOM.rmWidget` | Chọn workflow được cấp / nhập ID → map inputs (resourceMapper). Không tạo / không mở sub-workflow |
+| RM Init | `CUSTOM.rmInit` | Khởi tạo baseUrl, apiKey, sessionId |
+| RM UUID | `CUSTOM.rmUuid` | Tạo mã khóa ngẫu nhiên (Session ID) — không cần biết UUID/GUID |
 
 Cơ chế fields: giống Execute Sub-workflow — đọc schema từ **Execute Workflow Trigger** của child. Child phải khai báo inputs (không phải “Accept all data”) thì panel mới có trường.
 

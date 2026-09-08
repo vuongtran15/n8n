@@ -1,0 +1,63 @@
+{
+	"header": {
+		"displayName": "RM UUID",
+		"description": "生成随机密钥（Session ID）— 无需了解 UUID/GUID"
+	},
+	"nodeView": {
+		"tips": {
+			"displayName": "提示",
+			"description": "每次运行都会生成新的随机密钥（形如 xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx）。可用作 RM SAP / Web / File / Outlook 的 Session ID。无需手写 — 直接 Execute。"
+		},
+		"outputField": {
+			"displayName": "输出字段名",
+			"description": "写入 JSON 的字段名。默认 sessionId — 其他 RM 节点会读取该字段。",
+			"placeholder": "sessionId"
+		},
+		"alsoWriteUuid": {
+			"displayName": "同时写入 uuid",
+			"description": "除上述字段外，再写入同值的 uuid（方便表达式引用）。"
+		},
+		"format": {
+			"displayName": "格式",
+			"options": {
+				"standard": {
+					"displayName": "标准（带连字符）",
+					"description": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+				},
+				"upper": {
+					"displayName": "大写",
+					"description": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+				},
+				"noDashes": {
+					"displayName": "无连字符",
+					"description": "连续 32 个字符"
+				},
+				"upperNoDashes": {
+					"displayName": "大写、无连字符",
+					"description": "连续 32 个大写字符"
+				},
+				"braces": {
+					"displayName": "花括号",
+					"description": "{xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}"
+				}
+			}
+		},
+		"perItem": {
+			"displayName": "每条 item 一个码",
+			"description": "true = 每条输入各自一个码。false = 本次运行所有行共用一个码。"
+		},
+		"overwrite": {
+			"displayName": "若已有则覆盖",
+			"description": "true = 总是生成新码。false = 若输入已有该字段则保留。"
+		},
+		"previewUuid": {
+			"displayName": "预览 / 试生成",
+			"description": "仅用于表单预览 — Execute 才会写入工作流输出。",
+			"placeholder": "点击下方按钮查看示例码"
+		},
+		"randomPreview": {
+			"displayName": "生成示例码",
+			"description": "向预览框填入随机码（不影响 Execute）"
+		}
+	}
+}

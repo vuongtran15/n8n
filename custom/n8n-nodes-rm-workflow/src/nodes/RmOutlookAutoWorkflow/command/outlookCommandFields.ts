@@ -26,6 +26,7 @@ const ENTRY_ID_OPS = operationsWithParamKind(
 	'moveMail',
 	'deleteMail',
 	'saveAttachment',
+	'saveAllAttachments',
 	'closeInspector',
 );
 const SEND_MAIL_OPS = operationsWithParamKind('sendMail');
@@ -36,6 +37,8 @@ const MARK_AS_READ_OPS = operationsWithParamKind('markAsRead');
 const MOVE_MAIL_OPS = operationsWithParamKind('moveMail');
 const DELETE_MAIL_OPS = operationsWithParamKind('deleteMail');
 const SAVE_ATTACHMENT_OPS = operationsWithParamKind('saveAttachment');
+const SAVE_ALL_ATTACHMENTS_OPS = operationsWithParamKind('saveAllAttachments');
+const SAVE_DIR_OPS = operationsWithParamKind('saveAttachment', 'saveAllAttachments');
 const CLOSE_INSPECTOR_OPS = operationsWithParamKind('closeInspector', 'closeAllInspectors');
 const SEND_KEYS_OPS = operationsWithParamKind('sendKeys');
 const SEND_KEY_SEQUENCE_OPS = operationsWithParamKind('sendKeySequence');
@@ -68,6 +71,7 @@ export function getOutlookCommandShortcutProperties(): INodeProperties[] {
 					'moveMail',
 					'deleteMail',
 					'saveAttachment',
+					'saveAllAttachments',
 					'closeInspector',
 					'closeAllInspectors',
 					'sendKeys',
@@ -242,8 +246,17 @@ export function getOutlookCommandShortcutProperties(): INodeProperties[] {
 			type: 'string',
 			default: '',
 			placeholder: 'C:\\temp\\attachments',
-			description: 'Thư mục lưu trên máy worker (Save Attachment).',
-			displayOptions: op(...SAVE_ATTACHMENT_OPS),
+			description: 'Thư mục lưu trên máy worker (Save Attachment / Save All Attachments).',
+			displayOptions: op(...SAVE_DIR_OPS),
+		},
+		{
+			displayName: 'Skip Embedded',
+			name: 'skipEmbedded',
+			type: 'boolean',
+			default: true,
+			description:
+				'true = bỏ ảnh OLE / chữ ký inline khi Save All Attachments. false = lưu cả file nhúng.',
+			displayOptions: op(...SAVE_ALL_ATTACHMENTS_OPS),
 		},
 		{
 			displayName: 'Save Option',

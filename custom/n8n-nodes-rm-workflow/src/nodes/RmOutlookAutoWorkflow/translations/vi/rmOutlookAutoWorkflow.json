@@ -107,6 +107,11 @@
 					"description": "Lưu file đính kèm ra đĩa worker: entryId + attachmentKey + saveDirectory.",
 					"action": "Lưu đính kèm"
 				},
+				"saveAllAttachments": {
+					"displayName": "Lưu tất cả đính kèm",
+					"description": "Lưu tất cả đính kèm của mail ra saveDirectory. skipEmbedded=true (mặc định) bỏ ảnh OLE/chữ ký inline. Trả SavedFiles[], SavedCount.",
+					"action": "Lưu tất cả đính kèm"
+				},
 				"activateOutlook": {
 					"displayName": "Kích hoạt Outlook",
 					"description": "Đưa cửa sổ Outlook lên trước. Không cần param.",
@@ -256,8 +261,12 @@
 		},
 		"saveDirectory": {
 			"displayName": "Thư mục lưu",
-			"description": "Thư mục lưu trên máy worker (Save Attachment).",
+			"description": "Thư mục lưu trên máy worker (Save Attachment / Save All Attachments).",
 			"placeholder": "C:\\temp\\attachments"
+		},
+		"skipEmbedded": {
+			"displayName": "Bỏ file nhúng",
+			"description": "true = bỏ ảnh OLE / chữ ký inline khi Save All Attachments. false = lưu cả file nhúng."
 		},
 		"saveOption": {
 			"displayName": "Tùy chọn lưu",

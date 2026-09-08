@@ -13,6 +13,7 @@ export type OutlookCommandParamKind =
 	| 'moveMail'
 	| 'deleteMail'
 	| 'saveAttachment'
+	| 'saveAllAttachments'
 	| 'closeInspector'
 	| 'closeAllInspectors'
 	| 'sendKeys'
@@ -154,6 +155,15 @@ export const OUTLOOK_COMMAND_DEFINITIONS: OutlookCommandDefinition[] = [
 			'Lưu file đính kèm ra đĩa worker: entryId + attachmentKey + saveDirectory.',
 		action: 'Save attachment',
 		params: 'saveAttachment',
+	},
+	{
+		operation: 'saveAllAttachments',
+		function: 'SaveAllAttachments',
+		displayName: 'Save All Attachments',
+		description:
+			'Lưu tất cả đính kèm của mail ra saveDirectory. skipEmbedded=true (mặc định) bỏ ảnh OLE/signature inline. Trả SavedFiles[], SavedCount.',
+		action: 'Save all attachments',
+		params: 'saveAllAttachments',
 	},
 	{
 		operation: 'activateOutlook',

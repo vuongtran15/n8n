@@ -196,6 +196,17 @@ function buildParamObject(
 			if (!saveDirectory) throw new Error('Thiếu saveDirectory');
 			return { entryId, attachmentKey, saveDirectory };
 		}
+		case 'saveAllAttachments': {
+			const entryId = s('entryId').trim();
+			if (!entryId) throw new Error('Thiếu entryId');
+			const saveDirectory = s('saveDirectory').trim();
+			if (!saveDirectory) throw new Error('Thiếu saveDirectory');
+			return {
+				entryId,
+				saveDirectory,
+				skipEmbedded: boolStr(b('skipEmbedded', true)),
+			};
+		}
 		case 'closeInspector': {
 			const out: Record<string, string> = {
 				saveOption: s('saveOption').trim() || 'discard',
