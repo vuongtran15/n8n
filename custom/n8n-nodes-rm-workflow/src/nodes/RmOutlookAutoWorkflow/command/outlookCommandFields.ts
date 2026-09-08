@@ -250,6 +250,15 @@ export function getOutlookCommandShortcutProperties(): INodeProperties[] {
 			displayOptions: op(...SAVE_DIR_OPS),
 		},
 		{
+			displayName: 'Overwrite',
+			name: 'overwrite',
+			type: 'boolean',
+			default: true,
+			description:
+				'true = ghi đè file cùng tên trong saveDirectory. false = giữ file cũ, lưu bản mới thành ten_2.ext, ten_3.ext, …',
+			displayOptions: op(...SAVE_DIR_OPS),
+		},
+		{
 			displayName: 'Skip Embedded',
 			name: 'skipEmbedded',
 			type: 'boolean',

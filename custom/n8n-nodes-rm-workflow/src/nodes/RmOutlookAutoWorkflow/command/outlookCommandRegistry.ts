@@ -152,7 +152,7 @@ export const OUTLOOK_COMMAND_DEFINITIONS: OutlookCommandDefinition[] = [
 		function: 'SaveAttachment',
 		displayName: 'Save Attachment',
 		description:
-			'Lưu file đính kèm ra đĩa worker: entryId + attachmentKey + saveDirectory.',
+			'Lưu file đính kèm ra đĩa worker: entryId + attachmentKey + saveDirectory. overwrite=true (mặc định) ghi đè; false → ten_2.ext …',
 		action: 'Save attachment',
 		params: 'saveAttachment',
 	},
@@ -161,7 +161,7 @@ export const OUTLOOK_COMMAND_DEFINITIONS: OutlookCommandDefinition[] = [
 		function: 'SaveAllAttachments',
 		displayName: 'Save All Attachments',
 		description:
-			'Lưu tất cả đính kèm của mail ra saveDirectory. skipEmbedded=true (mặc định) bỏ ảnh OLE/signature inline. Trả SavedFiles[], SavedCount.',
+			'Lưu tất cả đính kèm ra saveDirectory. skipEmbedded=true bỏ ảnh inline. overwrite=true ghi đè; false → ten_2.ext …. Trả SavedFiles[], SavedCount.',
 		action: 'Save all attachments',
 		params: 'saveAllAttachments',
 	},

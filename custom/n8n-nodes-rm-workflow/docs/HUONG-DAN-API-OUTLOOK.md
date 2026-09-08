@@ -53,7 +53,7 @@ Content-Type: application/json
 | `profileName` | null | Tên **profile MAPI** (thường để trống). Không điền chữ "Outlook" trừ khi đó đúng tên profile trên Control Panel → Mail |
 | `idleTimeoutMinutes` | 5 | Tự disconnect khi idle |
 
-Mỗi lần **connect** sẽ **đóng mọi session Outlook HTTP** còn sót trên worker (`pre-connect cleanup`) rồi mới tạo session mới — giống web-auto.
+Mỗi lần **connect** sẽ **đóng mọi session Outlook HTTP** còn sót (kể cả cùng `sessionId`) rồi tạo session mới — Dispose đóng các **Inspector/form email** còn mở; không `Quit` Outlook nếu chỉ attach.
 
 Disconnect **không** `Quit` Outlook nếu session chỉ attach vào instance user đang dùng.
 
@@ -98,8 +98,8 @@ Response: `{ "Success": true, "Message": "OK", "Result": { ... } }`.
 | `MarkAsRead` | `entryId`, `isRead` |
 | `MoveMail` | `entryId`, `destinationFolderPath` |
 | `DeleteMail` | `entryId`, `permanent` |
-| `SaveAttachment` | `entryId`, `attachmentKey` (index 1-based hoặc tên file), `saveDirectory` |
-| `SaveAllAttachments` | `entryId`, `saveDirectory`, `skipEmbedded` (mặc định `true` — bỏ ảnh OLE / signature inline). Trả `SavedFiles[]`, `SavedCount` |
+| `SaveAttachment` | `entryId`, `attachmentKey` (index 1-based hoặc tên file), `saveDirectory`, `overwrite` |
+| `SaveAllAttachments` | `entryId`, `saveDirectory`, `skipEmbedded`, `overwrite`. Trả `SavedFiles[]`, `SavedCount` |
 | `SearchMails` | `filterOrSubject`, `folderPath`, `maxCount` |
 | `GetSelectedMail` | Mail đang chọn trên Explorer |
 | `OpenFolder` | Đặt `CurrentFolder` trên Explorer |
@@ -114,6 +114,107 @@ Response: `{ "Success": true, "Message": "OK", "Result": { ... } }`.
 ### Thư mục quen thuộc
 
 `Inbox`, `Sent` / `Sent Items`, `Drafts`, `Deleted` / `Deleted Items`, `Outbox`, `Junk` — hoặc đường dẫn `Inbox/SubFolder`.
+
+### Lưu attachment — `overwrite`
+
+Áp dụng cho cả **`SaveAttachment`** và **`SaveAllAttachments`**. Quyết định khi trên đĩa worker **đã có file cùng tên** trong `saveDirectory`.
+
+| `overwrite` | Mặc định | Hành vi |
+|-------------|----------|---------|
+| `true` | **Có** | Ghi đè file cùng tên (cập nhật bản mới từ mail) |
+| `false` | — | **Không** ghi đè: giữ file cũ, lưu bản mới thành `ten_2.ext`, `ten_3.ext`, … |
+
+### Ví dụ `SaveAttachment` (một file)
+
+| Param | Bắt buộc | Mặc định | Mô tả |
+|-------|----------|----------|--------|
+| `entryId` | Có | — | Mail chứa đính kèm |
+| `attachmentKey` | Có | — | Index **1-based** hoặc **tên file** |
+| `saveDirectory` | Có | — | Thư mục trên **máy worker** |
+| `overwrite` | Không | `true` | Ghi đè / đổi tên khi trùng |
+
+Ghi đè (mặc định):
+
+```json
+{
+  "sessionId": "...",
+  "function": "SaveAttachment",
+  "paramObject": {
+    "entryId": "...",
+    "attachmentKey": "1",
+    "saveDirectory": "D:\\Data\\OutlookAttachments",
+    "overwrite": "true"
+  }
+}
+```
+
+Không ghi đè — nếu `bao-cao.xlsx` đã tồn tại → lưu `bao-cao_2.xlsx`:
+
+```json
+{
+  "sessionId": "...",
+  "function": "SaveAttachment",
+  "paramObject": {
+    "entryId": "...",
+    "attachmentKey": "bao-cao.xlsx",
+    "saveDirectory": "D:\\Data\\OutlookAttachments",
+    "overwrite": "false"
+  }
+}
+```
+
+### Ví dụ `SaveAllAttachments` (tất cả file)
+
+| Param | Bắt buộc | Mặc định | Mô tả |
+|-------|----------|----------|--------|
+| `entryId` | Có | — | Mail nguồn |
+| `saveDirectory` | Có | — | Thư mục đích trên worker |
+| `skipEmbedded` | Không | `true` | `true` = bỏ ảnh OLE / chữ ký inline |
+| `overwrite` | Không | `true` | Giống bảng trên |
+
+```json
+{
+  "sessionId": "...",
+  "function": "SaveAllAttachments",
+  "paramObject": {
+    "entryId": "<EntryId từ ListMails/ReadMail>",
+    "saveDirectory": "D:\\temp\\outlook-att",
+    "skipEmbedded": "true",
+    "overwrite": "true"
+  }
+}
+```
+
+Giữ file cũ, thêm bản mới với hậu tố `_2`, `_3`, …:
+
+```json
+{
+  "sessionId": "...",
+  "function": "SaveAllAttachments",
+  "paramObject": {
+    "entryId": "...",
+    "saveDirectory": "D:\\temp\\outlook-att",
+    "skipEmbedded": "true",
+    "overwrite": "false"
+  }
+}
+```
+
+`Result` điển hình:
+
+```json
+{
+  "Success": true,
+  "Message": "OK",
+  "SavedCount": 2,
+  "SavedFiles": [
+    "D:\\temp\\outlook-att\\a.pdf",
+    "D:\\temp\\outlook-att\\b.xlsx"
+  ]
+}
+```
+
+Với `overwrite: false` và file đã tồn tại, path trong `SavedFiles` sẽ là bản `_2` / `_3` thực tế đã ghi.
 
 ### Ví dụ gửi mail
 
@@ -130,66 +231,6 @@ Response: `{ "Success": true, "Message": "OK", "Result": { ... } }`.
   }
 }
 ```
-
-### Lưu một attachment (`SaveAttachment`)
-
-| Param | Bắt buộc | Mặc định | Mô tả |
-|-------|----------|----------|--------|
-| `entryId` | Có | — | Mail chứa file đính kèm |
-| `attachmentKey` | Có | — | Index **1-based** hoặc **tên file** |
-| `saveDirectory` | Có | — | Thư mục trên **máy worker** |
-
-```json
-{
-  "sessionId": "...",
-  "function": "SaveAttachment",
-  "paramObject": {
-    "entryId": "...",
-    "attachmentKey": "1",
-    "saveDirectory": "D:\\Data\\OutlookAttachments"
-  }
-}
-```
-
-Hoặc theo tên file: `"attachmentKey": "bao-cao.xlsx"`.
-
-### Lưu tất cả attachment (`SaveAllAttachments`)
-
-Lưu **mọi** file đính kèm của một mail ra `saveDirectory` trên worker.
-
-| Param | Bắt buộc | Mặc định | Mô tả |
-|-------|----------|----------|--------|
-| `entryId` | Có | — | Mail nguồn |
-| `saveDirectory` | Có | — | Thư mục đích trên **máy worker** (tạo nếu thiếu tùy bản worker) |
-| `skipEmbedded` | Không | `true` | `true` = bỏ ảnh OLE / chữ ký inline; `false` = lưu cả file nhúng |
-
-```json
-{
-  "sessionId": "...",
-  "function": "SaveAllAttachments",
-  "paramObject": {
-    "entryId": "...",
-    "saveDirectory": "D:\\Data\\OutlookAttachments\\mail-001",
-    "skipEmbedded": "true"
-  }
-}
-```
-
-`Result` điển hình:
-
-```json
-{
-  "Success": true,
-  "Message": "OK",
-  "SavedCount": 2,
-  "SavedFiles": [
-    "D:\\Data\\OutlookAttachments\\mail-001\\a.pdf",
-    "D:\\Data\\OutlookAttachments\\mail-001\\b.xlsx"
-  ]
-}
-```
-
-Không có attachment (hoặc toàn bộ bị skip vì embedded): `SavedCount: 0`, `SavedFiles: []`.
 
 ### Ví dụ phím tắt (Ctrl+N → đợi → Enter)
 
@@ -264,7 +305,7 @@ Chỉ Enter:
 
 1. `POST /outlook-auto/connect` → giữ `sessionId`
 2. `ListMails` / `SearchMails` → lấy `entryId`
-3. `ReadMail` / `ReplyMail` / `MoveMail` / `SaveAllAttachments` / …
+3. `ReadMail` / `ReplyMail` / `MoveMail` / …
 4. `POST /outlook-auto/disconnect` khi xong
 
 Gateway: cùng path trên `http://<gateway-host>:8080/...` (proxy tới worker).

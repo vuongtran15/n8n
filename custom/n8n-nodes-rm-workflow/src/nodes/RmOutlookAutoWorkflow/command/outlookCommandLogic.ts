@@ -194,7 +194,12 @@ function buildParamObject(
 			if (!attachmentKey) throw new Error('Thiếu attachmentKey');
 			const saveDirectory = s('saveDirectory').trim();
 			if (!saveDirectory) throw new Error('Thiếu saveDirectory');
-			return { entryId, attachmentKey, saveDirectory };
+			return {
+				entryId,
+				attachmentKey,
+				saveDirectory,
+				overwrite: boolStr(b('overwrite', true)),
+			};
 		}
 		case 'saveAllAttachments': {
 			const entryId = s('entryId').trim();
@@ -205,6 +210,7 @@ function buildParamObject(
 				entryId,
 				saveDirectory,
 				skipEmbedded: boolStr(b('skipEmbedded', true)),
+				overwrite: boolStr(b('overwrite', true)),
 			};
 		}
 		case 'closeInspector': {

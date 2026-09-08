@@ -104,12 +104,12 @@
 				},
 				"saveAttachment": {
 					"displayName": "Lưu đính kèm",
-					"description": "Lưu file đính kèm ra đĩa worker: entryId + attachmentKey + saveDirectory.",
+					"description": "Lưu một file đính kèm: entryId + attachmentKey + saveDirectory. overwrite=true ghi đè; false → ten_2.ext …",
 					"action": "Lưu đính kèm"
 				},
 				"saveAllAttachments": {
 					"displayName": "Lưu tất cả đính kèm",
-					"description": "Lưu tất cả đính kèm của mail ra saveDirectory. skipEmbedded=true (mặc định) bỏ ảnh OLE/chữ ký inline. Trả SavedFiles[], SavedCount.",
+					"description": "Lưu tất cả đính kèm. skipEmbedded bỏ ảnh inline. overwrite=true ghi đè; false → ten_2.ext …. Trả SavedFiles[], SavedCount.",
 					"action": "Lưu tất cả đính kèm"
 				},
 				"activateOutlook": {
@@ -263,6 +263,10 @@
 			"displayName": "Thư mục lưu",
 			"description": "Thư mục lưu trên máy worker (Save Attachment / Save All Attachments).",
 			"placeholder": "C:\\temp\\attachments"
+		},
+		"overwrite": {
+			"displayName": "Ghi đè file",
+			"description": "true = ghi đè file cùng tên. false = giữ file cũ, lưu bản mới thành ten_2.ext, ten_3.ext, …"
 		},
 		"skipEmbedded": {
 			"displayName": "Bỏ file nhúng",

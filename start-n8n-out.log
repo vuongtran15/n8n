@@ -13,12 +13,12 @@ There are deprecations related to your n8n setup. Please take the recommended ac
  - N8N_COMPRESSION_NODE_MAX_ZIP_ENTRIES -> The default for this variable will be reduced from 5000 to 1000 in a future version. Set it explicitly to keep your current limit.
  - Running n8n outside a container is deprecated. Future versions will require running n8n via the official Docker image. See https://docs.n8n.io/deploy/host-n8n/install-options/install-with-docker
 
-[license SDK] cert state: expiresAt=2026-09-17T08:42:31.938Z terminatesAt=2051-08-28T08:37:39.149Z issuedAt=2026-09-07T08:42:31.978Z msToExpiry=788464954 msToTermination=787978572165 isValid=true isRenewalDue=false detachedEntitlementsCount=0 entitlements=1 enabledFeatures=6
+[license SDK] cert state: expiresAt=2026-09-17T08:42:31.938Z terminatesAt=2051-08-28T08:37:39.149Z issuedAt=2026-09-07T08:42:31.978Z msToExpiry=787356116 msToTermination=787977463327 isValid=true isRenewalDue=false detachedEntitlementsCount=0 entitlements=1 enabledFeatures=6
 [license SDK] Skipping renewal on init: license cert is not due for renewal
 Instance registered
 Discovered 4 cluster checks
-Cluster check warning Detected 2 instances claiming leader role: 3f94ffbe-e17b-4290-bc18-c7a96d598134, 9d2550ae-0b0e-43f7-81f2-219b38aa2043
-Registered runner "JS Task Runner" (eKNnTqyRh0Lw7woEocF8m) 
+Cluster check warning Detected 2 instances claiming leader role: 3f94ffbe-e17b-4290-bc18-c7a96d598134, 68882489-ac2c-4d9b-bfde-237ad9454c69
+Registered runner "JS Task Runner" (9srXY2yU_Fhq0vJ3iTTac) 
 McpRegistryNodeLoader: failed to resolve base node "mcpRegistryClientTool"
 Sandbox: enabled=false provider=n8n-sandbox (from env)
 Version: 2.37.0
@@ -29,43 +29,3 @@ Activated workflow "My workflow 2" (ID: 1YeXpNlurSb4XanN)
 
 Editor is now accessible via:
 https://ros.reginamiracle.com:201
-Error
-Error
-    at outlookAutoPost (D:\CODE\N8N\n8n\custom\n8n-nodes-rm-workflow\dist\nodes\RmOutlookAutoWorkflow\shared\outlookAutoRequest.js:65:19)
-    at processTicksAndRejections (node:internal/process/task_queues:104:5)
-    at ExecuteContext.execute (D:\CODE\N8N\n8n\custom\n8n-nodes-rm-workflow\dist\nodes\RmOutlookAutoWorkflow\RmOutlookAutoWorkflow.node.js:92:33)
-    at WorkflowExecute.executeNode (D:\CODE\N8N\n8n\packages\core\src\execution-engine\workflow-execute.ts:1091:8)
-    at WorkflowExecute.runNode (D:\CODE\N8N\n8n\packages\core\src\execution-engine\workflow-execute.ts:1391:11)
-    at D:\CODE\N8N\n8n\packages\core\src\execution-engine\workflow-execute.ts:1871:27
-    at D:\CODE\N8N\n8n\packages\core\src\execution-engine\workflow-execute.ts:2565:11
-
-Cannot read properties of null (reading 'Mails') [line 2]
-Cannot read properties of null (reading 'Mails') [line 2]
-TypeError: Cannot read properties of null (reading 'Mails')
-    at VmCodeWrapper (evalmachine.<anonymous>:2:34)
-    at evalmachine.<anonymous>:3:2
-    at Script.runInContext (node:vm:149:12)
-    at runInContext (node:vm:301:6)
-    at result (D:\CODE\N8N\n8n\packages\@n8n\task-runner\dist\js-task-runner\js-task-runner.js:209:61)
-    at new Promise (<anonymous>)
-    at JsTaskRunner.runForAllItems (D:\CODE\N8N\n8n\packages\@n8n\task-runner\dist\js-task-runner\js-task-runner.js:202:34)
-    at JsTaskRunner.executeTask (D:\CODE\N8N\n8n\packages\@n8n\task-runner\dist\js-task-runner\js-task-runner.js:137:26)
-    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
-    at async Object.waitingForSettings (D:\CODE\N8N\n8n\packages\@n8n\task-runner\dist\task-runner.js:283:17)
-
-Cleaned up stale registry members
-Cannot read properties of null (reading 'Mails') [line 2]
-Cannot read properties of null (reading 'Mails') [line 2]
-TypeError: Cannot read properties of null (reading 'Mails')
-    at VmCodeWrapper (evalmachine.<anonymous>:2:34)
-    at evalmachine.<anonymous>:3:2
-    at Script.runInContext (node:vm:149:12)
-    at runInContext (node:vm:301:6)
-    at result (D:\CODE\N8N\n8n\packages\@n8n\task-runner\dist\js-task-runner\js-task-runner.js:209:61)
-    at new Promise (<anonymous>)
-    at JsTaskRunner.runForAllItems (D:\CODE\N8N\n8n\packages\@n8n\task-runner\dist\js-task-runner\js-task-runner.js:202:34)
-    at JsTaskRunner.executeTask (D:\CODE\N8N\n8n\packages\@n8n\task-runner\dist\js-task-runner\js-task-runner.js:137:26)
-    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
-    at async Object.waitingForSettings (D:\CODE\N8N\n8n\packages\@n8n\task-runner\dist\task-runner.js:283:17)
-
-403 Instance AI is disabled
