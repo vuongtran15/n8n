@@ -1,0 +1,42 @@
+{
+	"displayName": "RM FILE AUTO",
+	"description": "Tự động hóa File & Excel (/file-auto)",
+	"properties": {
+		"operation": {
+			"displayName": "Operation",
+			"description": "Connect / Disconnect / File / Excel"
+		},
+		"branchOnSuccess": {
+			"displayName": "Nhánh theo Success",
+			"description": "Bật 2 output Success / Failed"
+		},
+		"rootDirectory": {
+			"displayName": "Thư mục gốc",
+			"description": "Sandbox trên máy worker"
+		},
+		"excelPath": {
+			"displayName": "Đường dẫn Excel",
+			"description": "Path .xlsx trong root"
+		},
+		"excelWriteMode": {
+			"displayName": "Chế độ ghi Excel",
+			"description": "Table / Cells / Range / Style / Batch"
+		},
+		"excelDataSource": {
+			"displayName": "Nguồn dữ liệu",
+			"description": "JSON hoặc Input Items"
+		},
+		"headersJson": {
+			"displayName": "Headers JSON",
+			"description": "Tên cột hoặc map field→header"
+		},
+		"dataJson": {
+			"displayName": "Data JSON",
+			"description": "Dữ liệu bảng / range"
+		},
+		"operationsJson": {
+			"displayName": "Operations JSON",
+			"description": "Batch nhiều sheet/ops"
+		}
+	}
+}

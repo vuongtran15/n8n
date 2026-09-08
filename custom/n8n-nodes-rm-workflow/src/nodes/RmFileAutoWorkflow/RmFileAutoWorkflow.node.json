@@ -1,0 +1,17 @@
+{
+	"node": "CUSTOM.rmFileAutoWorkflow",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["RM Workflow"],
+	"subcategories": {
+		"RM Workflow": ["RM Workflow"]
+	},
+	"alias": ["RMF", "FILE", "RMFILE", "RM FILE AUTO", "Excel", "EPPlus", "xlsx"],
+	"resources": {
+		"primaryDocumentation": [
+			{
+				"url": "docs/HUONG-DAN-API-FILE.md"
+			}
+		]
+	}
+}

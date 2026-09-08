@@ -1,0 +1,42 @@
+{
+	"displayName": "RM FILE AUTO",
+	"description": "文件与 Excel 自动化 (/file-auto)",
+	"properties": {
+		"operation": {
+			"displayName": "操作",
+			"description": "连接 / 断开 / 文件 / Excel"
+		},
+		"branchOnSuccess": {
+			"displayName": "按成功分支",
+			"description": "开启 Success / Failed 双输出"
+		},
+		"rootDirectory": {
+			"displayName": "根目录",
+			"description": "Worker 上的沙箱目录"
+		},
+		"excelPath": {
+			"displayName": "Excel 路径",
+			"description": "root 内的 .xlsx 路径"
+		},
+		"excelWriteMode": {
+			"displayName": "Excel 写入模式",
+			"description": "表格 / 单元格 / 区域 / 样式 / 批量"
+		},
+		"excelDataSource": {
+			"displayName": "数据来源",
+			"description": "JSON 或输入 Items"
+		},
+		"headersJson": {
+			"displayName": "表头 JSON",
+			"description": "列名或字段→表头映射"
+		},
+		"dataJson": {
+			"displayName": "数据 JSON",
+			"description": "表格 / 区域数据"
+		},
+		"operationsJson": {
+			"displayName": "批量操作 JSON",
+			"description": "多 sheet / 多操作"
+		}
+	}
+}

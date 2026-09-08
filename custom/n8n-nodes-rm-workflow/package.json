@@ -20,7 +20,8 @@
       "dist/nodes/RMWorkflow/RMWidget.node.js",
       "dist/nodes/RMWorkflow/RmInit.node.js",
       "dist/nodes/RmSapWorkflow/RmSapWorkflow.node.js",
-      "dist/nodes/RmWebAutoWorkflow/RmWebAutoWorkflow.node.js"
+      "dist/nodes/RmWebAutoWorkflow/RmWebAutoWorkflow.node.js",
+      "dist/nodes/RmFileAutoWorkflow/RmFileAutoWorkflow.node.js"
     ]
   },
   "peerDependencies": {
