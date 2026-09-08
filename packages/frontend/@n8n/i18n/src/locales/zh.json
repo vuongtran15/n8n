@@ -2211,7 +2211,7 @@
 	"rmWorkflow.settings.apiBaseUrl.label": "API 基础 URL",
 	"rmWorkflow.settings.apiBaseUrl.description": "RM portal 基础 URL（不含路径）。例如：http://172.19.137.206:200",
 	"rmWorkflow.settings.apiBaseUrl.placeholder": "http://172.19.137.206:200",
-	"rmWorkflow.settings.apiPathsHint": "分类：/api/portal/workflow/catalogs — 工作流：/api/portal/workflow",
+	"rmWorkflow.settings.apiPathsHint": "分类：/api/portal/workflow/catalogs — 工作流：/api/portal/workflow — Can-use：/api/portal/workflow/can-use",
 	"rmWorkflow.settings.save": "保存",
 	"rmWorkflow.settings.saveSuccess": "已保存 RM Workflow 设置",
 	"rmWorkflow.settings.saveError": "无法保存 RM Workflow 设置",

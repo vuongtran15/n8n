@@ -1,0 +1,13 @@
+{
+	"node": "CUSTOM.rmOutlookAutoWorkflow",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["RM Workflow"],
+	"subcategories": {
+		"RM Workflow": ["RM Workflow"]
+	},
+	"alias": ["RMO", "OUTLOOK", "RMOUTLOOK", "RM OUTLOOK AUTO", "Mail"],
+	"resources": {
+		"primaryDocumentation": []
+	}
+}

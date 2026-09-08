@@ -51,3 +51,12 @@ export type PortalWorkflowListResponse = {
 	tagFacets?: Array<{ tag: string; count: number }>;
 	totalActive?: number;
 };
+
+export type PortalCanUseResponse = {
+	allowed: boolean;
+	workflowId: string;
+	email: string;
+	id?: number;
+	name?: string;
+	message?: string;
+};

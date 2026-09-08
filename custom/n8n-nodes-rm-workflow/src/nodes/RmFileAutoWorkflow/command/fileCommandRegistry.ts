@@ -9,8 +9,12 @@ export type FileCommandParamKind =
 	| 'copyMove'
 	| 'listDirectory'
 	| 'downloadFromUrl'
+	| 'openFile'
 	| 'writeExcel'
-	| 'readExcel';
+	| 'readExcel'
+	| 'deleteExcelSheet'
+	| 'clearExcelRange'
+	| 'deleteExcelEmptyRows';
 
 export interface FileCommandDefinition {
 	operation: string;
@@ -143,6 +147,16 @@ export const FILE_COMMAND_DEFINITIONS: FileCommandDefinition[] = [
 		group: 'copy',
 	},
 	{
+		operation: 'openFile',
+		function: 'OpenFile',
+		displayName: 'Open File',
+		description:
+			'Mở file trên máy worker bằng app mặc định Windows (txt→Notepad, xlsx→Excel…). Tùy chọn applicationPath.',
+		action: 'Open file on worker',
+		params: 'openFile',
+		group: 'util',
+	},
+	{
 		operation: 'exportPathForApi',
 		function: 'ExportPathForApi',
 		displayName: 'Export Path For API',
@@ -189,6 +203,34 @@ export const FILE_COMMAND_DEFINITIONS: FileCommandDefinition[] = [
 			'Đọc sheet .xlsx → Result.Content (JSON string). hasHeader=true → object[]; false → matrix.',
 		action: 'Read Excel workbook',
 		params: 'readExcel',
+		group: 'excel',
+	},
+	{
+		operation: 'deleteExcelSheet',
+		function: 'DeleteExcelSheet',
+		displayName: 'Delete Excel Sheet',
+		description: 'Xóa một sheet (workbook phải còn ≥ 1 sheet). Không xóa file.',
+		action: 'Delete Excel sheet',
+		params: 'deleteExcelSheet',
+		group: 'excel',
+	},
+	{
+		operation: 'clearExcelRange',
+		function: 'ClearExcelRange',
+		displayName: 'Clear Excel Range',
+		description:
+			'Xóa nội dung vùng / used range. range trống hoặc * / used / all = Dimension. clearFormats tùy chọn.',
+		action: 'Clear Excel range',
+		params: 'clearExcelRange',
+		group: 'excel',
+	},
+	{
+		operation: 'deleteExcelEmptyRows',
+		function: 'DeleteExcelEmptyRows',
+		displayName: 'Delete Excel Empty Rows',
+		description: 'Xóa hàng trống trong used range. keepHeaderRow=true giữ hàng đầu.',
+		action: 'Delete empty Excel rows',
+		params: 'deleteExcelEmptyRows',
 		group: 'excel',
 	},
 ];

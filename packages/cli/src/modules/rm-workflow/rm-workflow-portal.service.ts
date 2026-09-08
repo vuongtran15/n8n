@@ -2,11 +2,13 @@ import { Service } from '@n8n/di';
 import { OperationalError } from 'n8n-workflow';
 
 import {
+	RM_WORKFLOW_CAN_USE_PATH,
 	RM_WORKFLOW_CATALOGS_PATH,
 	RM_WORKFLOW_LIST_PATH,
 } from './rm-workflow.constants';
 import { RmWorkflowSettingsService } from './rm-workflow-settings.service';
 import type {
+	PortalCanUseResponse,
 	PortalWorkflowCatalogsResponse,
 	PortalWorkflowListResponse,
 } from './rm-workflow.types';
@@ -36,6 +38,15 @@ export class RmWorkflowPortalService {
 
 		const url = `${this.buildUrl(RM_WORKFLOW_LIST_PATH)}?${params.toString()}`;
 		return await this.getJson<PortalWorkflowListResponse>(url);
+	}
+
+	async canUse(query: { workflowId: string; email: string }): Promise<PortalCanUseResponse> {
+		const params = new URLSearchParams({
+			workflowId: query.workflowId,
+			email: query.email,
+		});
+		const url = `${this.buildUrl(RM_WORKFLOW_CAN_USE_PATH)}?${params.toString()}`;
+		return await this.getJson<PortalCanUseResponse>(url);
 	}
 
 	private buildUrl(path: string): string {

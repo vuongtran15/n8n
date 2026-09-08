@@ -1,0 +1,13 @@
+{
+	"node": "CUSTOM.rmCopyContext",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["RM Workflow"],
+	"subcategories": {
+		"RM Workflow": ["RM Workflow"]
+	},
+	"alias": ["rm", "copy", "context", "pass", "merge", "baseUrl", "sessionId"],
+	"resources": {
+		"primaryDocumentation": []
+	}
+}

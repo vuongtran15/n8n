@@ -16,6 +16,8 @@ export class RmWorkflowModule implements ModuleInterface {
 		const { RmWorkflowSettingsService } = await import('./rm-workflow-settings.service.js');
 		await Container.get(RmWorkflowSettingsService).loadSettings();
 
+		await import('./rm-workflow-portal.service.js');
+		await import('./rm-widget-access.service.js');
 		await import('./rm-workflow.controller.js');
 	}
 

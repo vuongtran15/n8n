@@ -1,0 +1,31 @@
+Initializing n8n process
+McpRegistryNodeLoader: failed to resolve base node "mcpRegistryClientTool"
+Postgres 16 is outside the supported range and receives compatibility support only. Upgrade to Postgres 17 or newer.
+n8n ready on ::, port 201
+Acquiring database migration lock...
+n8n Task Broker ready on 127.0.0.1, port 5679
+Failed to start Python task runner in internal mode. because its virtual environment is missing from this system. Launching a Python runner in internal mode is intended only for debugging and is not recommended for production. Users are encouraged to deploy in external mode. See: https://docs.n8n.io/hosting/configuration/task-runners/#setting-up-external-mode
+
+There are deprecations related to your n8n setup. Please take the recommended actions to update your configuration:
+ - OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS -> Running manual executions in the main instance in scaling mode is deprecated. Manual executions will be routed to workers in a future version. Please set `OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true` to offload manual executions to workers and avoid potential issues in the future. Consider increasing memory available to workers and reducing memory available to main.
+ - N8N_RUNNERS_TASK_TIMEOUT -> The default for this variable will be reduced from 300 (5 minutes) to 60 (1 minute) in a future version. Set it explicitly to keep your current task timeout.
+ - N8N_COMPRESSION_NODE_MAX_DECOMPRESSED_SIZE_BYTES -> The default for this variable will be reduced from 2 GiB to 256 MiB in a future version. Set it explicitly to keep your current limit.
+ - N8N_COMPRESSION_NODE_MAX_ZIP_ENTRIES -> The default for this variable will be reduced from 5000 to 1000 in a future version. Set it explicitly to keep your current limit.
+ - Running n8n outside a container is deprecated. Future versions will require running n8n via the official Docker image. See https://docs.n8n.io/deploy/host-n8n/install-options/install-with-docker
+
+[license SDK] cert state: expiresAt=2026-09-17T08:42:31.938Z terminatesAt=2051-08-28T08:37:39.149Z issuedAt=2026-09-07T08:42:31.978Z msToExpiry=794254266 msToTermination=787984361477 isValid=true isRenewalDue=false detachedEntitlementsCount=0 entitlements=1 enabledFeatures=6
+[license SDK] Skipping renewal on init: license cert is not due for renewal
+Registered runner "JS Task Runner" (zjF5M66dSRfYoA4rnjJDd) 
+Instance registered
+Discovered 4 cluster checks
+Cluster check warning Detected 2 instances claiming leader role: 811cc091-bd0b-4fad-92ee-9e141abd0a8a, 878f2fcf-2157-42d8-a945-5dcb8ea64d79
+McpRegistryNodeLoader: failed to resolve base node "mcpRegistryClientTool"
+Sandbox: enabled=false provider=n8n-sandbox (from env)
+Version: 2.37.0
+Building workflow dependency index...
+Start Active Workflows:
+Finished building workflow dependency index. Processed 0 draft workflows, 0 published workflows.
+Activated workflow "My workflow 2" (ID: 1YeXpNlurSb4XanN)
+
+Editor is now accessible via:
+https://ros.reginamiracle.com:201

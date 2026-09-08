@@ -2211,7 +2211,7 @@
 	"rmWorkflow.settings.apiBaseUrl.label": "URL gốc API",
 	"rmWorkflow.settings.apiBaseUrl.description": "URL gốc portal RM (không gồm path). Ví dụ: http://172.19.137.206:200",
 	"rmWorkflow.settings.apiBaseUrl.placeholder": "http://172.19.137.206:200",
-	"rmWorkflow.settings.apiPathsHint": "Danh mục: /api/portal/workflow/catalogs — Workflow: /api/portal/workflow",
+	"rmWorkflow.settings.apiPathsHint": "Danh mục: /api/portal/workflow/catalogs — Workflow: /api/portal/workflow — Can-use: /api/portal/workflow/can-use",
 	"rmWorkflow.settings.save": "Lưu",
 	"rmWorkflow.settings.saveSuccess": "Đã lưu cấu hình RM Workflow",
 	"rmWorkflow.settings.saveError": "Không lưu được cấu hình RM Workflow",

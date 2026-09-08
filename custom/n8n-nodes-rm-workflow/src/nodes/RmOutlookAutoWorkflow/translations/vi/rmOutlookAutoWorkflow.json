@@ -1,0 +1,292 @@
+{
+	"header": {
+		"displayName": "RM OUTLOOK AUTO",
+		"description": "Tự động hóa Microsoft Outlook (COM)"
+	},
+	"nodeView": {
+		"operation": {
+			"displayName": "Thao tác",
+			"options": {
+				"connect": {
+					"displayName": "Kết nối",
+					"description": "POST /outlook-auto/connect — gắn / mở Outlook COM với sessionId (GUID)",
+					"action": "Kết nối Outlook"
+				},
+				"disconnect": {
+					"displayName": "Ngắt kết nối",
+					"description": "POST /outlook-auto/disconnect — gỡ session API (không Quit Outlook nếu attach)",
+					"action": "Ngắt kết nối session"
+				},
+				"sessionCheck": {
+					"displayName": "Kiểm tra session",
+					"description": "POST /outlook-auto/session/check — kiểm tra session còn active",
+					"action": "Kiểm tra session"
+				},
+				"functionList": {
+					"displayName": "Danh sách hàm",
+					"description": "GET /outlook-auto/function/list — liệt kê hàm runtime (không bắt buộc api-key)",
+					"action": "Liệt kê hàm Outlook"
+				},
+				"killAllSessions": {
+					"displayName": "Kill tất cả session",
+					"description": "POST /outlook-auto/session/kill-all — đóng hết session Outlook API. Không cần sessionId.",
+					"action": "Kill tất cả session Outlook"
+				},
+				"getSessionInfo": {
+					"displayName": "Thông tin session",
+					"description": "Lấy thông tin session Outlook: profile, CurrentUser, store. Không cần param.",
+					"action": "Lấy thông tin session"
+				},
+				"listFolders": {
+					"displayName": "Liệt kê thư mục",
+					"description": "Liệt kê thư mục con. folderPath tùy chọn (mặc định Inbox).",
+					"action": "Liệt kê thư mục"
+				},
+				"openFolder": {
+					"displayName": "Mở thư mục",
+					"description": "Đặt CurrentFolder trên Explorer. folderPath bắt buộc.",
+					"action": "Mở thư mục"
+				},
+				"listMails": {
+					"displayName": "Liệt kê mail",
+					"description": "Liệt kê mail trong folder. Tham số: folderPath, maxCount, unreadOnly, subjectContains.",
+					"action": "Liệt kê mail"
+				},
+				"searchMails": {
+					"displayName": "Tìm mail",
+					"description": "Tìm mail theo filterOrSubject (bắt buộc). Tùy chọn folderPath, maxCount.",
+					"action": "Tìm mail"
+				},
+				"readMail": {
+					"displayName": "Đọc mail",
+					"description": "Đọc subject/body/html/attachments theo entryId (bắt buộc).",
+					"action": "Đọc mail"
+				},
+				"displayMail": {
+					"displayName": "Hiển thị mail",
+					"description": "Mở Inspector xem mail theo entryId.",
+					"action": "Hiển thị mail"
+				},
+				"getSelectedMail": {
+					"displayName": "Mail đang chọn",
+					"description": "Lấy mail đang chọn trên Explorer. Không cần param.",
+					"action": "Lấy mail đang chọn"
+				},
+				"sendMail": {
+					"displayName": "Gửi mail",
+					"description": "Tạo & gửi mail. to bắt buộc; subject, body, htmlBody, cc, bcc, attachmentPaths tùy chọn. Bật Send Immediately để gửi ngay.",
+					"action": "Gửi mail"
+				},
+				"replyMail": {
+					"displayName": "Trả lời mail",
+					"description": "Trả lời mail theo entryId. body tùy chọn; replyAll, sendImmediately.",
+					"action": "Trả lời mail"
+				},
+				"forwardMail": {
+					"displayName": "Chuyển tiếp mail",
+					"description": "Chuyển tiếp mail: entryId + to bắt buộc; body, sendImmediately tùy chọn.",
+					"action": "Chuyển tiếp mail"
+				},
+				"markAsRead": {
+					"displayName": "Đánh dấu đã đọc",
+					"description": "Đánh dấu đã đọc / chưa đọc theo entryId + isRead.",
+					"action": "Đánh dấu đã đọc"
+				},
+				"moveMail": {
+					"displayName": "Di chuyển mail",
+					"description": "Chuyển mail: entryId + destinationFolderPath bắt buộc.",
+					"action": "Di chuyển mail"
+				},
+				"deleteMail": {
+					"displayName": "Xóa mail",
+					"description": "Xóa mail theo entryId. permanent=true xóa vĩnh viễn.",
+					"action": "Xóa mail"
+				},
+				"saveAttachment": {
+					"displayName": "Lưu đính kèm",
+					"description": "Lưu file đính kèm ra đĩa worker: entryId + attachmentKey + saveDirectory.",
+					"action": "Lưu đính kèm"
+				},
+				"activateOutlook": {
+					"displayName": "Kích hoạt Outlook",
+					"description": "Đưa cửa sổ Outlook lên trước. Không cần param.",
+					"action": "Kích hoạt Outlook"
+				},
+				"closeInspector": {
+					"displayName": "Đóng Inspector",
+					"description": "Đóng cửa sổ email. entryId tùy chọn; saveOption: discard / save / prompt.",
+					"action": "Đóng Inspector"
+				},
+				"closeAllInspectors": {
+					"displayName": "Đóng mọi Inspector",
+					"description": "Đóng mọi Inspector. saveOption: discard / save / prompt.",
+					"action": "Đóng mọi Inspector"
+				},
+				"sendKeys": {
+					"displayName": "Gửi phím",
+					"description": "Gửi một chuỗi SendKeys (keys bắt buộc). activateFirst tùy chọn.",
+					"action": "Gửi phím"
+				},
+				"sendKeySequence": {
+					"displayName": "Chuỗi phím",
+					"description": "Chuỗi bước cách || + {'{'}WAIT:ms{'}'}. sequence bắt buộc; activateFirst tùy chọn.",
+					"action": "Gửi chuỗi phím"
+				}
+			}
+		},
+		"branchOnSuccess": {
+			"displayName": "Phân nhánh khi thành công",
+			"description": "Khi bật: node có 2 output — Success (response.Success === true) và Failed (còn lại). Khi tắt: một output."
+		},
+		"branchOnSuccessInfo": {
+			"displayName": "Phân nhánh thành công",
+			"description": "Output Success: item có Success = true. Output Failed: Success = false, thiếu field Success, hoặc lỗi khi bật Continue On Fail."
+		},
+		"connectionFieldsSourceInfo": {
+			"displayName": "Nguồn trường kết nối",
+			"description": "Bắt buộc từ JSON input item: baseUrl, apiKey. sessionId bắt buộc trừ Kill All và Function List. Tùy chọn: requestTimeoutSeconds (mặc định 600), logUrl."
+		},
+		"attachExisting": {
+			"displayName": "Gắn instance có sẵn",
+			"description": "Gắn Outlook đang chạy; nếu không có thì tạo process mới. Mặc định true."
+		},
+		"visible": {
+			"displayName": "Hiện cửa sổ",
+			"description": "true = hiện cửa sổ Outlook trên máy worker."
+		},
+		"profileName": {
+			"displayName": "Tên profile",
+			"description": "Profile MAPI tùy chọn (hiếm khi cần). Để trống = không gửi.",
+			"placeholder": "Outlook"
+		},
+		"idleTimeoutMinutes": {
+			"displayName": "Timeout nhàn rỗi (phút)",
+			"description": "Phút không có request thì tự disconnect. Để trống = server mặc định 5 phút.",
+			"placeholder": "Để trống = server mặc định 5 phút"
+		},
+		"killAllReason": {
+			"displayName": "Lý do",
+			"description": "Ghi chú tùy chọn gửi trong body (reason) khi đóng hết session Outlook.",
+			"placeholder": "cleanup"
+		},
+		"commandParamsSourceInfo": {
+			"displayName": "Nguồn tham số lệnh",
+			"description": "Tham số command có thể lấy từ JSON input item (ưu tiên hơn form). Ví dụ: entryId, folderPath, to, subject, body, …"
+		},
+		"folderPath": {
+			"displayName": "Đường dẫn thư mục",
+			"description": "Đường dẫn thư mục Outlook (Inbox, Sent Items, …).",
+			"placeholder": "Inbox, Sent, Inbox/SubFolder"
+		},
+		"maxCount": {
+			"displayName": "Số lượng tối đa",
+			"description": "Số mail tối đa trả về (List / Search). Để trống = server mặc định.",
+			"placeholder": "20"
+		},
+		"unreadOnly": {
+			"displayName": "Chỉ chưa đọc",
+			"description": "true = chỉ liệt kê mail chưa đọc (List Mails)."
+		},
+		"subjectContains": {
+			"displayName": "Subject chứa",
+			"description": "Lọc subject chứa chuỗi (List Mails)."
+		},
+		"filterOrSubject": {
+			"displayName": "Filter / Subject",
+			"description": "Filter hoặc subject tìm kiếm (Search Mails) — bắt buộc."
+		},
+		"entryId": {
+			"displayName": "Entry ID",
+			"description": "EntryID mail Outlook (Read, Reply, Move, Delete, …)."
+		},
+		"to": {
+			"displayName": "Đến",
+			"description": "Người nhận (Send Mail, Forward Mail).",
+			"placeholder": "user{'@'}example.com"
+		},
+		"subject": {
+			"displayName": "Tiêu đề",
+			"description": "Tiêu đề mail (Send Mail)."
+		},
+		"body": {
+			"displayName": "Nội dung",
+			"description": "Nội dung text (Send / Reply / Forward)."
+		},
+		"htmlBody": {
+			"displayName": "Nội dung HTML",
+			"description": "Nội dung HTML (Send Mail)."
+		},
+		"cc": {
+			"displayName": "CC",
+			"description": "CC (Send Mail)."
+		},
+		"bcc": {
+			"displayName": "BCC",
+			"description": "BCC (Send Mail)."
+		},
+		"attachmentPaths": {
+			"displayName": "Đường dẫn đính kèm",
+			"description": "Đường dẫn file trên máy worker, nối bằng ; hoặc | (Send Mail).",
+			"placeholder": "C:\\temp\\a.pdf;C:\\temp\\b.xlsx"
+		},
+		"replyAll": {
+			"displayName": "Trả lời tất cả",
+			"description": "true = Reply All (Reply Mail)."
+		},
+		"sendImmediately": {
+			"displayName": "Gửi ngay",
+			"description": "true = gửi mail ngay (Sent=true). false = chỉ mở draft, không gửi (Sent=false). Áp dụng Send / Reply / Forward."
+		},
+		"isRead": {
+			"displayName": "Đã đọc",
+			"description": "true = đánh dấu đã đọc; false = chưa đọc (Mark As Read)."
+		},
+		"destinationFolderPath": {
+			"displayName": "Thư mục đích",
+			"description": "Thư mục đích khi Move Mail.",
+			"placeholder": "Inbox/Archive"
+		},
+		"permanent": {
+			"displayName": "Xóa vĩnh viễn",
+			"description": "true = xóa vĩnh viễn (Delete Mail)."
+		},
+		"attachmentKey": {
+			"displayName": "Khóa đính kèm",
+			"description": "Tên file hoặc index đính kèm (Save Attachment)."
+		},
+		"saveDirectory": {
+			"displayName": "Thư mục lưu",
+			"description": "Thư mục lưu trên máy worker (Save Attachment).",
+			"placeholder": "C:\\temp\\attachments"
+		},
+		"saveOption": {
+			"displayName": "Tùy chọn lưu",
+			"description": "Cách xử lý khi đóng Inspector: discard / save / prompt.",
+			"options": {
+				"discard": {
+					"displayName": "Hủy"
+				},
+				"save": {
+					"displayName": "Lưu"
+				},
+				"prompt": {
+					"displayName": "Hỏi"
+				}
+			}
+		},
+		"keys": {
+			"displayName": "Phím",
+			"description": "Chuỗi SendKeys (Send Keys).",
+			"placeholder": "%{'{'}F4{'}'}"
+		},
+		"sequence": {
+			"displayName": "Chuỗi bước",
+			"description": "Chuỗi bước cách || + {'{'}WAIT:ms{'}'} (Send Key Sequence).",
+			"placeholder": "^{'{'}a{'}'}||{'{'}WAIT:500{'}'}||^{'{'}c{'}'}"
+		},
+		"activateFirst": {
+			"displayName": "Kích hoạt trước",
+			"description": "true = ActivateOutlook trước khi gửi phím."
+		}
+	}
+}

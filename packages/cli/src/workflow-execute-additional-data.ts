@@ -573,6 +573,20 @@ async function startExecution(
 		} else {
 			await Container.get(CredentialsPermissionChecker).check(workflowData.id, workflowData.nodes);
 		}
+
+		// RM Widget only: own sub-workflows pass; cross-owner calls need portal can-use.
+		if (workflowData.id && options.parentWorkflowId) {
+			const { RmWidgetAccessService } = await import(
+				'@/modules/rm-workflow/rm-widget-access.service.js'
+			);
+			await Container.get(RmWidgetAccessService).assertCanUse({
+				node: options.node,
+				targetWorkflowId: workflowData.id,
+				parentWorkflowId: options.parentWorkflowId,
+				userId: additionalData.userId,
+			});
+		}
+
 		await Container.get(SubworkflowPolicyChecker).check(
 			workflow,
 			options.parentWorkflowId,

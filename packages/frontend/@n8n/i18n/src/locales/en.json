@@ -2205,7 +2205,7 @@
 	"rmWorkflow.settings.apiBaseUrl.label": "API base URL",
 	"rmWorkflow.settings.apiBaseUrl.description": "Base URL of the RM portal (without path). Example: http://172.19.137.206:200",
 	"rmWorkflow.settings.apiBaseUrl.placeholder": "http://172.19.137.206:200",
-	"rmWorkflow.settings.apiPathsHint": "Catalogs: /api/portal/workflow/catalogs — Workflows: /api/portal/workflow",
+	"rmWorkflow.settings.apiPathsHint": "Catalogs: /api/portal/workflow/catalogs — Workflows: /api/portal/workflow — Can-use: /api/portal/workflow/can-use",
 	"rmWorkflow.settings.save": "Save",
 	"rmWorkflow.settings.saveSuccess": "RM Workflow settings saved",
 	"rmWorkflow.settings.saveError": "Could not save RM Workflow settings",

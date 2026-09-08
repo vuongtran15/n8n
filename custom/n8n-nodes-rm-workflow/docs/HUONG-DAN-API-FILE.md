@@ -26,7 +26,7 @@ Tài liệu tham chiếu HTTP **`/file-auto/*`** trên worker **RMIV.WF.CLIENT**
 ### B. Hàm xử lý file
 6. [Tồn tại / thư mục](#6-tồn-tại--thư-mục)
 7. [Đọc / ghi text & bytes](#7-đọc--ghi-text--bytes)
-8. [Xóa / copy / move](#8-xóa--copy--move)
+8. [Xóa / copy / move / mở file](#8-xóa--copy--move)
 9. [ListDirectory](#9-listdirectory)
 10. [ExportPathForApi](#10-exportpathforapi)
 11. [DownloadFromUrl](#11-downloadfromurl)
@@ -41,8 +41,9 @@ Tài liệu tham chiếu HTTP **`/file-auto/*`** trên worker **RMIV.WF.CLIENT**
 18. [type = range](#18-type--range)
 19. [type = style / sheetStyle](#19-type--style--sheetstyle)
 20. [Object style](#20-object-style)
-21. [overwrite](#21-overwrite)
+21. [overwrite — nhiều node ghi cùng 1 file](#21-overwrite--nhiều-node-ghi-cùng-1-file)
 22. [ReadExcel](#22-readexcel)
+22b. [DeleteExcelSheet / ClearExcelRange / DeleteExcelEmptyRows](#22b-deleteexcelsheet--clearexcelrange--deleteexcelemptyrows)
 
 ### D. Vận hành
 23. [Response & lỗi](#23-response--lỗi)
@@ -144,7 +145,7 @@ Cùng `sessionId` không đổi được `rootDirectory` cho đến khi `disconn
 | `byte[]` | **Base64** string |
 | `Encoding` | Tên: `"utf-8"` (rỗng → mặc định API) |
 | `TimeSpan?` | Số **giây** hoặc chuỗi parse được |
-| JSON phức tạp (Excel) | **Stringify** (`dataJson`, `operationsJson`, …) |
+| JSON phức tạp (Excel) | **Stringify** (`dataJson`, `operationsJson`, …) **hoặc** gửi thẳng mảng/object trong `paramObject` (worker tự Serialize) |
 
 ---
 
@@ -165,11 +166,15 @@ Cùng `sessionId` không đổi được `rootDirectory` cho đến khi `disconn
 | `DeleteDirectory` | Xóa | Xóa thư mục (`recursive`) |
 | `CopyFile` | Copy/Move | Copy file |
 | `MoveFile` | Copy/Move | Di chuyển / đổi tên |
+| **`OpenFile`** | Mở xem | Mở file bằng app mặc định Windows (txt/excel/json/word/ppt/…) |
 | `ExportPathForApi` | Export | File → Base64; thư mục → zip Base64 |
 | `DownloadFromUrl` | Network | Tải HTTP(S) vào trong root |
 | `TryResolvePath` | Utility | Resolve path an toàn (thường dùng nội bộ) |
 | **`WriteExcel`** | Excel | Ghi `.xlsx` (table/cells/range/style) |
 | **`ReadExcel`** | Excel | Đọc sheet → JSON |
+| **`DeleteExcelSheet`** | Excel | Xóa một sheet (workbook phải còn ≥ 1 sheet) |
+| **`ClearExcelRange`** | Excel | Xóa nội dung vùng / used range (không xóa sheet) |
+| **`DeleteExcelEmptyRows`** | Excel | Xóa các hàng trống trong used range |
 
 > `DownloadFromUrlAsync` **không** expose qua HTTP — dùng `DownloadFromUrl`.  
 > Property `RootDirectory` không gọi qua command.
@@ -380,6 +385,59 @@ Cùng tham số như `CopyFile`. `overwrite=false` + đích tồn tại → lỗ
 }
 ```
 
+### `OpenFile` — mở file cho người xem (ShellExecute)
+
+Mở file **trên máy chạy worker** bằng ứng dụng mặc định Windows (hoặc exe chỉ định). Không đọc nội dung về API — chỉ “mở cửa sổ” để user xem.
+
+| Param | Mặc định | Mô tả |
+|-------|----------|--------|
+| `relativeOrAbsolutePath` | — | **Có** — path trong root |
+| `applicationPath` | tự chọn | Thường **bỏ trống**. `.json`/`.txt`/`.csv`/… → **notepad.exe**; Excel/Word/PPT → association Windows. Chỉ set khi muốn ép app khác. |
+
+**Đuôi phổ biến**
+
+| Đuôi | Mặc định mở bằng |
+|------|------------------|
+| `.json` `.txt` `.log` `.csv` `.xml` `.md` `.yml` `.yaml` | **notepad.exe** (chỉ cần path) |
+| `.xlsx` `.xls` `.xlsm` | Microsoft Excel (association) |
+| `.docx` `.doc` | Microsoft Word |
+| `.pptx` `.ppt` | Microsoft PowerPoint |
+| `.pdf` | Adobe / Edge / trình PDF mặc định |
+
+```json
+{
+  "function": "OpenFile",
+  "paramObject": {
+    "relativeOrAbsolutePath": "exports\\bao-cao.xlsx"
+  }
+}
+```
+
+JSON — chỉ cần path (tự notepad):
+
+```json
+{
+  "function": "OpenFile",
+  "paramObject": {
+    "relativeOrAbsolutePath": "data\\config.json"
+  }
+}
+```
+
+Ép app khác (tuỳ chọn):
+
+```json
+{
+  "function": "OpenFile",
+  "paramObject": {
+    "relativeOrAbsolutePath": "data\\config.json",
+    "applicationPath": "C:\\Program Files\\Notepad++\\notepad++.exe"
+  }
+}
+```
+
+> File phải nằm trong `rootDirectory` của session. Cửa sổ mở trên **máy worker** (RDP/console của máy đó), không phải máy gọi API từ xa. API trả về ngay — không chờ đóng app.
+
 ---
 
 ## 9) ListDirectory
@@ -510,9 +568,9 @@ Alias: `cell`→`cells`, `sheet-style`→`sheetStyle`. Engine: EPPlus 4.5.3.3 ·
 | `headersJson` | null | Không | Header tùy chỉnh |
 | `cellsJson` | null | Theo type | Map ô |
 | `range` | null | Theo type | `A1` / `A1:C3` |
-| `style` / `styleJson` | null | Không | Style vùng |
-| `headerStyle` | null | Không | Style hàng header |
-| `overwrite` | `true` | Không | [§21](#21-overwrite) |
+| `style` / `styleJson` | null | Theo type | Style object hoặc stringify — **bắt buộc** với `sheetStyle` / `style` |
+| `headerStyle` / `headerStyleJson` | null | Không | Style hàng header (type=table) |
+| `overwrite` | `true` | Không | [§21](#21-overwrite--nhiều-node-ghi-cùng-1-file) — `true` = workbook mới; `false` = mở file có sẵn (nhiều node) |
 | `createParentDirectories` | `true` | Không | Tạo thư mục cha |
 
 Trong `operationsJson`, mỗi phần tử dùng `data`/`headers`/`cells`/`style` (object) **hoặc** `*Json` (string).
@@ -710,11 +768,20 @@ hoặc `"cells": ["E1","E2"]`.
 
 ```json
 {
-  "type": "sheetStyle",
-  "sheetName": "DoanhSo",
-  "style": { "fontName": "Arial", "fontSize": 11 }
+  "function": "WriteExcel",
+  "paramObject": {
+    "relativeOrAbsolutePath": "exports\\bc.xlsx",
+    "type": "sheetStyle",
+    "sheetName": "Sheet1",
+    "styleJson": "{\"fontName\":\"Times New Roman\",\"fontSize\":12}",
+    "overwrite": "false"
+  }
 }
 ```
+
+Hoặc object trong `operationsJson`: `"style": { "fontName": "Times New Roman", "fontSize": 12 }`.
+
+> Tên font phải **đúng tên Windows** (vd `Times New Roman`, không phải `Time News Roman`). Font không tồn tại → Excel dùng font mặc định.
 
 Gọi trước khi ghi data.
 
@@ -813,13 +880,63 @@ Gọi trước khi ghi data.
 ```
 ---
 
-## 21) overwrite
+## 21) overwrite — nhiều node ghi cùng 1 file
+
+`overwrite` (mặc định **`true`**) quyết định **tạo workbook mới hay mở file đã có**. Đây là tham số then chốt khi **nhiều node / nhiều lần `WriteExcel` vào cùng một path**.
+
+### Bảng hành vi
 
 | Tình huống | `overwrite=true` | `overwrite=false` |
 |------------|------------------|-------------------|
-| Một `table` | Workbook mới (ghi đè file) | Lỗi nếu file tồn tại |
-| `operationsJson` | Xóa file cũ → workbook mới → ops | File có → mở cập nhật |
-| `cells` / `range` / `style` | Mở nếu có / tạo nếu không | Giống |
+| `type=table` (một op) | **Xóa file cũ** (nếu có) → workbook mới → ghi table | File **chưa có** → tạo mới. File **đã có** → **mở cập nhật** (giữ sheet khác; ghi/đè vùng table trên `sheetName`) |
+| `operationsJson` | Xóa file cũ → workbook mới → chạy hết ops | Giống cột phải của table: mở file nếu có, rồi áp ops |
+| `type=cells` / `range` / `style` / `sheetStyle` | File có → **mở cập nhật** (không xóa cả file). File chưa có → tạo mới | **Giống** `overwrite=true` — không xóa cả workbook |
+
+> **Lưu ý:** với `cells` / `range` / `style`, cờ `overwrite` **không** xóa toàn bộ file. Chỉ `table` và `operationsJson` mới dùng `overwrite=true` để **làm mới cả workbook**.
+
+### Pattern khuyến nghị — nhiều node → 1 file Excel
+
+Cùng `relativeOrAbsolutePath`, cùng session `file-auto` (hoặc connect lại cùng `rootDirectory`).
+
+| Node | `overwrite` | `type` / ghi chú |
+|------|-------------|------------------|
+| **1 — tạo file** | `true` | `table` (hoặc `operationsJson`) — tạo workbook sạch |
+| **2…N — ghi tiếp** | `false` | `table` sheet khác, hoặc cùng sheet `startCell` khác; hoặc `cells` / `range` / `style` |
+
+**Ví dụ**
+
+```text
+Node A: WriteExcel path=exports\bc.xlsx  type=table  sheetName=DoanhSo   overwrite=true
+Node B: WriteExcel path=exports\bc.xlsx  type=table  sheetName=TonKho    overwrite=false
+Node C: WriteExcel path=exports\bc.xlsx  type=cells  sheetName=DoanhSo   overwrite=false
+        cellsJson={"E1":"Tổng","E2":123}
+```
+
+- Node A tạo file + sheet `DoanhSo`.
+- Node B **không** xóa file → thêm/cập nhật sheet `TonKho`, **giữ** `DoanhSo`.
+- Node C mở file → ghi thêm ô trên `DoanhSo`.
+
+**Sai:** mọi node đều `overwrite=true` + `type=table` → mỗi lần **xóa hết** dữ liệu node trước.
+
+**Một request thay nhiều node:** gom trong `operationsJson` + `overwrite=true` (tạo mới) hoặc `false` (cập nhật file có sẵn) — xem [§15](#15-operationsjson).
+
+### Request mẫu (node tiếp theo)
+
+```json
+{
+  "function": "WriteExcel",
+  "paramObject": {
+    "relativeOrAbsolutePath": "exports\\bc.xlsx",
+    "type": "table",
+    "sheetName": "TonKho",
+    "startCell": "A1",
+    "headersJson": "[\"Mã\",\"SL\"]",
+    "dataJson": "[[\"SP01\",10]]",
+    "overwrite": "false",
+    "createParentDirectories": "true"
+  }
+}
+```
 
 ---
 
@@ -846,6 +963,59 @@ Gọi trước khi ghi data.
 
 ---
 
+## 22b) DeleteExcelSheet / ClearExcelRange / DeleteExcelEmptyRows
+
+### `DeleteExcelSheet` — xóa sheet (không xóa file)
+
+```json
+{
+  "function": "DeleteExcelSheet",
+  "paramObject": {
+    "relativeOrAbsolutePath": "exports\\doanh-so.xlsx",
+    "sheetName": "Sheet2"
+  }
+}
+```
+
+Workbook phải còn ≥ 1 sheet. Không có hàm `CloseOutlook`-style để xóa cả file — dùng `DeleteFile` nếu cần.
+
+### `ClearExcelRange` — xóa nội dung vùng / khoảng trống dùng
+
+```json
+{
+  "function": "ClearExcelRange",
+  "paramObject": {
+    "relativeOrAbsolutePath": "exports\\doanh-so.xlsx",
+    "sheetName": "Sheet1",
+    "range": "A1:C100",
+    "clearFormats": "false"
+  }
+}
+```
+
+| Param | Mặc định | Mô tả |
+|-------|----------|--------|
+| `sheetName` | sheet đầu | Tên sheet |
+| `range` | used range | `A1:C10`, hoặc `*` / `used` / `all` / rỗng = toàn Dimension |
+| `clearFormats` | `false` | `true` = xóa luôn style ô |
+
+### `DeleteExcelEmptyRows` — xóa hàng trống
+
+```json
+{
+  "function": "DeleteExcelEmptyRows",
+  "paramObject": {
+    "relativeOrAbsolutePath": "exports\\doanh-so.xlsx",
+    "sheetName": "Sheet1",
+    "keepHeaderRow": "true"
+  }
+}
+```
+
+Hàng coi là trống nếu mọi ô trong used range null hoặc chỉ khoảng trắng. `keepHeaderRow=true` → không xóa hàng đầu Dimension.
+
+---
+
 ## 23) Response & lỗi
 
 Luôn kiểm tra `Result.Success` khi Result là `FileAccessResponse` / `FileReadResponse` / …
@@ -858,8 +1028,10 @@ Luôn kiểm tra `Result.Success` khi Result là `FileAccessResponse` / `FileRea
 | `function is required` | Thiếu `function` |
 | `Path must end with .xlsx` | Sai đuôi Excel |
 | `dataJson is required for type=table` | Thiếu data |
-| `Destination file already exists` | table + overwrite false |
+| `dataJson must be a JSON array` | dataJson không phải mảng (đã sửa: nested array trong paramObject OK) |
 | `File not found.` | Đọc path không tồn tại |
+| `Worksheet not found` | Sai `sheetName` |
+| `Cannot delete the only worksheet` | `DeleteExcelSheet` khi chỉ còn 1 sheet |
 | `File already exists.` | Download/copy không overwrite |
 | Path ngoài root | Traversal / sai sandbox |
 
@@ -875,6 +1047,15 @@ Luôn kiểm tra `Result.Success` khi Result là `FileAccessResponse` / `FileRea
 | 2 | Code / HTTP | Hàm file và/hoặc `WriteExcel` |
 | 3 | IF | `Result.Success` |
 | 4 | HTTP | `POST /file-auto/disconnect` |
+
+### Nhiều node ghi cùng 1 `.xlsx`
+
+| # | Node WriteExcel | `overwrite` |
+|---|-----------------|-------------|
+| 1 | Tạo file / sheet đầu (`type=table`) | **`true`** |
+| 2…N | Sheet khác hoặc `cells`/`range` cùng path | **`false`** |
+
+Chi tiết hành vi: [§21 overwrite](#21-overwrite--nhiều-node-ghi-cùng-1-file). Không đặt `overwrite=true` trên mọi node table — sẽ xóa dữ liệu node trước.
 
 ### Mapping UI → API
 

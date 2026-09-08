@@ -9,7 +9,13 @@ import {
 import { fileAutoGet, fileAutoPost } from '../shared/fileAutoRequest';
 import { coalesceNumber, valueFromItemJson } from '../shared/fileItemJson';
 import { FILE_COMMAND_FUNCTION, FILE_COMMAND_PARAM_KIND } from './fileCommandRegistry';
-import { buildReadExcelParamObject, buildWriteExcelParamObject } from './fileExcelLogic';
+import {
+	buildClearExcelRangeParamObject,
+	buildDeleteExcelEmptyRowsParamObject,
+	buildDeleteExcelSheetParamObject,
+	buildReadExcelParamObject,
+	buildWriteExcelParamObject,
+} from './fileExcelLogic';
 
 export { FILE_COMMAND_FUNCTION };
 
@@ -180,10 +186,27 @@ function buildParamObject(
 			if (timeoutSec > 0) out.timeout = String(timeoutSec);
 			return out;
 		}
+		case 'openFile': {
+			const out: Record<string, string> = { relativeOrAbsolutePath: requirePath() };
+			const app = preferStr(
+				useInputJsonFields,
+				itemJson,
+				'applicationPath',
+				ctx.getNodeParameter('applicationPath', itemIndex, '') as string,
+			).trim();
+			if (app) out.applicationPath = app;
+			return out;
+		}
 		case 'writeExcel':
 			return buildWriteExcelParamObject(ctx, itemIndex, itemJson, useInputJsonFields);
 		case 'readExcel':
 			return buildReadExcelParamObject(ctx, itemIndex, itemJson, useInputJsonFields);
+		case 'deleteExcelSheet':
+			return buildDeleteExcelSheetParamObject(ctx, itemIndex, itemJson, useInputJsonFields);
+		case 'clearExcelRange':
+			return buildClearExcelRangeParamObject(ctx, itemIndex, itemJson, useInputJsonFields);
+		case 'deleteExcelEmptyRows':
+			return buildDeleteExcelEmptyRowsParamObject(ctx, itemIndex, itemJson, useInputJsonFields);
 		default:
 			return undefined;
 	}
