@@ -208,13 +208,20 @@ export class AuthService {
 	}
 
 	clearCookie(res: Response) {
-		// Must match issueCookie attributes (path/secure/sameSite/httpOnly) or some
-		// browsers keep n8n-auth — logout then removes browserId → endless 401/signout.
+		// Browsers only drop the cookie when clear attributes match how it was set
+		// (path/secure/sameSite/httpOnly). A sticky n8n-auth after logout + browserId
+		// removal causes endless 401 → /signin?sessionExpired=true reloads.
 		const { samesite, secure } = this.globalConfig.auth.cookie;
+		const base = { httpOnly: true, sameSite: samesite, path: '/' as const };
+		res.clearCookie(AUTH_COOKIE_NAME, { ...base, secure });
+		// Cookie may still be bound to the opposite Secure flag after an env change.
+		res.clearCookie(AUTH_COOKIE_NAME, { ...base, secure: !secure });
+		// Embed / iframe sessions mint SameSite=None; Clear-Cookie must match that too.
 		res.clearCookie(AUTH_COOKIE_NAME, {
 			httpOnly: true,
-			sameSite: samesite,
-			secure,
+			sameSite: 'none',
+			secure: true,
+			path: '/',
 		});
 		// The form page auth cookies (`n8n-form-auth-*`) are NOT cleared here: their
 		// names embed the workflow/execution they were minted for, and this response
@@ -259,6 +266,7 @@ export class AuthService {
 		res.cookie(AUTH_COOKIE_NAME, token, {
 			maxAge: this.jwtExpiration * Time.seconds.toMilliseconds,
 			httpOnly: true,
+			path: '/',
 			sameSite: cookieOverrides?.sameSite ?? samesite,
 			secure: cookieOverrides?.secure ?? secure,
 		});

@@ -16,6 +16,7 @@ import { useSSOStore } from '@/features/settings/sso/sso.store';
 
 import type { IFormBoxConfig } from '@/Interface';
 import { MFA_AUTHENTICATION_REQUIRED_ERROR_CODE, VIEWS, MFA_FORM } from '@/app/constants';
+import { INTENTIONAL_LOGOUT_STORAGE_KEY } from '@/app/utils/handleSessionExpired';
 import type { LoginRequestDto } from '@n8n/api-types';
 import { SSO_ERROR_ACCESS_DENIED, SSO_ERROR_QUERY_PARAM } from '@n8n/api-types';
 
@@ -54,6 +55,25 @@ const showAuthViewMessage = (messageData: Parameters<typeof toast.showMessage>[0
 };
 
 onMounted(() => {
+	// Voluntary logout must not look like an expired session (and may race a 401
+	// that briefly added ?sessionExpired=true).
+	let intentionalLogout = false;
+	try {
+		intentionalLogout = sessionStorage.getItem(INTENTIONAL_LOGOUT_STORAGE_KEY) === '1';
+		if (intentionalLogout) {
+			sessionStorage.removeItem(INTENTIONAL_LOGOUT_STORAGE_KEY);
+		}
+	} catch {
+		// sessionStorage may be unavailable
+	}
+	if (intentionalLogout) {
+		if (route.query.sessionExpired === 'true') {
+			const { sessionExpired: _removed, ...rest } = route.query;
+			void router.replace({ query: rest });
+		}
+		return;
+	}
+
 	// An SSO login denied by role mapping ("Block access"): the user authenticated
 	// fine at the IdP, they are simply not allowed in, so say exactly that.
 	if (route.query[SSO_ERROR_QUERY_PARAM] === SSO_ERROR_ACCESS_DENIED) {

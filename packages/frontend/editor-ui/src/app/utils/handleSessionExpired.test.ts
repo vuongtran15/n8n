@@ -31,6 +31,7 @@ describe('handleSessionExpired', () => {
 		setActivePinia(createPinia());
 		ownBackendURL = useRootStore().restApiContext.baseUrl;
 		window.preventNodeViewBeforeUnload = undefined;
+		sessionStorage.clear();
 
 		Object.defineProperty(window, 'location', {
 			value: { href: '' },
@@ -183,6 +184,47 @@ describe('handleSessionExpired', () => {
 
 		expect(logout).toHaveBeenCalledTimes(1);
 		expect(hrefSpy).not.toHaveBeenCalled();
+	});
+
+	it('redirects to sign-in without sessionExpired during intentional logout', async () => {
+		sessionStorage.setItem('n8n-intentional-logout', '1');
+		const logout = vi.fn().mockResolvedValue({ redirectUrl: null });
+		vi.mocked(useUsersStore).mockReturnValue({
+			currentUser: { id: '123' },
+			logout,
+		} as unknown as ReturnType<typeof useUsersStore>);
+		const router = createRouterMock({ fullPath: '/workflow/1' });
+		const hrefSpy = vi.spyOn(window.location, 'href', 'set');
+
+		await handleSessionExpired(router, ownBackendURL);
+
+		expect(logout).toHaveBeenCalledTimes(1);
+		expect(router.resolve).toHaveBeenCalledWith({
+			name: VIEWS.SIGNIN,
+			query: undefined,
+		});
+		expect(hrefSpy).toHaveBeenCalledWith(SIGNIN_HREF);
+		expect(sessionStorage.getItem('n8n-intentional-logout')).toBeNull();
+	});
+
+	it('avoids sessionExpired reload loops within a short window', async () => {
+		sessionStorage.setItem('n8n-session-expired-at', String(Date.now()));
+		const logout = vi.fn().mockResolvedValue({ redirectUrl: null });
+		vi.mocked(useUsersStore).mockReturnValue({
+			currentUser: { id: '123' },
+			logout,
+		} as unknown as ReturnType<typeof useUsersStore>);
+		const router = createRouterMock({ fullPath: '/workflow/1' });
+		const hrefSpy = vi.spyOn(window.location, 'href', 'set');
+
+		await handleSessionExpired(router, ownBackendURL);
+
+		expect(logout).toHaveBeenCalledTimes(1);
+		expect(router.resolve).toHaveBeenCalledWith({
+			name: VIEWS.SIGNIN,
+			query: undefined,
+		});
+		expect(hrefSpy).toHaveBeenCalledWith(SIGNIN_HREF);
 	});
 
 	it('suppresses notifications synchronously, before logout is awaited', () => {

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { VIEWS } from '@/app/constants';
+import { INTENTIONAL_LOGOUT_STORAGE_KEY } from '@/app/utils/handleSessionExpired';
 import { useUsersStore } from '@n8n/stores/users.store';
 import { useSSOStore } from '@/features/settings/sso/sso.store';
 import { useToast } from '@n8n/composables/useToast';
@@ -15,6 +16,14 @@ const i18n = useI18n();
 
 const logout = async () => {
 	try {
+		// Mark before the API call so a concurrent 401 is treated as voluntary logout,
+		// not "session expired".
+		try {
+			sessionStorage.setItem(INTENTIONAL_LOGOUT_STORAGE_KEY, '1');
+		} catch {
+			// sessionStorage may be unavailable
+		}
+
 		// When OIDC is the active authentication method, sign out through the
 		// OIDC logout endpoint so the provider session can be terminated too
 		// (RP-Initiated Logout). The backend verifies that this specific
@@ -27,6 +36,11 @@ const logout = async () => {
 
 		window.location.href = redirectUrl ?? router.resolve({ name: VIEWS.SIGNIN }).href;
 	} catch (e) {
+		try {
+			sessionStorage.removeItem(INTENTIONAL_LOGOUT_STORAGE_KEY);
+		} catch {
+			// ignore
+		}
 		toast.showError(e, i18n.baseText('auth.signout.error'));
 	}
 };

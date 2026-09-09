@@ -273,8 +273,8 @@ export class AuthController {
 		return { inviter: { firstName, lastName } };
 	}
 
-	/** Log out a user */
-	@Post('/logout')
+	/** Log out a user. Unauthenticated so a half-dead cookie still gets cleared. */
+	@Post('/logout', { allowUnauthenticated: true })
 	async logout(req: AuthenticatedRequest, res: Response) {
 		await this.authService.invalidateToken(req);
 		this.authService.clearCookie(res);
