@@ -2,7 +2,7 @@
  * Generate zh/vi translation JSON for RM SAP and RM WEB AUTO nodes
  * from KT-Node dist node descriptions (full property list).
  */
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ACTION_VI, LABEL_VI, OP_NAME_VI } from './rm-locale-maps.mjs';
@@ -503,6 +503,10 @@ function buildNodeView(properties, locale) {
 
 for (const node of NODES) {
 	const sourcePath = join(ktNodeRoot, node.ktFolder, `${node.ktFolder}.node.json`);
+	if (!existsSync(sourcePath)) {
+		console.warn(`Skip ${node.nodeKey}: missing KT-Node source ${sourcePath}`);
+		continue;
+	}
 	const source = JSON.parse(readFileSync(sourcePath, 'utf8'));
 
 	for (const locale of ['zh', 'vi']) {

@@ -148,10 +148,16 @@ watch(
 		nodeTypes: useNodeTypesStore().visibleNodeTypes,
 	}),
 	({ nodeTypes, httpOnlyCredentials }) => {
-		const { actions, mergedNodes } = generateMergedNodesAndActions(nodeTypes, httpOnlyCredentials);
-
-		setActions(actions);
-		setMergeNodes(mergedNodes);
+		try {
+			const { actions, mergedNodes } = generateMergedNodesAndActions(
+				nodeTypes,
+				httpOnlyCredentials,
+			);
+			setActions(actions);
+			setMergeNodes(mergedNodes);
+		} catch (error) {
+			console.error('Failed to generate node creator items', error);
+		}
 	},
 	{ immediate: true },
 );

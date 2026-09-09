@@ -34,6 +34,13 @@ export class RMWidget implements INodeType {
 		defaults: {
 			name: 'RM Widget',
 		},
+		codex: {
+			categories: ['RM Workflow'],
+			subcategories: {
+				'RM Workflow': ['RM Workflow'],
+			},
+			alias: ['RM', 'Widget', 'subworkflow', 'execute workflow', 'call workflow'],
+		},
 		inputs: [NodeConnectionTypes.Main],
 		outputs: [NodeConnectionTypes.Main],
 		properties: [

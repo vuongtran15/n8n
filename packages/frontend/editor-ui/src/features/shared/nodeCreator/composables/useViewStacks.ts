@@ -26,7 +26,7 @@ import {
 } from '@/app/constants';
 import { defineStore } from 'pinia';
 import { v4 as uuid } from 'uuid';
-import { computed, nextTick, ref } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import difference from 'lodash/difference';
 
 import { useNodeCreatorStore } from '@/features/shared/nodeCreator/nodeCreator.store';
@@ -580,6 +580,25 @@ export const useViewStacks = defineStore('nodeCreatorViewStacks', () => {
 
 		updateCurrentViewStack({ baselineItems: stackItems });
 	}
+
+	// Node types often arrive after the panel opens — refresh open subcategory lists
+	watch(
+		() => nodeCreatorStore.mergedNodes.length,
+		(count, previous) => {
+			if (count === 0 || count === previous) return;
+
+			for (const stack of viewStacks.value) {
+				if (stack.searchItems !== undefined) {
+					stack.searchItems = nodeCreatorStore.mergedNodes;
+				}
+			}
+
+			const stack = getLastActiveStack();
+			if (stack?.uuid && !stack.items) {
+				setStackBaselineItems();
+			}
+		},
+	);
 
 	function pushViewStack(
 		stack: ViewStack,

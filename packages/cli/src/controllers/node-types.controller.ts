@@ -12,7 +12,11 @@ function resolveNodeTranslationLocale(req: Request, defaultLocale: string): stri
 	const acceptLanguage = req.headers['accept-language'];
 	if (typeof acceptLanguage === 'string') {
 		const primary = acceptLanguage.split(',')[0]?.trim().split('-')[0]?.toLowerCase();
-		if (primary && primary !== 'en') {
+		// English UI must stay on English node strings — do not fall through to N8N_DEFAULT_LOCALE
+		if (primary === 'en') {
+			return 'en';
+		}
+		if (primary) {
 			return primary;
 		}
 	}

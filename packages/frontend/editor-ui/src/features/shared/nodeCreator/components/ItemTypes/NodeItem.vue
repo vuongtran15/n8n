@@ -13,6 +13,7 @@ import { computed, ref } from 'vue';
 
 import NodeIcon from '@/app/components/NodeIcon.vue';
 import { getNodeIconSize } from '@/app/utils/nodeIcon';
+import { storeToRefs } from 'pinia';
 import { useNodeCreatorStore } from '@/features/shared/nodeCreator/nodeCreator.store';
 import { isCommunityPackageName } from 'n8n-workflow';
 import OfficialIcon from 'virtual:icons/mdi/verified';
@@ -44,7 +45,7 @@ const props = withDefaults(defineProps<Props>(), {
 const i18n = useI18n();
 const telemetry = useTelemetry();
 
-const { actions } = useNodeCreatorStore();
+const { actions } = storeToRefs(useNodeCreatorStore());
 const { getAddedNodesAndConnections } = useActions();
 const { activeViewStack } = useViewStacks();
 const { isSubNodeType } = useNodeType({
@@ -106,7 +107,7 @@ const hasActions = computed(() => {
 });
 
 const nodeActions = computed(() => {
-	return actions[props.nodeType.name] || [];
+	return actions.value[props.nodeType.name] || [];
 });
 
 const nodeListIconSize = computed(() => {

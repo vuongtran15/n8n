@@ -79,13 +79,13 @@ const customNodeActionsParsers: {
 };
 
 function getNodeTypeBase(nodeTypeDescription: INodeTypeDescription, label?: string) {
-	const isTrigger = nodeTypeDescription.group.includes('trigger');
+	const isTrigger = nodeTypeDescription.group?.includes('trigger') ?? false;
 	const category = isTrigger
 		? cachedBaseText('nodeCreator.actionsCategory.triggers')
 		: cachedBaseText('nodeCreator.actionsCategory.actions');
 	return {
 		name: nodeTypeDescription.name,
-		group: nodeTypeDescription.group,
+		group: nodeTypeDescription.group ?? [],
 		codex: {
 			label: label ?? '',
 			categories: [category],
@@ -408,7 +408,7 @@ export function useActionsGenerator() {
 			defaults,
 			description,
 			name,
-			group,
+			group: group ?? [],
 			icon,
 			iconColor,
 			iconUrl,
@@ -441,45 +441,53 @@ export function useActionsGenerator() {
 		const actions: ActionsRecord<typeof mergedNodes> = {};
 		const mergedNodes: SimplifiedNodeType[] = [];
 		visibleNodeTypes
-			.filter((node) => !node.group.includes('trigger'))
+			.filter((node) => !(node.group?.includes('trigger') ?? false))
 			.forEach((app) => {
-				const appActions = generateNodeActions(app);
-				actions[app.name] = appActions;
+				try {
+					const appActions = generateNodeActions(app);
+					actions[app.name] = appActions;
 
-				if (app.name === HTTP_REQUEST_NODE_TYPE) {
-					const credentialOnlyNodes = httpOnlyCredentials.map((credentialType) => {
-						const credsOnlyNode = getCredentialOnlyNodeType(app, credentialType);
-						if (credsOnlyNode) return getSimplifiedNodeType(credsOnlyNode);
-						return null;
-					});
+					if (app.name === HTTP_REQUEST_NODE_TYPE) {
+						const credentialOnlyNodes = httpOnlyCredentials.map((credentialType) => {
+							const credsOnlyNode = getCredentialOnlyNodeType(app, credentialType);
+							if (credsOnlyNode) return getSimplifiedNodeType(credsOnlyNode);
+							return null;
+						});
 
-					const filteredNodes = credentialOnlyNodes.filter(
-						(node): node is SimplifiedNodeType => node !== null,
-					);
+						const filteredNodes = credentialOnlyNodes.filter(
+							(node): node is SimplifiedNodeType => node !== null,
+						);
 
-					mergedNodes.push(...filteredNodes);
+						mergedNodes.push(...filteredNodes);
+					}
+
+					mergedNodes.push(getSimplifiedNodeType(app));
+				} catch (error) {
+					console.error(`Failed to process node type ${app.name}`, error);
 				}
-
-				mergedNodes.push(getSimplifiedNodeType(app));
 			});
 
 		visibleNodeTypes
-			.filter((node) => node.group.includes('trigger'))
+			.filter((node) => node.group?.includes('trigger') ?? false)
 			.forEach((trigger) => {
-				const normalizedName = trigger.name.replace('Trigger', '');
-				const triggerActions = generateNodeActions(trigger);
-				const appActions = actions?.[normalizedName] || [];
-				const app = mergedNodes.find((node) => node.name === normalizedName);
+				try {
+					const normalizedName = trigger.name.replace('Trigger', '');
+					const triggerActions = generateNodeActions(trigger);
+					const appActions = actions?.[normalizedName] || [];
+					const app = mergedNodes.find((node) => node.name === normalizedName);
 
-				if (app && appActions?.length > 0) {
-					// merge triggers into regular nodes that match
-					const mergedActions = filterActions([...appActions, ...triggerActions]);
-					actions[normalizedName] = mergedActions;
+					if (app && appActions?.length > 0) {
+						// merge triggers into regular nodes that match
+						const mergedActions = filterActions([...appActions, ...triggerActions]);
+						actions[normalizedName] = mergedActions;
 
-					app.description = trigger.description; // default to trigger description
-				} else {
-					actions[trigger.name] = filterActions(triggerActions);
-					mergedNodes.push(getSimplifiedNodeType(trigger));
+						app.description = trigger.description; // default to trigger description
+					} else {
+						actions[trigger.name] = filterActions(triggerActions);
+						mergedNodes.push(getSimplifiedNodeType(trigger));
+					}
+				} catch (error) {
+					console.error(`Failed to process trigger node type ${trigger.name}`, error);
 				}
 			});
 

@@ -11,6 +11,7 @@ import {
 	TRIGGER_NODE_CREATOR_VIEW,
 } from '@/app/constants';
 import { computed, onMounted, onUnmounted, watch } from 'vue';
+import { storeToRefs } from 'pinia';
 
 import { useNodeCreatorStore } from '@/features/shared/nodeCreator/nodeCreator.store';
 
@@ -43,10 +44,11 @@ import { N8nIcon, N8nNotice } from '@n8n/design-system';
 const i18n = useI18n();
 const { callDebounced, debounce } = useDebounce();
 
-const { mergedNodes } = useNodeCreatorStore();
+const nodeCreatorStore = useNodeCreatorStore();
+// Keep reactivity — bare destructure freezes mergedNodes at first empty []
+const { mergedNodes } = storeToRefs(nodeCreatorStore);
 const { pushViewStack, popViewStack, updateCurrentViewStack } = useViewStacks();
 const { setActiveItemIndex, attachKeydownEvent, detachKeydownEvent } = useKeyboardNavigation();
-const nodeCreatorStore = useNodeCreatorStore();
 
 const { isAdminOrOwner } = useUsersStore();
 
@@ -214,7 +216,7 @@ watch(
 			console.warn(`No view found for ${selectedView}`);
 			return;
 		}
-		const view = matchedView(mergedNodes);
+		const view = matchedView(mergedNodes.value);
 		const viewStack: ViewStack = {
 			title: view.title,
 			subtitle: view?.subtitle ?? '',
@@ -224,8 +226,7 @@ watch(
 			hasSearch: true,
 			mode: 'nodes',
 			rootView: selectedView,
-			// Root search should include all nodes
-			searchItems: mergedNodes,
+			searchItems: mergedNodes.value,
 			...additionalOptions[selectedView],
 		};
 		pushViewStack(viewStack);

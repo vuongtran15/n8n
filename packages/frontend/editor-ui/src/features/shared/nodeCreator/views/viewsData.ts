@@ -549,6 +549,8 @@ export function RegularView(nodes: SimplifiedNodeType[]) {
 				properties: {
 					title: TRANSFORM_DATA_SUBCATEGORY,
 					icon: 'pen',
+					// Data Table is codex-tagged Helpers; still surface it here for kito users
+					forceIncludeNodes: [DATA_TABLE_NODE_TYPE],
 					sections: [
 						{
 							key: 'popular',
@@ -610,6 +612,7 @@ export function RegularView(nodes: SimplifiedNodeType[]) {
 				properties: {
 					title: HELPERS_SUBCATEGORY,
 					icon: 'toolbox',
+					forceIncludeNodes: [DATA_TABLE_NODE_TYPE, HTTP_REQUEST_NODE_TYPE, CODE_NODE_TYPE],
 					sections: [
 						{
 							key: 'popular',

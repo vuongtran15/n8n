@@ -41,9 +41,17 @@ export function parsePathSegments(path: string): string[] {
 	return segments;
 }
 
+/** Bỏ prefix `$json.` / `json.` nếu user gõ nhầm. */
+export function normalizePropertyPath(path: string): string {
+	return path
+		.trim()
+		.replace(/^\$json\./i, '')
+		.replace(/^json\./i, '');
+}
+
 /** Lấy giá trị theo path: `data.Result` / `data.test.result` / `data.result[1]`. */
 export function getByPath(root: unknown, path: string): unknown {
-	const parts = parsePathSegments(path);
+	const parts = parsePathSegments(normalizePropertyPath(path));
 	if (parts.length === 0) return root;
 
 	let current: unknown = root;
@@ -53,6 +61,12 @@ export function getByPath(root: unknown, path: string): unknown {
 		current = (current as Record<string, unknown>)[part];
 	}
 	return current;
+}
+
+export function isParameterExpression(raw: unknown): boolean {
+	if (typeof raw !== 'string') return false;
+	const trimmed = raw.trim();
+	return trimmed.startsWith('=') || trimmed.includes('{{');
 }
 
 /**
@@ -76,7 +90,7 @@ export function valueHasData(value: unknown, treatBlankAsEmpty: boolean): boolea
 /**
  * Trả về true nếu item có dữ liệu nghiệp vụ.
  * - `propertyPath` trống → dò cả object (bỏ field kết nối RM nếu bật).
- * - có path → chỉ dò giá trị tại path (vd. data.Result).
+ * - có path → chỉ dò giá trị tại path (vd. Result.Mails).
  */
 export function itemHasData(
 	json: IDataObject,
@@ -87,7 +101,7 @@ export function itemHasData(
 		extraIgnoreKeys: string[];
 	},
 ): boolean {
-	const path = options.propertyPath.trim();
+	const path = normalizePropertyPath(options.propertyPath);
 	if (path) {
 		return valueHasData(getByPath(json, path), options.treatBlankAsEmpty);
 	}
@@ -111,8 +125,43 @@ export function itemHasData(
 }
 
 /**
+ * Resolve Property Path cho 1 item:
+ * - trống → dò cả object
+ * - expression (`={{ $json.Result.Mails }}`) → check đúng giá trị đã evaluate (undefined → false)
+ * - literal path (`Result.Mails`) → getByPath
+ */
+export function resolveItemHasData(
+	json: IDataObject,
+	rawParameter: unknown,
+	resolvedParameter: unknown,
+	options: {
+		ignoreConnectionFields: boolean;
+		treatBlankAsEmpty: boolean;
+		extraIgnoreKeys: string[];
+	},
+): boolean {
+	const rawEmpty =
+		rawParameter === undefined ||
+		rawParameter === null ||
+		(typeof rawParameter === 'string' && rawParameter.trim() === '');
+
+	if (rawEmpty) {
+		return itemHasData(json, { propertyPath: '', ...options });
+	}
+
+	// Expression: dùng giá trị đã evaluate — undefined/null → Empty
+	if (isParameterExpression(rawParameter)) {
+		return valueHasData(resolvedParameter, options.treatBlankAsEmpty);
+	}
+
+	// Literal path string
+	const path = String(resolvedParameter ?? rawParameter ?? '');
+	return itemHasData(json, { propertyPath: path, ...options });
+}
+
+/**
  * RM Has Data — tách nhánh khi input trắng dạng `[{}]` / chỉ còn field kết nối RM.
- * Có thể dò theo property path (data.Result…). Output 0 = Has Data, Output 1 = Empty.
+ * Có thể dò theo property path (Result.Mails…). Output 0 = Has Data, Output 1 = Empty.
  */
 export class RmHasData implements INodeType {
 	description: INodeTypeDescription = {
@@ -124,7 +173,7 @@ export class RmHasData implements INodeType {
 		version: 1,
 		subtitle: '={{$parameter["propertyPath"] || "Has Data / Empty"}}',
 		description:
-			'Kiểm tra input có dữ liệu hay trống — có thể dò theo property (data.Result…). Tách nhánh Has Data / Empty',
+			'Kiểm tra input có dữ liệu hay trống — có thể dò theo property (Result.Mails…). Tách nhánh Has Data / Empty',
 		defaults: {
 			name: 'RM Has Data',
 		},
@@ -158,16 +207,16 @@ export class RmHasData implements INodeType {
 				default: '',
 				typeOptions: { theme: 'info' },
 				description:
-					'Để trống Property Path = dò cả object. Điền path (vd. data.Result, data.result[1], data.test.result) = chỉ kiểm tra field đó. Empty / null / "" / [] → nhánh Empty.',
+					'Path literal: Result.Mails (không cần {{ }}). Hoặc expression {{ $json.Result.Mails }} — undefined / null / "" / [] → nhánh Empty.',
 			},
 			{
 				displayName: 'Property Path',
 				name: 'propertyPath',
 				type: 'string',
 				default: '',
-				placeholder: 'data.result[1]',
+				placeholder: 'Result.Mails',
 				description:
-					'Để trống = dò cả object. Ví dụ: data.Result, data.test.result, data.result[1]. Index bắt đầu từ 0. Empty / null / "" / [] → Empty (false).',
+					'Để trống = dò cả object. Path: Result.Mails, data.result[1]. Hoặc expression {{ $json.Result.Mails }} — undefined/null → Empty (false).',
 			},
 			{
 				displayName: 'Bỏ qua field kết nối RM',
@@ -188,7 +237,7 @@ export class RmHasData implements INodeType {
 				type: 'boolean',
 				default: true,
 				description:
-					'true = "", null, [], {} không tính là có dữ liệu. false = object có key vẫn tính (kể cả value trống); mảng rỗng [] vẫn luôn Empty.',
+					'true = "", null, undefined, [], {} không tính là có dữ liệu. false = object có key vẫn tính (kể cả value trống); mảng rỗng [] vẫn luôn Empty.',
 			},
 			{
 				displayName: 'Thêm field bỏ qua',
@@ -219,7 +268,7 @@ export class RmHasData implements INodeType {
 		const hasDataOut: INodeExecutionData[] = [];
 		const emptyOut: INodeExecutionData[] = [];
 
-		const propertyPath = String(this.getNodeParameter('propertyPath', 0, '') ?? '');
+		const rawPropertyPath = this.getNode().parameters.propertyPath;
 		const ignoreConnectionFields = this.getNodeParameter(
 			'ignoreConnectionFields',
 			0,
@@ -233,8 +282,7 @@ export class RmHasData implements INodeType {
 			.filter(Boolean);
 		const writeHasDataField = this.getNodeParameter('writeHasDataField', 0, true) as boolean;
 
-		const options = {
-			propertyPath,
+		const baseOptions = {
 			ignoreConnectionFields,
 			treatBlankAsEmpty,
 			extraIgnoreKeys,
@@ -248,7 +296,16 @@ export class RmHasData implements INodeType {
 
 		for (let i = 0; i < items.length; i++) {
 			const incoming = (items[i]?.json ?? {}) as IDataObject;
-			const hasData = itemHasData(incoming, options);
+
+			// Per-item resolve — expression có thể khác nhau theo item
+			let resolvedPath: unknown;
+			try {
+				resolvedPath = this.getNodeParameter('propertyPath', i);
+			} catch {
+				resolvedPath = undefined;
+			}
+
+			const hasData = resolveItemHasData(incoming, rawPropertyPath, resolvedPath, baseOptions);
 			const json: IDataObject = writeHasDataField
 				? { ...incoming, hasData }
 				: { ...incoming };

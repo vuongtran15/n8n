@@ -25,7 +25,7 @@ async function fetchNodeTypesJsonWithRetry(url: string, retries = 5, delay = 500
 	for (let attempt = 0; attempt < retries; attempt++) {
 		const response = await axios.get(url, { withCredentials: true });
 
-		if (typeof response.data === 'object' && response.data !== null) {
+		if (Array.isArray(response.data)) {
 			return response.data;
 		}
 

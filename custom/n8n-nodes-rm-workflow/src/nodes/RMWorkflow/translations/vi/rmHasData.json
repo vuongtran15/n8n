@@ -6,12 +6,12 @@
 	"nodeView": {
 		"tips": {
 			"displayName": "Gợi ý",
-			"description": "Để trống Property Path = dò cả object. Điền path (vd. data.Result, data.result[1], data.test.result) = chỉ kiểm tra field đó. Empty / null / \"\" / [] → nhánh Empty."
+			"description": "Path literal: Result.Mails (không cần {{ }}). Hoặc expression {{ $json.Result.Mails }} — undefined / null / \"\" / [] → nhánh Empty."
 		},
 		"propertyPath": {
 			"displayName": "Property Path",
-			"description": "Để trống = dò cả object. Ví dụ: data.Result, data.test.result, data.result[1]. Index bắt đầu từ 0. Empty / null / \"\" / [] → Empty (false).",
-			"placeholder": "data.result[1]"
+			"description": "Để trống = dò cả object. Path: Result.Mails, data.result[1]. Hoặc expression {{ $json.Result.Mails }} — undefined/null → Empty (false).",
+			"placeholder": "Result.Mails"
 		},
 		"ignoreConnectionFields": {
 			"displayName": "Bỏ qua field kết nối RM",

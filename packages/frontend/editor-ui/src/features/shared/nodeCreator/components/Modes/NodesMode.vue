@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import camelCase from 'lodash/camelCase';
 import { computed } from 'vue';
+import { storeToRefs } from 'pinia';
 import type {
 	ActionTypeDescription,
 	INodeCreateElement,
@@ -60,7 +61,9 @@ const i18n = useI18n();
 
 const { isRagStarterCalloutVisible, openSampleWorkflowTemplate } = useCalloutHelpers();
 
-const { mergedNodes, actions, onSubcategorySelected } = useNodeCreatorStore();
+const nodeCreatorStore = useNodeCreatorStore();
+const { mergedNodes, actions } = storeToRefs(nodeCreatorStore);
+const { onSubcategorySelected } = nodeCreatorStore;
 const { pushViewStack, popViewStack, isAiSubcategoryView, isHitlSubcategoryView } = useViewStacks();
 const { setAddedNodeActionParameters, nodeCreateElementToNodeTypeSelectedPayload } = useActions();
 
@@ -147,7 +150,7 @@ function onSelected(item: INodeCreateElement) {
 
 	if (item.type === 'node') {
 		const payload = nodeCreateElementToNodeTypeSelectedPayload(item);
-		let nodeActions = getFilteredActions(item, actions);
+		let nodeActions = getFilteredActions(item, actions.value);
 		const notInstalledCommunityNode =
 			isCommunityPackageName(item.key) && !useNodeTypesStore().getIsNodeInstalled(item.key);
 		const nodeIcon = getNodeIconSource(
@@ -238,7 +241,7 @@ function onSelected(item: INodeCreateElement) {
 			console.warn(`No view found for ${itemKey}`);
 			return;
 		}
-		const view = matchedView(mergedNodes);
+		const view = matchedView(mergedNodes.value);
 
 		pushViewStack({
 			title: view.title,
@@ -249,7 +252,7 @@ function onSelected(item: INodeCreateElement) {
 			rootView: view.value as NodeFilterType,
 			mode: 'nodes',
 			// Root search should include all nodes
-			searchItems: mergedNodes,
+			searchItems: mergedNodes.value,
 		});
 	}
 
@@ -270,8 +273,8 @@ function onSelected(item: INodeCreateElement) {
 function subcategoriesMapper(item: INodeCreateElement) {
 	if (item.type !== 'node') return item;
 
-	const hasTriggerGroup = item.properties.group.includes('trigger');
-	const nodeActions = getFilteredActions(item, actions);
+	const hasTriggerGroup = item.properties.group?.includes('trigger') ?? false;
+	const nodeActions = getFilteredActions(item, actions.value);
 	const hasActions = nodeActions.length > 0;
 
 	if (hasTriggerGroup && hasActions) {
@@ -291,8 +294,8 @@ function baseSubcategoriesFilter(item: INodeCreateElement): boolean {
 	if (item.type === 'section') return true;
 	if (item.type !== 'node') return false;
 
-	const hasTriggerGroup = item.properties.group.includes('trigger');
-	const nodeActions = getFilteredActions(item, actions);
+	const hasTriggerGroup = item.properties.group?.includes('trigger') ?? false;
+	const nodeActions = getFilteredActions(item, actions.value);
 	const hasActions = nodeActions.length > 0;
 
 	const isTriggerRootView = activeViewStack.value.rootView === TRIGGER_NODE_CREATOR_VIEW;
@@ -307,7 +310,7 @@ const globalCallouts = computed<INodeCreateElement[]>(() => [
 	...getRootSearchCallouts(
 		activeViewStack.value.search ?? '',
 		{ isRagStarterCalloutVisible: isRagStarterCalloutVisible.value },
-		mergedNodes,
+		mergedNodes.value,
 	),
 ]);
 
