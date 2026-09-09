@@ -1,0 +1,34 @@
+{
+	"header": {
+		"displayName": "RM Has Data",
+		"description": "检查输入是否有数据 — 可按属性路径（data.Result…）判断，分流到 Has Data / Empty"
+	},
+	"nodeView": {
+		"tips": {
+			"displayName": "提示",
+			"description": "Property Path 留空 = 检查整个对象。填写路径（如 data.Result、data.result[1]、data.test.result）= 只检查该字段。Empty / null / \"\" / [] → Empty 分支。"
+		},
+		"propertyPath": {
+			"displayName": "属性路径",
+			"description": "留空 = 检查整个对象。例如：data.Result、data.test.result、data.result[1]。索引从 0 开始。值为空或空列表 [] → Empty（false）。",
+			"placeholder": "data.result[1]"
+		},
+		"ignoreConnectionFields": {
+			"displayName": "忽略 RM 连接字段",
+			"description": "仅在 Property Path 为空时生效。true = 不把 baseUrl、apiKey、sessionId、uuid、SAP… 当作业务数据。"
+		},
+		"treatBlankAsEmpty": {
+			"displayName": "空字符串 / 空数组 / 空对象 = Empty",
+			"description": "true = \"\"、null、[]、{} 不算有数据。false = 有 key 的对象仍算有数据；空数组 [] 始终为 Empty。"
+		},
+		"extraIgnoreKeys": {
+			"displayName": "额外忽略字段",
+			"description": "仅在 Property Path 为空时生效。逗号分隔的额外字段名，不计入业务数据。",
+			"placeholder": "success, message, error"
+		},
+		"writeHasDataField": {
+			"displayName": "写入 hasData 字段",
+			"description": "在输出 JSON 中写入 hasData: true/false（方便表达式引用）。"
+		}
+	}
+}

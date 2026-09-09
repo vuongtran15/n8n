@@ -526,7 +526,20 @@ export function RegularView(nodes: SimplifiedNodeType[]) {
 				category: RM_WORKFLOW_CATEGORY,
 				properties: {
 					title: RM_WORKFLOW_CATEGORY,
+					subcategory: RM_WORKFLOW_CATEGORY,
 					icon: 'layers',
+					// Always surface RM custom nodes even if codex/locale subcategory matching fails
+					forceIncludeNodes: [
+						'CUSTOM.rmWidget',
+						'CUSTOM.rmInit',
+						'CUSTOM.rmUuid',
+						'CUSTOM.rmHasData',
+						'CUSTOM.rmCopyContext',
+						'CUSTOM.rmSapWorkflow',
+						'CUSTOM.rmWebAutoWorkflow',
+						'CUSTOM.rmFileAutoWorkflow',
+						'CUSTOM.rmOutlookAutoWorkflow',
+					],
 				},
 			},
 			{

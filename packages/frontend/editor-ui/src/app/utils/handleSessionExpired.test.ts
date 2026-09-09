@@ -98,7 +98,7 @@ describe('handleSessionExpired', () => {
 		expect(window.preventNodeViewBeforeUnload).toBe(true);
 		expect(router.resolve).toHaveBeenCalledWith({
 			name: VIEWS.SIGNIN,
-			query: { redirect: encodeURIComponent('/workflow/1'), sessionExpired: 'true' },
+			query: { redirect: '/workflow/1', sessionExpired: 'true' },
 		});
 		expect(hrefSpy).toHaveBeenCalledWith(SIGNIN_HREF);
 	});
@@ -132,7 +132,7 @@ describe('handleSessionExpired', () => {
 		});
 		expect(router.resolve).toHaveBeenCalledWith({
 			name: VIEWS.SIGNIN,
-			query: { redirect: encodeURIComponent('/workflow/1'), sessionExpired: 'true' },
+			query: { redirect: '/workflow/1', sessionExpired: 'true' },
 		});
 		expect(hrefSpy).toHaveBeenCalledWith(SIGNIN_HREF);
 	});
@@ -161,9 +161,28 @@ describe('handleSessionExpired', () => {
 		expect(resolveWorkflowRoute).not.toHaveBeenCalled();
 		expect(router.resolve).toHaveBeenCalledWith({
 			name: VIEWS.SIGNIN,
-			query: { redirect: encodeURIComponent('/workflow/1/abc123'), sessionExpired: 'true' },
+			query: { redirect: '/workflow/1/abc123', sessionExpired: 'true' },
 		});
 		expect(hrefSpy).toHaveBeenCalledWith(SIGNIN_HREF);
+	});
+
+	it('logs out without reloading when already on the sign-in page', async () => {
+		const logout = vi.fn().mockResolvedValue({ redirectUrl: null });
+		vi.mocked(useUsersStore).mockReturnValue({
+			currentUser: { id: '123' },
+			logout,
+		} as unknown as ReturnType<typeof useUsersStore>);
+		const router = createRouterMock({
+			fullPath: '/signin?sessionExpired=true',
+			name: VIEWS.SIGNIN,
+			path: '/signin',
+		});
+		const hrefSpy = vi.spyOn(window.location, 'href', 'set');
+
+		await handleSessionExpired(router, ownBackendURL);
+
+		expect(logout).toHaveBeenCalledTimes(1);
+		expect(hrefSpy).not.toHaveBeenCalled();
 	});
 
 	it('suppresses notifications synchronously, before logout is awaited', () => {

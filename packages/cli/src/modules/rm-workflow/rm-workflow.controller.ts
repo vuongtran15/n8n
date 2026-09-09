@@ -44,14 +44,16 @@ export class RmWorkflowController {
 		return this.settingsService.getSettingsResponse();
 	}
 
-	@GlobalScope('workflow:read')
+	// Any signed-in member may browse; portal filters widgets by req.user.email.
+	// Do not use workflow:read — that is global-owner/admin only and 403s members.
+	@GlobalScope('user:list')
 	@Get('/catalogs')
 	async getCatalogs(_req: AuthenticatedRequest) {
 		const response = await this.portalService.getCatalogs();
 		return { catalogs: normalizePortalCatalogs(response) };
 	}
 
-	@GlobalScope('workflow:read')
+	@GlobalScope('user:list')
 	@Get('/workflows')
 	async getWorkflows(
 		req: AuthenticatedRequest,

@@ -111,7 +111,7 @@ function getFilteredActions(
 
 function onSelected(item: INodeCreateElement) {
 	if (item.type === 'subcategory') {
-		const subcategoryKey = camelCase(item.properties.title);
+		const subcategoryKey = camelCase(item.key || item.properties.title);
 		const title = i18n.baseText(`nodeCreator.subcategoryNames.${subcategoryKey}` as BaseTextKey);
 
 		// If the info message exists in locale, add it to the info field of the view

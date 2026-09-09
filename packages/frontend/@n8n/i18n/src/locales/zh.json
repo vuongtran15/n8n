@@ -2178,7 +2178,7 @@
 	"nodeCreator.subcategoryNames.files": "文件",
 	"nodeCreator.subcategoryNames.flow": "流",
 	"nodeCreator.subcategoryNames.helpers": "核心",
-	"nodeCreator.subcategoryNames.rmWorkflow": "RM 工作流程",
+	"nodeCreator.subcategoryNames.rmWorkflow": "RM Workflow",
 	"nodeCreator.subcategoryDescriptions.rmWorkflow": "用于工作流程自动化的自定义 RM 节点",
 	"headers.rmWidget.displayName": "RM Widget",
 	"headers.rmWidget.description": "调用 RM Widget",

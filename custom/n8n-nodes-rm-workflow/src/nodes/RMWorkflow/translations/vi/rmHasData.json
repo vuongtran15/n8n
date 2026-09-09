@@ -1,0 +1,34 @@
+{
+	"header": {
+		"displayName": "RM Has Data",
+		"description": "Kiểm tra input có dữ liệu hay trống — có thể dò theo property (data.Result…). Tách nhánh Has Data / Empty"
+	},
+	"nodeView": {
+		"tips": {
+			"displayName": "Gợi ý",
+			"description": "Để trống Property Path = dò cả object. Điền path (vd. data.Result, data.result[1], data.test.result) = chỉ kiểm tra field đó. Empty / null / \"\" / [] → nhánh Empty."
+		},
+		"propertyPath": {
+			"displayName": "Property Path",
+			"description": "Để trống = dò cả object. Ví dụ: data.Result, data.test.result, data.result[1]. Index bắt đầu từ 0. Empty / null / \"\" / [] → Empty (false).",
+			"placeholder": "data.result[1]"
+		},
+		"ignoreConnectionFields": {
+			"displayName": "Bỏ qua field kết nối RM",
+			"description": "Chỉ dùng khi Property Path trống. true = không tính baseUrl, apiKey, sessionId, uuid, SAP… là dữ liệu nghiệp vụ."
+		},
+		"treatBlankAsEmpty": {
+			"displayName": "Chuỗi / mảng / object trống = Empty",
+			"description": "true = \"\", null, [], {} không tính là có dữ liệu. false = object có key vẫn tính (kể cả value trống); mảng rỗng [] vẫn luôn Empty."
+		},
+		"extraIgnoreKeys": {
+			"displayName": "Thêm field bỏ qua",
+			"description": "Chỉ dùng khi Property Path trống. Danh sách field thêm (cách nhau bằng dấu phẩy) không tính là dữ liệu nghiệp vụ.",
+			"placeholder": "success, message, error"
+		},
+		"writeHasDataField": {
+			"displayName": "Ghi field hasData",
+			"description": "Ghi hasData: true/false vào JSON output (tiện dùng biểu thức)."
+		}
+	}
+}

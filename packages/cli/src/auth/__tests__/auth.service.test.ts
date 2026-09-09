@@ -154,7 +154,7 @@ describe('AuthService', () => {
 			expect(userRepository.findOne).not.toHaveBeenCalled();
 			expect(next).not.toHaveBeenCalled();
 			expect(res.status).toHaveBeenCalledWith(401);
-			expect(res.clearCookie).toHaveBeenCalledWith(AUTH_COOKIE_NAME);
+			expect(res.clearCookie).toHaveBeenCalledWith(AUTH_COOKIE_NAME, { httpOnly: true, sameSite: 'lax', secure: true });
 		});
 
 		it('should 401 and clear the cookie if the JWT has been invalidated', async () => {
@@ -170,7 +170,7 @@ describe('AuthService', () => {
 			expect(userRepository.findOne).not.toHaveBeenCalled();
 			expect(next).not.toHaveBeenCalled();
 			expect(res.status).toHaveBeenCalledWith(401);
-			expect(res.clearCookie).toHaveBeenCalledWith(AUTH_COOKIE_NAME);
+			expect(res.clearCookie).toHaveBeenCalledWith(AUTH_COOKIE_NAME, { httpOnly: true, sameSite: 'lax', secure: true });
 		});
 
 		it('should 401 but not clear the cookie if 2FA is enforced and not configured for the user', async () => {
@@ -338,7 +338,7 @@ describe('AuthService', () => {
 				await middleware(req, res, next);
 
 				expect(invalidAuthTokenRepository.existsBy).toHaveBeenCalled();
-				expect(res.clearCookie).toHaveBeenCalledWith(AUTH_COOKIE_NAME);
+				expect(res.clearCookie).toHaveBeenCalledWith(AUTH_COOKIE_NAME, { httpOnly: true, sameSite: 'lax', secure: true });
 				expect(next).toHaveBeenCalled(); // Should still call next() due to preview mode skip
 				expect(res.status).not.toHaveBeenCalled();
 			});
@@ -382,7 +382,7 @@ describe('AuthService', () => {
 				expect(userRepository.findOne).not.toHaveBeenCalled();
 				expect(req.user).toBeUndefined();
 				expect(next).toHaveBeenCalled();
-				expect(res.clearCookie).toHaveBeenCalledWith(AUTH_COOKIE_NAME);
+				expect(res.clearCookie).toHaveBeenCalledWith(AUTH_COOKIE_NAME, { httpOnly: true, sameSite: 'lax', secure: true });
 			});
 
 			it('should clear the cookie if the token has been invalidated', async () => {
@@ -401,7 +401,7 @@ describe('AuthService', () => {
 				expect(userRepository.findOne).not.toHaveBeenCalled();
 				expect(req.user).toBeUndefined();
 				expect(next).toHaveBeenCalled();
-				expect(res.clearCookie).toHaveBeenCalledWith(AUTH_COOKIE_NAME);
+				expect(res.clearCookie).toHaveBeenCalledWith(AUTH_COOKIE_NAME, { httpOnly: true, sameSite: 'lax', secure: true });
 			});
 
 			it('should not populate the user info if the token is invalid', async () => {
@@ -420,7 +420,7 @@ describe('AuthService', () => {
 				expect(userRepository.findOne).not.toHaveBeenCalled();
 				expect(req.user).toBeUndefined();
 				expect(next).toHaveBeenCalled();
-				expect(res.clearCookie).toHaveBeenCalledWith(AUTH_COOKIE_NAME);
+				expect(res.clearCookie).toHaveBeenCalledWith(AUTH_COOKIE_NAME, { httpOnly: true, sameSite: 'lax', secure: true });
 			});
 
 			it('should not populate the user info if the token is not set', async () => {
@@ -462,7 +462,7 @@ describe('AuthService', () => {
 				expect(userRepository.findOne).toHaveBeenCalled();
 				expect(req.user).toBeUndefined();
 				expect(next).toHaveBeenCalled();
-				expect(res.clearCookie).toHaveBeenCalledWith(AUTH_COOKIE_NAME);
+				expect(res.clearCookie).toHaveBeenCalledWith(AUTH_COOKIE_NAME, { httpOnly: true, sameSite: 'lax', secure: true });
 			});
 
 			it('should skip user when MFA enforced and user has no MFA', async () => {
@@ -962,12 +962,16 @@ describe('AuthService', () => {
 	});
 
 	describe('clearCookie', () => {
-		it('should clear the session cookie', () => {
+		it('should clear the session cookie with the same attributes as issueCookie', () => {
 			const res = mock<Response>();
 
 			authService.clearCookie(res);
 
-			expect(res.clearCookie).toHaveBeenCalledWith(AUTH_COOKIE_NAME);
+			expect(res.clearCookie).toHaveBeenCalledWith(AUTH_COOKIE_NAME, {
+				httpOnly: true,
+				sameSite: 'lax',
+				secure: true,
+			});
 			// The form page cookies are not clearable from here: their names embed the
 			// workflow/execution they were minted for, unknown to this response.
 			expect(res.clearCookie).toHaveBeenCalledTimes(1);

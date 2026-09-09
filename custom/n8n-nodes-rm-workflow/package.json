@@ -8,7 +8,9 @@
     "build": "tsc -p tsconfig.json && node scripts/generate-translations.mjs && node scripts/copy-codex.mjs",
     "watch": "tsc -p tsconfig.json --watch",
     "clean": "rimraf dist",
-    "generate:translations": "node scripts/generate-translations.mjs"
+    "generate:translations": "node scripts/generate-translations.mjs",
+    "pack:release": "node scripts/pack-release.mjs",
+    "pack:release:skip-build": "node scripts/pack-release.mjs --skip-build"
   },
   "files": ["dist"],
   "dependencies": {
@@ -20,6 +22,7 @@
       "dist/nodes/RMWorkflow/RMWidget.node.js",
       "dist/nodes/RMWorkflow/RmInit.node.js",
       "dist/nodes/RMWorkflow/RmUuid.node.js",
+      "dist/nodes/RMWorkflow/RmHasData.node.js",
       "dist/nodes/RMWorkflow/RmCopyContext.node.js",
       "dist/nodes/RmSapWorkflow/RmSapWorkflow.node.js",
       "dist/nodes/RmWebAutoWorkflow/RmWebAutoWorkflow.node.js",

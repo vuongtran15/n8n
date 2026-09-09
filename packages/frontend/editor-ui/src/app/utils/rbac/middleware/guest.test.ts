@@ -67,6 +67,18 @@ describe('Middleware', () => {
 				expect(nextMock).toHaveBeenCalledWith({ name: VIEWS.HOMEPAGE });
 			});
 
+			it('should redirect to homepage if redirect is an auth path', async () => {
+				const nextMock = vi.fn();
+				const toMock = {
+					query: { redirect: '/signout' },
+				} as unknown as RouteLocationNormalized;
+				const fromMock = {} as RouteLocationNormalized;
+
+				await guestMiddleware(toMock, fromMock, nextMock, {});
+
+				expect(nextMock).toHaveBeenCalledWith({ name: VIEWS.HOMEPAGE });
+			});
+
 			it('should redirect to homepage if redirect is not the origin domain', async () => {
 				const nextMock = vi.fn();
 				const toMock = {

@@ -31,10 +31,10 @@ Loader: `N8N_CUSTOM_EXTENSIONS` → package name luôn là **`CUSTOM`**.
 Trong `docker/kito-n8n/n8n.env` (copy sang `packages/cli/bin/.env`):
 
 ```env
-N8N_CUSTOM_EXTENSIONS=D:/CODE/N8N/n8n/custom/n8n-nodes-rm-workflow
+N8N_CUSTOM_EXTENSIONS=D:/CODE/N8N/n8n-custom-extensions/n8n-nodes-rm-workflow
 ```
 
-Và trong `NODES_INCLUDE` có `"CUSTOM.rmWidget"`.
+**Prod vs Dev:** đừng trỏ `N8N_CUSTOM_EXTENSIONS` vào `custom/n8n-nodes-rm-workflow` (source) khi đang chạy prod. Source chỉ để sửa/test; khi ổn chạy `pnpm pack:release` rồi restart prod.
 
 Đổi path cho máy bạn nếu repo không nằm ở `D:/CODE/N8N/n8n`.
 

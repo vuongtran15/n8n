@@ -208,7 +208,14 @@ export class AuthService {
 	}
 
 	clearCookie(res: Response) {
-		res.clearCookie(AUTH_COOKIE_NAME);
+		// Must match issueCookie attributes (path/secure/sameSite/httpOnly) or some
+		// browsers keep n8n-auth — logout then removes browserId → endless 401/signout.
+		const { samesite, secure } = this.globalConfig.auth.cookie;
+		res.clearCookie(AUTH_COOKIE_NAME, {
+			httpOnly: true,
+			sameSite: samesite,
+			secure,
+		});
 		// The form page auth cookies (`n8n-form-auth-*`) are NOT cleared here: their
 		// names embed the workflow/execution they were minted for, and this response
 		// can neither read them (they're scoped to the form-waiting path) nor clear a

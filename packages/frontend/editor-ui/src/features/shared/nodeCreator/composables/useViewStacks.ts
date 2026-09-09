@@ -545,17 +545,21 @@ export const useViewStacks = defineStore('nodeCreatorViewStacks', () => {
 			const sections = stack.sections;
 
 			if (sections) {
-				stackItems = groupItemsInSections(itemsInSubcategory, sections);
+				stackItems = groupItemsInSections(itemsInSubcategory ?? [], sections);
 			} else {
-				stackItems = itemsInSubcategory;
+				stackItems = itemsInSubcategory ?? [];
 			}
 		}
 
 		// Ensure that the nodes specified in `stack.forceIncludeNodes` are always included,
 		// regardless of whether the subcategory is matched
 		if ((stack.forceIncludeNodes ?? []).length > 0) {
+			const existingKeys = new Set(stackItems.map((item) => item.key));
 			const matchedNodes = nodeCreatorStore.mergedNodes
-				.filter((item) => stack.forceIncludeNodes?.includes(item.name))
+				.filter(
+					(item) =>
+						stack.forceIncludeNodes?.includes(item.name) && !existingKeys.has(item.name),
+				)
 				.map((item) => transformNodeType(item, stack.subcategory));
 
 			stackItems.push(...matchedNodes);
