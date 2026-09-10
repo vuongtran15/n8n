@@ -91,6 +91,25 @@ describe('Middleware', () => {
 
 				expect(nextMock).toHaveBeenCalledWith({ name: VIEWS.HOMEPAGE });
 			});
+
+			it('should clear the session and stay on sign-in when sessionExpired is set', async () => {
+				const logout = vi.fn().mockResolvedValue({ redirectUrl: null });
+				vi.mocked(useUsersStore).mockReturnValue({
+					currentUser: { id: '123' },
+					logout,
+				} as unknown as ReturnType<typeof useUsersStore>);
+
+				const nextMock = vi.fn();
+				const toMock = {
+					query: { redirect: '/home/workflows', sessionExpired: 'true' },
+				} as unknown as RouteLocationNormalized;
+				const fromMock = {} as RouteLocationNormalized;
+
+				await guestMiddleware(toMock, fromMock, nextMock, {});
+
+				expect(logout).toHaveBeenCalledTimes(1);
+				expect(nextMock).not.toHaveBeenCalled();
+			});
 		});
 
 		it('should not redirect if no current user is present', async () => {

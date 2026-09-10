@@ -1,3 +1,5 @@
+import { useUsersStore } from '@n8n/stores/users.store';
+
 import type { RouterMiddleware } from '@/app/types/router';
 import { VIEWS } from '@/app/constants';
 import type { GuestPermissionOptions } from '@/app/types/rbac';
@@ -32,6 +34,18 @@ export const guestMiddleware: RouterMiddleware<GuestPermissionOptions> = async (
 ) => {
 	const valid = isGuest();
 	if (!valid) {
+		// Sticky cookie after backend restart / session expiry: do not bounce into
+		// redirect=/home/workflows (signin ↔ workflows loop). Clear the session and
+		// stay on the auth page so the user can log in fresh.
+		if (to.query.sessionExpired === 'true') {
+			try {
+				await useUsersStore().logout();
+			} catch {
+				// Cookie may already be invalid; local cleanup still runs inside logout().
+			}
+			return;
+		}
+
 		const redirect = (to.query.redirect as string) ?? '';
 
 		// Allow local path redirects (except auth pages — those cause logout loops)

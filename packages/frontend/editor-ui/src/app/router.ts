@@ -11,6 +11,7 @@ import { useExternalHooks } from '@/app/composables/useExternalHooks';
 import { useSettingsStore } from '@n8n/stores/settings.store';
 import { useTemplatesStore } from '@/features/workflows/templates/templates.store';
 import { useUIStore } from '@/app/stores/ui.store';
+import { useUsersStore } from '@n8n/stores/users.store';
 import { useSSOStore } from '@/features/settings/sso/sso.store';
 import { EnterpriseEditionFeature, VIEWS, EDITABLE_CANVAS_VIEWS } from '@/app/constants';
 import { useTelemetry } from '@n8n/composables/useTelemetry';
@@ -1238,6 +1239,19 @@ router.beforeEach(async (to: RouteLocationNormalized, from, next) => {
 			 */
 
 			await initializeCore();
+
+			// After a backend restart the auth cookie can still look valid, so
+			// loginWithCookie succeeds and guest middleware would bounce into
+			// ?redirect=/home/workflows — then 401 → signin forever. Drop that
+			// stale session before authenticated boot or guest redirects run.
+			if (to.query.sessionExpired === 'true' && useUsersStore().currentUser) {
+				try {
+					await useUsersStore().logout();
+				} catch {
+					// Session may already be dead server-side.
+				}
+			}
+
 			// Pass undefined for first param to use default
 			await initializeAuthenticatedFeatures(undefined, to.name as string);
 		} catch (error) {
