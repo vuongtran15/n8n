@@ -116,6 +116,12 @@ const outlookVi = {
 					description: 'Mở Inspector xem mail theo entryId.',
 					action: 'Hiển thị mail',
 				},
+				captureMail: {
+					displayName: 'Chụp mail',
+					description:
+						'Chụp/lưu email ra file. format: png / html / msg. Đường dẫn: savePath hoặc saveDirectory + fileName ({subject} {date} {time} {entryId}). overwrite mặc định true.',
+					action: 'Chụp mail',
+				},
 				getSelectedMail: {
 					displayName: 'Mail đang chọn',
 					description: 'Lấy mail đang chọn trên Explorer. Không cần param.',
@@ -256,7 +262,7 @@ const outlookVi = {
 		},
 		entryId: {
 			displayName: 'Entry ID',
-			description: 'EntryID mail Outlook (Read, Reply, Move, Delete, …).',
+			description: 'EntryID mail Outlook (Read, Capture, Reply, Move, Delete, …).',
 		},
 		to: {
 			displayName: 'Đến',
@@ -313,8 +319,35 @@ const outlookVi = {
 		},
 		saveDirectory: {
 			displayName: 'Thư mục lưu',
-			description: 'Thư mục lưu trên máy worker (Save Attachment).',
+			description:
+				'Thư mục lưu trên máy worker (Save Attachment / Save All / Capture Mail). Capture: dùng cùng File Name, hoặc dùng Save Path.',
 			placeholder: 'C:\\temp\\attachments',
+		},
+		savePath: {
+			displayName: 'Đường dẫn file',
+			description:
+				'Đường dẫn file đầy đủ (Capture Mail). Thay thế cho Thư mục lưu + Tên file.',
+			placeholder: 'D:\\temp\\outlook-capture\\mail1.png',
+		},
+		fileName: {
+			displayName: 'Tên file',
+			description:
+				'Tên file khi dùng Thư mục lưu (Capture Mail). Placeholder: {subject} {date} {time} {entryId}.',
+			placeholder: 'PR_check_{date}_{time}.png',
+		},
+		format: {
+			displayName: 'Định dạng',
+			description: 'Định dạng xuất Capture Mail: png (ảnh) / html / msg.',
+			options: {
+				png: { displayName: 'PNG' },
+				html: { displayName: 'HTML' },
+				msg: { displayName: 'MSG' },
+			},
+		},
+		overwrite: {
+			displayName: 'Ghi đè file',
+			description:
+				'true = ghi đè file cùng tên. false = giữ file cũ, lưu bản mới thành ten_2.ext, ten_3.ext, …',
 		},
 		saveOption: {
 			displayName: 'Tùy chọn lưu',
@@ -415,6 +448,12 @@ const outlookZh = {
 					displayName: '显示邮件',
 					description: '按 entryId 打开 Inspector 查看邮件。',
 					action: '显示邮件',
+				},
+				captureMail: {
+					displayName: '截取邮件',
+					description:
+						'将邮件截取/保存为文件。format：png / html / msg。路径：savePath，或 saveDirectory + fileName（{subject} {date} {time} {entryId}）。overwrite 默认 true。',
+					action: '截取邮件',
 				},
 				getSelectedMail: {
 					displayName: '当前选中邮件',
@@ -551,7 +590,7 @@ const outlookZh = {
 		},
 		entryId: {
 			displayName: 'Entry ID',
-			description: 'Outlook 邮件 EntryID（读取、回复、移动、删除等）。',
+			description: 'Outlook 邮件 EntryID（读取、截取、回复、移动、删除等）。',
 		},
 		to: {
 			displayName: '收件人',
@@ -608,8 +647,34 @@ const outlookZh = {
 		},
 		saveDirectory: {
 			displayName: '保存目录',
-			description: 'worker 上的保存目录（保存附件）。',
+			description:
+				'worker 上的保存目录（保存附件 / 保存全部 / 截取邮件）。截取时可配合文件名，或改用完整路径。',
 			placeholder: 'C:\\temp\\attachments',
+		},
+		savePath: {
+			displayName: '完整路径',
+			description: '完整文件路径（截取邮件）。可替代「保存目录 + 文件名」。',
+			placeholder: 'D:\\temp\\outlook-capture\\mail1.png',
+		},
+		fileName: {
+			displayName: '文件名',
+			description:
+				'配合保存目录使用（截取邮件）。占位符：{subject} {date} {time} {entryId}。',
+			placeholder: 'PR_check_{date}_{time}.png',
+		},
+		format: {
+			displayName: '格式',
+			description: '截取邮件导出格式：png（图片）/ html / msg。',
+			options: {
+				png: { displayName: 'PNG' },
+				html: { displayName: 'HTML' },
+				msg: { displayName: 'MSG' },
+			},
+		},
+		overwrite: {
+			displayName: '覆盖文件',
+			description:
+				'true = 覆盖同名文件。false = 保留旧文件，新文件存为 ten_2.ext、ten_3.ext …',
 		},
 		saveOption: {
 			displayName: '保存选项',

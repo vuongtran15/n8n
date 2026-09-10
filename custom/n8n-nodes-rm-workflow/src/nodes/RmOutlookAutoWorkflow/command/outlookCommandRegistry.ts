@@ -14,6 +14,7 @@ export type OutlookCommandParamKind =
 	| 'deleteMail'
 	| 'saveAttachment'
 	| 'saveAllAttachments'
+	| 'captureMail'
 	| 'closeInspector'
 	| 'closeAllInspectors'
 	| 'sendKeys'
@@ -88,6 +89,15 @@ export const OUTLOOK_COMMAND_DEFINITIONS: OutlookCommandDefinition[] = [
 		description: 'Mở Inspector xem mail theo entryId.',
 		action: 'Display mail',
 		params: 'entryId',
+	},
+	{
+		operation: 'captureMail',
+		function: 'CaptureMail',
+		displayName: 'Capture Mail',
+		description:
+			'Chụp/lưu email ra file. format: png / html / msg. Đường dẫn: savePath hoặc saveDirectory + fileName ({subject} {date} {time} {entryId}). overwrite mặc định true.',
+		action: 'Capture mail',
+		params: 'captureMail',
 	},
 	{
 		operation: 'getSelectedMail',

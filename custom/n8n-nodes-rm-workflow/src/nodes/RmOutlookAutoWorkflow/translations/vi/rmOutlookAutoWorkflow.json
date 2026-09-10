@@ -67,6 +67,11 @@
 					"description": "Mở Inspector xem mail theo entryId.",
 					"action": "Hiển thị mail"
 				},
+				"captureMail": {
+					"displayName": "Chụp mail",
+					"description": "Chụp/lưu email ra file. format: png / html / msg. Đường dẫn: savePath hoặc saveDirectory + fileName ({'{'}subject{'}'} {'{'}date{'}'} {'{'}time{'}'} {'{'}entryId{'}'}). overwrite mặc định true.",
+					"action": "Chụp mail"
+				},
 				"getSelectedMail": {
 					"displayName": "Mail đang chọn",
 					"description": "Lấy mail đang chọn trên Explorer. Không cần param.",
@@ -202,7 +207,7 @@
 		},
 		"entryId": {
 			"displayName": "Entry ID",
-			"description": "EntryID mail Outlook (Read, Reply, Move, Delete, …)."
+			"description": "EntryID mail Outlook (Read, Capture, Reply, Move, Delete, …)."
 		},
 		"to": {
 			"displayName": "Đến",
@@ -261,8 +266,33 @@
 		},
 		"saveDirectory": {
 			"displayName": "Thư mục lưu",
-			"description": "Thư mục lưu trên máy worker (Save Attachment / Save All Attachments).",
+			"description": "Thư mục lưu trên máy worker (Save Attachment / Save All / Capture Mail). Capture: dùng cùng File Name, hoặc dùng Save Path.",
 			"placeholder": "C:\\temp\\attachments"
+		},
+		"savePath": {
+			"displayName": "Đường dẫn file",
+			"description": "Đường dẫn file đầy đủ (Capture Mail). Thay thế cho Thư mục lưu + Tên file.",
+			"placeholder": "D:\\temp\\outlook-capture\\mail1.png"
+		},
+		"fileName": {
+			"displayName": "Tên file",
+			"description": "Tên file khi dùng Thư mục lưu (Capture Mail). Placeholder: {'{'}subject{'}'} {'{'}date{'}'} {'{'}time{'}'} {'{'}entryId{'}'}.",
+			"placeholder": "PR_check_{'{'}date{'}'}_{'{'}time{'}'}.png"
+		},
+		"format": {
+			"displayName": "Định dạng",
+			"description": "Định dạng xuất Capture Mail: png (ảnh) / html / msg.",
+			"options": {
+				"png": {
+					"displayName": "PNG"
+				},
+				"html": {
+					"displayName": "HTML"
+				},
+				"msg": {
+					"displayName": "MSG"
+				}
+			}
 		},
 		"overwrite": {
 			"displayName": "Ghi đè file",

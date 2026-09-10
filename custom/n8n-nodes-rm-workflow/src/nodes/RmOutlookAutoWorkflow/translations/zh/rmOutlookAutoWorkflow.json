@@ -67,6 +67,11 @@
 					"description": "按 entryId 打开 Inspector 查看邮件。",
 					"action": "显示邮件"
 				},
+				"captureMail": {
+					"displayName": "截取邮件",
+					"description": "将邮件截取/保存为文件。format：png / html / msg。路径：savePath，或 saveDirectory + fileName（{'{'}subject{'}'} {'{'}date{'}'} {'{'}time{'}'} {'{'}entryId{'}'}）。overwrite 默认 true。",
+					"action": "截取邮件"
+				},
 				"getSelectedMail": {
 					"displayName": "当前选中邮件",
 					"description": "获取 Explorer 上当前选中的邮件。无需参数。",
@@ -202,7 +207,7 @@
 		},
 		"entryId": {
 			"displayName": "Entry ID",
-			"description": "Outlook 邮件 EntryID（读取、回复、移动、删除等）。"
+			"description": "Outlook 邮件 EntryID（读取、截取、回复、移动、删除等）。"
 		},
 		"to": {
 			"displayName": "收件人",
@@ -261,8 +266,33 @@
 		},
 		"saveDirectory": {
 			"displayName": "保存目录",
-			"description": "worker 上的保存目录（保存附件 / 保存全部附件）。",
+			"description": "worker 上的保存目录（保存附件 / 保存全部 / 截取邮件）。截取时可配合文件名，或改用完整路径。",
 			"placeholder": "C:\\temp\\attachments"
+		},
+		"savePath": {
+			"displayName": "完整路径",
+			"description": "完整文件路径（截取邮件）。可替代「保存目录 + 文件名」。",
+			"placeholder": "D:\\temp\\outlook-capture\\mail1.png"
+		},
+		"fileName": {
+			"displayName": "文件名",
+			"description": "配合保存目录使用（截取邮件）。占位符：{'{'}subject{'}'} {'{'}date{'}'} {'{'}time{'}'} {'{'}entryId{'}'}。",
+			"placeholder": "PR_check_{'{'}date{'}'}_{'{'}time{'}'}.png"
+		},
+		"format": {
+			"displayName": "格式",
+			"description": "截取邮件导出格式：png（图片）/ html / msg。",
+			"options": {
+				"png": {
+					"displayName": "PNG"
+				},
+				"html": {
+					"displayName": "HTML"
+				},
+				"msg": {
+					"displayName": "MSG"
+				}
+			}
 		},
 		"overwrite": {
 			"displayName": "覆盖文件",

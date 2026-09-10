@@ -213,6 +213,27 @@ function buildParamObject(
 				overwrite: boolStr(b('overwrite', true)),
 			};
 		}
+		case 'captureMail': {
+			const entryId = s('entryId').trim();
+			if (!entryId) throw new Error('Thiếu entryId');
+			const savePath = s('savePath').trim();
+			const saveDirectory = s('saveDirectory').trim();
+			const fileName = s('fileName').trim();
+			if (!savePath && !saveDirectory) {
+				throw new Error('Thiếu savePath hoặc saveDirectory (+ fileName)');
+			}
+			const formatRaw = s('format').trim().toLowerCase() || 'png';
+			const format = ['png', 'html', 'msg'].includes(formatRaw) ? formatRaw : 'png';
+			const out: Record<string, string> = {
+				entryId,
+				format,
+				overwrite: boolStr(b('overwrite', true)),
+			};
+			if (savePath) out.savePath = savePath;
+			if (saveDirectory) out.saveDirectory = saveDirectory;
+			if (fileName) out.fileName = fileName;
+			return out;
+		}
 		case 'closeInspector': {
 			const out: Record<string, string> = {
 				saveOption: s('saveOption').trim() || 'discard',
