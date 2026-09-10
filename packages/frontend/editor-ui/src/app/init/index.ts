@@ -46,7 +46,7 @@ let authenticatedFeaturesInitialized = false;
  * Initializes the core application stores and hooks
  * This is called once, when the first route is loaded.
  */
-export async function initializeCore() {
+export async function initializeCore(options?: { skipCookieLogin?: boolean }) {
 	if (state.initialized) {
 		return;
 	}
@@ -91,7 +91,7 @@ export async function initializeCore() {
 	});
 
 	if (!settingsStore.isPreviewMode) {
-		await usersStore.initialize();
+		await usersStore.initialize({ skipCookieLogin: options?.skipCookieLogin });
 	}
 
 	void useExternalHooks().run('app.mount');

@@ -191,13 +191,16 @@ export const useUsersStore = defineStore(STORES.USERS, () => {
 		await setCurrentUser(user);
 	};
 
-	const initialize = async () => {
+	const initialize = async (options?: { skipCookieLogin?: boolean }) => {
 		if (initialized.value) {
 			return;
 		}
 
 		try {
-			await loginWithCookie();
+			// Sign-in must not restore a sticky session (causes a flash into the app).
+			if (!options?.skipCookieLogin) {
+				await loginWithCookie();
+			}
 			initialized.value = true;
 		} catch {
 			// A missing or expired auth cookie before setup is expected; leave the store

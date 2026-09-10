@@ -173,7 +173,7 @@ export class RmHasData implements INodeType {
 		version: 1,
 		subtitle: '={{$parameter["propertyPath"] || "Has Data / Empty"}}',
 		description:
-			'Kiểm tra input có dữ liệu hay trống — có thể dò theo property (Result.Mails…). Tách nhánh Has Data / Empty',
+			'Check whether input has data or is empty — optionally by property (Result.Mails…). Branches: Has Data / Empty',
 		defaults: {
 			name: 'RM Has Data',
 		},

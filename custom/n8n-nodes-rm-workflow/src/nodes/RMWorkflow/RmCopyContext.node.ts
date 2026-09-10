@@ -71,8 +71,7 @@ export class RmCopyContext implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["sourceNode"]}}',
-		description:
-			'Copy dữ liệu từ một node khác trong workflow',
+		description: 'Copy data from another node in the workflow',
 		defaults: {
 			name: 'RM Copy Context',
 		},

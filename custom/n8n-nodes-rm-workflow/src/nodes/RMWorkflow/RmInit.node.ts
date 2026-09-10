@@ -33,7 +33,7 @@ export class RmInit implements INodeType {
 		version: 1,
 		subtitle: '={{$parameter["baseUrl"]}}',
 		description:
-			'Khởi tạo baseUrl, apiKey, sessionId (và tùy chọn thông tin SAP) cho các node RM tiếp theo',
+			'Initialize baseUrl, apiKey, sessionId (and optional SAP details) for the following RM nodes',
 		defaults: {
 			name: 'RM Init',
 		},

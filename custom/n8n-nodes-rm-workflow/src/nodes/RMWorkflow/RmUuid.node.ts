@@ -38,7 +38,7 @@ export class RmUuid implements INodeType {
 		version: 1,
 		subtitle: '={{$parameter["outputField"]}}',
 		description:
-			'Tạo mã khóa ngẫu nhiên (Session ID) cho workflow — không cần biết UUID/GUID là gì',
+			'Generate a random key (Session ID) for the workflow — no need to know UUID/GUID',
 		defaults: {
 			name: 'RM UUID',
 		},

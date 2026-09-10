@@ -101,7 +101,28 @@ describe('Middleware', () => {
 
 				const nextMock = vi.fn();
 				const toMock = {
+					name: VIEWS.SIGNIN,
 					query: { redirect: '/home/workflows', sessionExpired: 'true' },
+				} as unknown as RouteLocationNormalized;
+				const fromMock = {} as RouteLocationNormalized;
+
+				await guestMiddleware(toMock, fromMock, nextMock, {});
+
+				expect(logout).toHaveBeenCalledTimes(1);
+				expect(nextMock).not.toHaveBeenCalled();
+			});
+
+			it('should clear the session and stay on sign-in for any /signin visit', async () => {
+				const logout = vi.fn().mockResolvedValue({ redirectUrl: null });
+				vi.mocked(useUsersStore).mockReturnValue({
+					currentUser: { id: '123' },
+					logout,
+				} as unknown as ReturnType<typeof useUsersStore>);
+
+				const nextMock = vi.fn();
+				const toMock = {
+					name: VIEWS.SIGNIN,
+					query: { redirect: '/' },
 				} as unknown as RouteLocationNormalized;
 				const fromMock = {} as RouteLocationNormalized;
 

@@ -34,10 +34,8 @@ export const guestMiddleware: RouterMiddleware<GuestPermissionOptions> = async (
 ) => {
 	const valid = isGuest();
 	if (!valid) {
-		// Sticky cookie after backend restart / session expiry: do not bounce into
-		// redirect=/home/workflows (signin ↔ workflows loop). Clear the session and
-		// stay on the auth page so the user can log in fresh.
-		if (to.query.sessionExpired === 'true') {
+		// /signin always clears session — never bounce a sticky cookie into the app.
+		if (to.name === VIEWS.SIGNIN || to.query.sessionExpired === 'true') {
 			try {
 				await useUsersStore().logout();
 			} catch {

@@ -1238,19 +1238,20 @@ router.beforeEach(async (to: RouteLocationNormalized, from, next) => {
 			 * This step executes before first route is loaded and is required for permission checks
 			 */
 
-			await initializeCore();
+			const isSignIn = to.name === VIEWS.SIGNIN;
 
-			// After a backend restart the auth cookie can still look valid, so
-			// loginWithCookie succeeds and guest middleware would bounce into
-			// ?redirect=/home/workflows — then 401 → signin forever. Drop that
-			// stale session before authenticated boot or guest redirects run.
-			if (to.query.sessionExpired === 'true' && useUsersStore().currentUser) {
+			// Visiting /signin always drops the session first (cookie + in-memory user).
+			// Doing this before initializeCore avoids loginWithCookie → brief bounce into
+			// the app → logout flash on ?sessionExpired=true.
+			if (isSignIn) {
 				try {
 					await useUsersStore().logout();
 				} catch {
-					// Session may already be dead server-side.
+					// Cookie may already be missing/invalid.
 				}
 			}
+
+			await initializeCore({ skipCookieLogin: isSignIn });
 
 			// Pass undefined for first param to use default
 			await initializeAuthenticatedFeatures(undefined, to.name as string);
