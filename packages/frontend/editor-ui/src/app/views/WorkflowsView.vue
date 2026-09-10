@@ -677,6 +677,66 @@ const refreshWorkflows = async () => {
 	]);
 };
 
+const isWorkflowListItem = (resource: WorkflowListResource): resource is WorkflowListItem =>
+	resource.resource !== 'folder';
+
+const decrementListCounts = () => {
+	if (workflowsListStore.totalWorkflowCount > 0) {
+		workflowsListStore.totalWorkflowCount -= 1;
+	}
+	if (foldersStore.totalWorkflowCount > 0) {
+		foldersStore.totalWorkflowCount -= 1;
+	}
+};
+
+const removeWorkflowFromList = (id: string, { updateCount = true } = {}) => {
+	const before = workflowsAndFolders.value.length;
+	workflowsAndFolders.value = workflowsAndFolders.value.filter((item) => item.id !== id);
+	if (updateCount && workflowsAndFolders.value.length < before) {
+		decrementListCounts();
+	}
+};
+
+const markWorkflowArchivedInList = (id: string, isArchived: boolean) => {
+	workflowsAndFolders.value = workflowsAndFolders.value.map((resource) => {
+		if (resource.id !== id || !isWorkflowListItem(resource)) {
+			return resource;
+		}
+		return {
+			...resource,
+			isArchived,
+			...(isArchived ? { active: false, activeVersionId: null } : {}),
+		};
+	});
+};
+
+const onWorkflowDeleted = async (id: string) => {
+	removeWorkflowFromList(id);
+	await refreshWorkflows();
+	// Refetch can return a stale row if it raced the delete — keep the item gone.
+	removeWorkflowFromList(id, { updateCount: false });
+};
+
+const onWorkflowArchived = async (id: string) => {
+	if (filters.value.showArchived) {
+		markWorkflowArchivedInList(id, true);
+	} else {
+		removeWorkflowFromList(id);
+	}
+	await refreshWorkflows();
+	if (filters.value.showArchived) {
+		markWorkflowArchivedInList(id, true);
+	} else {
+		removeWorkflowFromList(id, { updateCount: false });
+	}
+};
+
+const onWorkflowUnarchived = async (id: string) => {
+	markWorkflowArchivedInList(id, false);
+	await refreshWorkflows();
+	markWorkflowArchivedInList(id, false);
+};
+
 const onFolderDeleted = async (payload: {
 	folderId: string;
 	workflowCount: number;
@@ -2436,9 +2496,9 @@ const onNameSubmit = async (name: string) => {
 					:can-manage-instance-mcp="canManageInstanceMcp"
 					:is-workflow-card-mcp-toggle-enabled="isWorkflowCardMcpToggleEnabled"
 					@click:tag="onClickTag"
-					@workflow:deleted="refreshWorkflows"
-					@workflow:archived="refreshWorkflows"
-					@workflow:unarchived="refreshWorkflows"
+					@workflow:deleted="onWorkflowDeleted"
+					@workflow:archived="onWorkflowArchived"
+					@workflow:unarchived="onWorkflowUnarchived"
 					@workflow:moved="fetchWorkflows"
 					@workflow:duplicated="fetchWorkflows"
 					@workflow:unpublished="onWorkflowUnpublished"
