@@ -26,6 +26,9 @@ const common = {
 	time: true,
 	windowsHide: true,
 	vizion: false,
+	env: {
+		GENERIC_TIMEZONE: 'Asia/Ho_Chi_Minh',
+	},
 };
 
 module.exports = {
@@ -40,6 +43,7 @@ module.exports = {
 			name: 'n8n-worker-1',
 			args: 'worker',
 			env: {
+				...common.env,
 				N8N_RUNNERS_BROKER_PORT: '5680',
 			},
 			restart_delay: 8_000,
@@ -49,6 +53,7 @@ module.exports = {
 			name: 'n8n-worker-2',
 			args: 'worker',
 			env: {
+				...common.env,
 				N8N_RUNNERS_BROKER_PORT: '5681',
 			},
 			restart_delay: 10_000,
