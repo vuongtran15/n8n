@@ -99,18 +99,23 @@ if not exist "%FE_DIST%\index.html" (
 )
 
 echo.
-echo === Done ===
-echo Tiep theo ^(neu dang chay PM2^):
-echo   stop-n8n-pm2.bat
-echo   start-n8n-pm2.bat
-echo Hoac: pm2 restart n8n-main
+echo === Done build ===
 echo.
-echo Cua so se tu dong sau 8s...
-timeout /t 8 /nobreak >nul
+
+echo [6/6] Start n8n via PM2 ^(env + custom da co trong start-n8n-pm2.bat^)
+if exist "%ROOT%\start-n8n-pm2.bat" (
+  call "%ROOT%\start-n8n-pm2.bat"
+  exit /b %ERRORLEVEL%
+)
+
+echo WARNING: Khong thay start-n8n-pm2.bat — tu start tay.
+echo   start-n8n-pm2.bat
+echo.
+ping -n 9 127.0.0.1 >nul
 exit /b 0
 
 :END
 echo.
 echo Co loi — cua so se dong sau 20s, hoac bam phim bat ky...
-timeout /t 20 >nul
+ping -n 21 127.0.0.1 >nul
 exit /b 1
