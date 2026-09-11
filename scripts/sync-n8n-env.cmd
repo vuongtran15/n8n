@@ -5,6 +5,8 @@ REM Usage: call scripts\sync-n8n-env.cmd   (from repo root, or set ROOT)
 setlocal EnableExtensions EnableDelayedExpansion
 
 if not defined ROOT set "ROOT=%CD%"
+REM Trim trailing spaces from ROOT (cmd `set VAR=path &&` often leaves a space)
+for /f "tokens=* delims= " %%A in ("%ROOT%") do set "ROOT=%%A"
 set "BIN=%ROOT%\packages\cli\bin"
 set "TEMPLATE=%ROOT%\docker\kito-n8n\n8n.env"
 set "CUSTOM_NODES=%ROOT%\custom\n8n-nodes-rm-workflow"
