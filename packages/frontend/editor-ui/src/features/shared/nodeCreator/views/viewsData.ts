@@ -539,6 +539,7 @@ export function RegularView(nodes: SimplifiedNodeType[]) {
 						'CUSTOM.rmWebAutoWorkflow',
 						'CUSTOM.rmFileAutoWorkflow',
 						'CUSTOM.rmOutlookAutoWorkflow',
+						'CUSTOM.rmWecomWorkflow',
 					],
 				},
 			},

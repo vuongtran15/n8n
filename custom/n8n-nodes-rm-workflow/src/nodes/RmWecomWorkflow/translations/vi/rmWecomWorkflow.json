@@ -1,0 +1,78 @@
+{
+	"header": {
+		"displayName": "RM WECOM",
+		"description": "Gửi tin nhóm WeCom qua portal RMAI (/api/n8n/wecom)"
+	},
+	"nodeView": {
+		"operation": {
+			"displayName": "Thao tác",
+			"options": {
+				"sendText": {
+					"displayName": "Gửi text",
+					"description": "POST /api/n8n/wecom/send-text — gửi plain text (+ mention tùy chọn)",
+					"action": "Gửi text WeCom"
+				},
+				"sendMarkdown": {
+					"displayName": "Gửi markdown",
+					"description": "POST /api/n8n/wecom/send-markdown — gửi markdown WeCom (mention bằng <@userid>)",
+					"action": "Gửi markdown WeCom"
+				},
+				"sendImage": {
+					"displayName": "Gửi ảnh",
+					"description": "POST /api/n8n/wecom/send-image — gửi ảnh JPG/PNG ≤ 2 MB (multipart, từ binary)",
+					"action": "Gửi ảnh WeCom"
+				},
+				"sendFile": {
+					"displayName": "Gửi file",
+					"description": "POST /api/n8n/wecom/send-file — gửi file ≤ 20 MB (multipart, từ binary)",
+					"action": "Gửi file WeCom"
+				}
+			}
+		},
+		"branchOnSuccess": {
+			"displayName": "Nhánh theo Success",
+			"description": "Khi bật: node có 2 output — Success (response.Success === true) và Failed (còn lại). Khi tắt: một output, mọi item đi nhánh chính dù Success true hay false."
+		},
+		"branchOnSuccessInfo": {
+			"displayName": "Giải thích nhánh Success",
+			"description": "Output Success: item có Success = true. Output Failed: Success = false, thiếu field Success, hoặc lỗi được trả về khi bật Continue On Fail."
+		},
+		"connectionFieldsSourceInfo": {
+			"displayName": "Nguồn field kết nối",
+			"description": "Không cần đăng nhập / Bearer. Ưu tiên field từ JSON input item: webhook (hoặc key/id), content, mentionedList, mentionedMobileList, binaryPropertyName, filename. Markdown: content/text/markdown (mention bằng <@userid>). Tùy chọn: baseUrl, requestTimeoutSeconds."
+		},
+		"baseUrl": {
+			"displayName": "Base URL",
+			"description": "Portal WeCom API base (không trailing slash). Mặc định host RMAI /api/n8n/wecom."
+		},
+		"requestTimeoutSeconds": {
+			"displayName": "Timeout request (giây)",
+			"description": "Timeout HTTP gọi portal (giây)."
+		},
+		"webhook": {
+			"displayName": "Webhook",
+			"description": "Bot key (UUID) hoặc full URL webhook WeCom. Alias JSON: key, id, botid."
+		},
+		"content": {
+			"displayName": "Nội dung",
+			"description": "Send Text: plain text (alias: text). Send Markdown: markdown WeCom (alias: text, markdown); @ bằng <@userid>.",
+			"placeholder": "Nội dung text hoặc markdown WeCom"
+		},
+		"mentionedList": {
+			"displayName": "Danh sách mention",
+			"description": "Tùy chọn. EmpId + @all. Nhiều giá trị: phân tách bằng dấu phẩy."
+		},
+		"mentionedMobileList": {
+			"displayName": "Danh sách mention (mobile)",
+			"description": "Tùy chọn. Chỉ EmpId + @all (SĐT bị server loại)."
+		},
+		"binaryPropertyName": {
+			"displayName": "Property binary",
+			"description": "Tên property binary trên input item (ảnh JPG/PNG ≤ 2 MB hoặc file ≤ 20 MB)."
+		},
+		"filename": {
+			"displayName": "Tên file",
+			"description": "Tên hiển thị trên WeCom (tùy chọn). Để trống = dùng tên file binary."
+		}
+	}
+}

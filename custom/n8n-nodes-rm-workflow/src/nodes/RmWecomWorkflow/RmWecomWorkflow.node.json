@@ -1,0 +1,13 @@
+{
+	"node": "CUSTOM.rmWecomWorkflow",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["RM Workflow"],
+	"subcategories": {
+		"RM Workflow": ["RM Workflow"]
+	},
+	"alias": ["RMW", "WECOM", "RMWECOM", "RM WECOM", "WeChat Work", "企业微信"],
+	"resources": {
+		"primaryDocumentation": []
+	}
+}

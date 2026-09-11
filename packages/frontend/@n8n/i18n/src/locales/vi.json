@@ -2186,6 +2186,8 @@
 	"headers.rmSapWorkflow.description": "API HTTP tự động hóa SAP (/sap-auto/*) — mở/kết nối, lệnh, ngắt kết nối",
 	"headers.rmWebAutoWorkflow.displayName": "RM WEB AUTO",
 	"headers.rmWebAutoWorkflow.description": "API HTTP tự động hóa Web (/web-auto/*) — Playwright kết nối, lệnh, ngắt kết nối",
+	"headers.rmWecomWorkflow.displayName": "RM WECOM",
+	"headers.rmWecomWorkflow.description": "Gửi tin nhóm WeCom qua portal RMAI (/api/n8n/wecom) — text, ảnh, file",
 	"rmWorkflow.widgetStore.title": "Kho widget",
 	"rmWorkflow.widgetStore.subtitle": "Chọn workflow widget có sẵn để chạy ở bước này",
 	"rmWorkflow.widgetStore.searchPlaceholder": "Tìm tên, tag…",

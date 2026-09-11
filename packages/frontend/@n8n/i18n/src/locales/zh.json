@@ -2186,6 +2186,8 @@
 	"headers.rmSapWorkflow.description": "SAP 自动化 HTTP API（/sap-auto/*）— 打开并连接、命令、断开连接",
 	"headers.rmWebAutoWorkflow.displayName": "RM WEB AUTO",
 	"headers.rmWebAutoWorkflow.description": "Web 自动化 HTTP API（/web-auto/*）— Playwright 连接、命令、断开连接",
+	"headers.rmWecomWorkflow.displayName": "RM WECOM",
+	"headers.rmWecomWorkflow.description": "通过 RMAI 门户发送企业微信群消息（/api/n8n/wecom）— 文本、图片、文件",
 	"rmWorkflow.widgetStore.title": "Widget 库",
 	"rmWorkflow.widgetStore.subtitle": "选择预置的 widget 工作流在此步骤运行",
 	"rmWorkflow.widgetStore.searchPlaceholder": "按名称或标签搜索…",

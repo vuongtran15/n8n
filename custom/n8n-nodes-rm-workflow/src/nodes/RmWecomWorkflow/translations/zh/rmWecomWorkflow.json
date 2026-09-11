@@ -1,0 +1,78 @@
+{
+	"header": {
+		"displayName": "RM WECOM",
+		"description": "通过 RMAI 门户发送企业微信群消息（/api/n8n/wecom）"
+	},
+	"nodeView": {
+		"operation": {
+			"displayName": "操作",
+			"options": {
+				"sendText": {
+					"displayName": "发送文本",
+					"description": "POST /api/n8n/wecom/send-text — 发送纯文本（可选 @mention）",
+					"action": "发送企业微信文本"
+				},
+				"sendMarkdown": {
+					"displayName": "发送 Markdown",
+					"description": "POST /api/n8n/wecom/send-markdown — 发送企业微信 markdown（用 <@userid> @人）",
+					"action": "发送企业微信 Markdown"
+				},
+				"sendImage": {
+					"displayName": "发送图片",
+					"description": "POST /api/n8n/wecom/send-image — 发送 JPG/PNG ≤ 2 MB（multipart，来自 binary）",
+					"action": "发送企业微信图片"
+				},
+				"sendFile": {
+					"displayName": "发送文件",
+					"description": "POST /api/n8n/wecom/send-file — 发送文件 ≤ 20 MB（multipart，来自 binary）",
+					"action": "发送企业微信文件"
+				}
+			}
+		},
+		"branchOnSuccess": {
+			"displayName": "按 Success 分支",
+			"description": "开启后：节点有 2 个输出 — Success（response.Success === true）与 Failed（其余）。关闭：单输出，无论 Success 与否都走主分支。"
+		},
+		"branchOnSuccessInfo": {
+			"displayName": "Success 分支说明",
+			"description": "Success 输出：Success = true。Failed 输出：Success = false、缺少 Success，或 Continue On Fail 时返回的错误。"
+		},
+		"connectionFieldsSourceInfo": {
+			"displayName": "连接字段来源",
+			"description": "无需登录 / Bearer。优先使用 JSON input：webhook（或 key/id）、content、mentionedList、mentionedMobileList、binaryPropertyName、filename。Markdown：content/text/markdown（用 <@userid> @人）。可选：baseUrl、requestTimeoutSeconds。"
+		},
+		"baseUrl": {
+			"displayName": "Base URL",
+			"description": "企业微信门户 API 根地址（无斜杠）。默认 RMAI /api/n8n/wecom。"
+		},
+		"requestTimeoutSeconds": {
+			"displayName": "请求超时（秒）",
+			"description": "调用门户的 HTTP 超时（秒）。"
+		},
+		"webhook": {
+			"displayName": "Webhook",
+			"description": "机器人 key（UUID）或完整 webhook URL。JSON 别名：key、id、botid。"
+		},
+		"content": {
+			"displayName": "内容",
+			"description": "Send Text：纯文本（别名 text）。Send Markdown：企业微信 markdown（别名 text/markdown）；用 <@userid> @人。",
+			"placeholder": "文本或 Markdown 内容"
+		},
+		"mentionedList": {
+			"displayName": "提及列表",
+			"description": "可选。EmpId + @all。多个值用逗号分隔。"
+		},
+		"mentionedMobileList": {
+			"displayName": "提及手机列表",
+			"description": "可选。仅 EmpId + @all（手机号会被服务端过滤）。"
+		},
+		"binaryPropertyName": {
+			"displayName": "二进制属性名",
+			"description": "输入项上的 binary 属性名（图片 JPG/PNG ≤ 2 MB 或文件 ≤ 20 MB）。"
+		},
+		"filename": {
+			"displayName": "文件名",
+			"description": "企业微信显示名（可选）。为空则用 binary 文件名。"
+		}
+	}
+}
