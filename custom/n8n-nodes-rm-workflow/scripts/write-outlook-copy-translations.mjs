@@ -119,8 +119,32 @@ const outlookVi = {
 				captureMail: {
 					displayName: 'Chụp mail',
 					description:
-						'Chụp/lưu email ra file. format: png / html / msg. Đường dẫn: savePath hoặc saveDirectory + fileName ({subject} {date} {time} {entryId}). overwrite mặc định true.',
-					action: 'Chụp mail',
+						'Chụp ảnh 1 email (png; cũng hỗ trợ html/msg). Đường dẫn: savePath hoặc saveDirectory + fileName.',
+					action: 'Chụp ảnh mail',
+				},
+				saveMail: {
+					displayName: 'Lưu mail',
+					description:
+						'Lưu 1 email ra file .msg. Đường dẫn: savePath hoặc saveDirectory + fileName ({subject} {date} {time} {entryId}).',
+					action: 'Lưu mail .msg',
+				},
+				getConversation: {
+					displayName: 'Lấy hội thoại',
+					description:
+						'Liệt kê email nối (thread): entryId, maxCount tùy chọn. Trả Count, RelatedCount, Mails[].',
+					action: 'Lấy hội thoại',
+				},
+				saveConversationMails: {
+					displayName: 'Lưu hội thoại',
+					description:
+						'Lưu cả email nối ra .msg: saveDirectory + fileName (nên có {index}). Trả Count, RelatedCount, Files[].',
+					action: 'Lưu hội thoại .msg',
+				},
+				captureConversation: {
+					displayName: 'Chụp hội thoại',
+					description:
+						'Chụp ảnh cả thread (png). saveDirectory + fileName (nên có {index}), maxCount tùy chọn.',
+					action: 'Chụp ảnh hội thoại',
 				},
 				getSelectedMail: {
 					displayName: 'Mail đang chọn',
@@ -245,7 +269,7 @@ const outlookVi = {
 		},
 		maxCount: {
 			displayName: 'Số lượng tối đa',
-			description: 'Số mail tối đa trả về (List / Search). Để trống = server mặc định.',
+			description: 'Số mail tối đa (List / Search / Conversation). Để trống = server mặc định.',
 			placeholder: '20',
 		},
 		unreadOnly: {
@@ -262,7 +286,7 @@ const outlookVi = {
 		},
 		entryId: {
 			displayName: 'Entry ID',
-			description: 'EntryID mail Outlook (Read, Capture, Reply, Move, Delete, …).',
+			description: 'EntryID mail Outlook (Read, Capture, Save, Conversation, Reply, …).',
 		},
 		to: {
 			displayName: 'Đến',
@@ -320,24 +344,41 @@ const outlookVi = {
 		saveDirectory: {
 			displayName: 'Thư mục lưu',
 			description:
-				'Thư mục lưu trên máy worker (Save Attachment / Save All / Capture Mail). Capture: dùng cùng File Name, hoặc dùng Save Path.',
+				'Thư mục lưu trên máy worker (Save Attachment / Save All / Capture Mail).',
 			placeholder: 'C:\\temp\\attachments',
+		},
+		capturePathMode: {
+			displayName: 'Kiểu đường dẫn',
+			description:
+				'Chọn một cách lưu — thư mục + tên file, hoặc đường dẫn file đầy đủ (Capture Mail / Save Mail).',
+			options: {
+				directory: { displayName: 'Thư mục + tên file' },
+				fullPath: { displayName: 'Đường dẫn đầy đủ' },
+			},
+		},
+		mailPathMode: {
+			displayName: 'Kiểu đường dẫn',
+			description:
+				'Chọn một cách lưu — thư mục + tên file, hoặc đường dẫn file đầy đủ (Capture Mail / Save Mail).',
+			options: {
+				directory: { displayName: 'Thư mục + tên file' },
+				fullPath: { displayName: 'Đường dẫn đầy đủ' },
+			},
 		},
 		savePath: {
 			displayName: 'Đường dẫn file',
-			description:
-				'Đường dẫn file đầy đủ (Capture Mail). Thay thế cho Thư mục lưu + Tên file.',
+			description: 'Đường dẫn file đầy đủ (Capture Mail / Save Mail).',
 			placeholder: 'D:\\temp\\outlook-capture\\mail1.png',
 		},
 		fileName: {
 			displayName: 'Tên file',
 			description:
-				'Tên file khi dùng Thư mục lưu (Capture Mail). Placeholder: {subject} {date} {time} {entryId}.',
+				'Tên file khi dùng Thư mục lưu. Placeholder: {subject} {date} {time} {entryId} (thread: thêm {index}).',
 			placeholder: 'PR_check_{date}_{time}.png',
 		},
 		format: {
 			displayName: 'Định dạng',
-			description: 'Định dạng xuất Capture Mail: png (ảnh) / html / msg.',
+			description: 'Định dạng chụp: png (ảnh) / html / msg (Capture Mail / Capture Conversation).',
 			options: {
 				png: { displayName: 'PNG' },
 				html: { displayName: 'HTML' },
@@ -452,8 +493,32 @@ const outlookZh = {
 				captureMail: {
 					displayName: '截取邮件',
 					description:
-						'将邮件截取/保存为文件。format：png / html / msg。路径：savePath，或 saveDirectory + fileName（{subject} {date} {time} {entryId}）。overwrite 默认 true。',
-					action: '截取邮件',
+						'截取单封邮件图片（png；也支持 html/msg）。路径：savePath，或 saveDirectory + fileName。',
+					action: '截取邮件图片',
+				},
+				saveMail: {
+					displayName: '保存邮件',
+					description:
+						'将单封邮件保存为 .msg。路径：savePath，或 saveDirectory + fileName（{subject} {date} {time} {entryId}）。',
+					action: '保存邮件 .msg',
+				},
+				getConversation: {
+					displayName: '获取会话',
+					description:
+						'列出会话邮件：entryId，可选 maxCount。返回 Count、RelatedCount、Mails[]。',
+					action: '获取会话',
+				},
+				saveConversationMails: {
+					displayName: '保存会话邮件',
+					description:
+						'将会话全部保存为 .msg：saveDirectory + fileName（建议含 {index}）。返回 Count、RelatedCount、Files[]。',
+					action: '保存会话 .msg',
+				},
+				captureConversation: {
+					displayName: '截取会话',
+					description:
+						'截取整个会话图片（png）。saveDirectory + fileName（建议含 {index}），可选 maxCount。',
+					action: '截取会话图片',
 				},
 				getSelectedMail: {
 					displayName: '当前选中邮件',
@@ -573,7 +638,7 @@ const outlookZh = {
 		},
 		maxCount: {
 			displayName: '最大数量',
-			description: 'List / Search 返回的最大邮件数。留空 = 服务器默认。',
+			description: '最大邮件数（List / Search / Conversation）。留空 = 服务器默认。',
 			placeholder: '20',
 		},
 		unreadOnly: {
@@ -590,7 +655,7 @@ const outlookZh = {
 		},
 		entryId: {
 			displayName: 'Entry ID',
-			description: 'Outlook 邮件 EntryID（读取、截取、回复、移动、删除等）。',
+			description: 'Outlook 邮件 EntryID（读取、截取、保存、会话、回复等）。',
 		},
 		to: {
 			displayName: '收件人',
@@ -647,24 +712,39 @@ const outlookZh = {
 		},
 		saveDirectory: {
 			displayName: '保存目录',
-			description:
-				'worker 上的保存目录（保存附件 / 保存全部 / 截取邮件）。截取时可配合文件名，或改用完整路径。',
+			description: 'worker 上的保存目录（保存附件 / 保存全部 / 截取邮件）。',
 			placeholder: 'C:\\temp\\attachments',
+		},
+		capturePathMode: {
+			displayName: '路径方式',
+			description: '二选一 — 目录 + 文件名，或完整文件路径（截取邮件 / 保存邮件）。',
+			options: {
+				directory: { displayName: '目录 + 文件名' },
+				fullPath: { displayName: '完整路径' },
+			},
+		},
+		mailPathMode: {
+			displayName: '路径方式',
+			description: '二选一 — 目录 + 文件名，或完整文件路径（截取邮件 / 保存邮件）。',
+			options: {
+				directory: { displayName: '目录 + 文件名' },
+				fullPath: { displayName: '完整路径' },
+			},
 		},
 		savePath: {
 			displayName: '完整路径',
-			description: '完整文件路径（截取邮件）。可替代「保存目录 + 文件名」。',
+			description: '完整文件路径（截取邮件 / 保存邮件）。',
 			placeholder: 'D:\\temp\\outlook-capture\\mail1.png',
 		},
 		fileName: {
 			displayName: '文件名',
 			description:
-				'配合保存目录使用（截取邮件）。占位符：{subject} {date} {time} {entryId}。',
+				'配合保存目录使用。占位符：{subject} {date} {time} {entryId}（会话另加 {index}）。',
 			placeholder: 'PR_check_{date}_{time}.png',
 		},
 		format: {
 			displayName: '格式',
-			description: '截取邮件导出格式：png（图片）/ html / msg。',
+			description: '截取格式：png（图片）/ html / msg（截取邮件 / 截取会话）。',
 			options: {
 				png: { displayName: 'PNG' },
 				html: { displayName: 'HTML' },

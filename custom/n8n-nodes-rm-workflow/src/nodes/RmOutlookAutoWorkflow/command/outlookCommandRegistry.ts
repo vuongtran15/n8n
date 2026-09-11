@@ -15,6 +15,10 @@ export type OutlookCommandParamKind =
 	| 'saveAttachment'
 	| 'saveAllAttachments'
 	| 'captureMail'
+	| 'saveMail'
+	| 'getConversation'
+	| 'saveConversationMails'
+	| 'captureConversation'
 	| 'closeInspector'
 	| 'closeAllInspectors'
 	| 'sendKeys'
@@ -95,9 +99,45 @@ export const OUTLOOK_COMMAND_DEFINITIONS: OutlookCommandDefinition[] = [
 		function: 'CaptureMail',
 		displayName: 'Capture Mail',
 		description:
-			'Chụp/lưu email ra file. format: png / html / msg. Đường dẫn: savePath hoặc saveDirectory + fileName ({subject} {date} {time} {entryId}). overwrite mặc định true.',
-		action: 'Capture mail',
+			'Chụp ảnh 1 email (png; cũng hỗ trợ html/msg). Đường dẫn: savePath hoặc saveDirectory + fileName.',
+		action: 'Capture mail screenshot',
 		params: 'captureMail',
+	},
+	{
+		operation: 'saveMail',
+		function: 'SaveMail',
+		displayName: 'Save Mail',
+		description:
+			'Lưu 1 email ra file .msg. Đường dẫn: savePath hoặc saveDirectory + fileName ({subject} {date} {time} {entryId}).',
+		action: 'Save mail as msg',
+		params: 'saveMail',
+	},
+	{
+		operation: 'getConversation',
+		function: 'GetConversation',
+		displayName: 'Get Conversation',
+		description:
+			'Liệt kê email nối (thread): entryId, maxCount tùy chọn. Trả Count, RelatedCount, Mails[].',
+		action: 'Get conversation',
+		params: 'getConversation',
+	},
+	{
+		operation: 'saveConversationMails',
+		function: 'SaveConversationMails',
+		displayName: 'Save Conversation Mails',
+		description:
+			'Lưu cả email nối ra .msg: saveDirectory + fileName (nên có {index}). Trả Count, RelatedCount, Files[].',
+		action: 'Save conversation as msg',
+		params: 'saveConversationMails',
+	},
+	{
+		operation: 'captureConversation',
+		function: 'CaptureConversation',
+		displayName: 'Capture Conversation',
+		description:
+			'Chụp ảnh cả thread (png). saveDirectory + fileName (nên có {index}), maxCount tùy chọn.',
+		action: 'Capture conversation screenshots',
+		params: 'captureConversation',
 	},
 	{
 		operation: 'getSelectedMail',

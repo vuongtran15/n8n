@@ -28,6 +28,10 @@ const ENTRY_ID_OPS = operationsWithParamKind(
 	'saveAttachment',
 	'saveAllAttachments',
 	'captureMail',
+	'saveMail',
+	'getConversation',
+	'saveConversationMails',
+	'captureConversation',
 	'closeInspector',
 );
 const SEND_MAIL_OPS = operationsWithParamKind('sendMail');
@@ -39,11 +43,27 @@ const MOVE_MAIL_OPS = operationsWithParamKind('moveMail');
 const DELETE_MAIL_OPS = operationsWithParamKind('deleteMail');
 const SAVE_ATTACHMENT_OPS = operationsWithParamKind('saveAttachment');
 const SAVE_ALL_ATTACHMENTS_OPS = operationsWithParamKind('saveAllAttachments');
-const CAPTURE_MAIL_OPS = operationsWithParamKind('captureMail');
-const SAVE_DIR_OPS = operationsWithParamKind(
+const MAIL_PATH_MODE_OPS = operationsWithParamKind('captureMail', 'saveMail');
+const CONVERSATION_FILE_OPS = operationsWithParamKind(
+	'saveConversationMails',
+	'captureConversation',
+);
+const CAPTURE_FORMAT_OPS = operationsWithParamKind('captureMail', 'captureConversation');
+const MAX_COUNT_OPS = operationsWithParamKind(
+	'listMails',
+	'searchMails',
+	'getConversation',
+	'saveConversationMails',
+	'captureConversation',
+);
+const SAVE_DIR_OPS = operationsWithParamKind('saveAttachment', 'saveAllAttachments');
+const OVERWRITE_OPS = operationsWithParamKind(
 	'saveAttachment',
 	'saveAllAttachments',
 	'captureMail',
+	'saveMail',
+	'saveConversationMails',
+	'captureConversation',
 );
 const CLOSE_INSPECTOR_OPS = operationsWithParamKind('closeInspector', 'closeAllInspectors');
 const SEND_KEYS_OPS = operationsWithParamKind('sendKeys');
@@ -79,6 +99,10 @@ export function getOutlookCommandShortcutProperties(): INodeProperties[] {
 					'saveAttachment',
 					'saveAllAttachments',
 					'captureMail',
+					'saveMail',
+					'getConversation',
+					'saveConversationMails',
+					'captureConversation',
 					'closeInspector',
 					'closeAllInspectors',
 					'sendKeys',
@@ -101,8 +125,9 @@ export function getOutlookCommandShortcutProperties(): INodeProperties[] {
 			type: 'string',
 			default: '',
 			placeholder: '20',
-			description: 'Số mail tối đa trả về (List / Search). Để trống = server mặc định.',
-			displayOptions: op(...LIST_MAILS_OPS, ...SEARCH_MAILS_OPS),
+			description:
+				'Số mail tối đa (List / Search / Conversation). Để trống = server mặc định.',
+			displayOptions: op(...MAX_COUNT_OPS),
 		},
 		{
 			displayName: 'Unread Only',
@@ -133,7 +158,7 @@ export function getOutlookCommandShortcutProperties(): INodeProperties[] {
 			name: 'entryId',
 			type: 'string',
 			default: '',
-			description: 'EntryID mail Outlook (Read, Capture, Reply, Move, Delete, …).',
+			description: 'EntryID mail Outlook (Read, Capture, Save, Conversation, Reply, …).',
 			displayOptions: op(...ENTRY_ID_OPS),
 		},
 		{
@@ -253,19 +278,35 @@ export function getOutlookCommandShortcutProperties(): INodeProperties[] {
 			type: 'string',
 			default: '',
 			placeholder: 'C:\\temp\\attachments',
-			description:
-				'Thư mục lưu trên máy worker (Save Attachment / Save All / Capture Mail). Capture: dùng cùng fileName, hoặc dùng Save Path.',
+			description: 'Thư mục lưu trên máy worker (Save Attachment / Save All Attachments).',
 			displayOptions: op(...SAVE_DIR_OPS),
 		},
 		{
-			displayName: 'Save Path',
-			name: 'savePath',
+			displayName: 'Path Mode',
+			name: 'mailPathMode',
+			type: 'options',
+			options: [
+				{ name: 'Directory + File Name', value: 'directory' },
+				{ name: 'Full Path', value: 'fullPath' },
+			],
+			default: 'directory',
+			description:
+				'Chọn một cách lưu — thư mục + tên file, hoặc đường dẫn file đầy đủ (Capture Mail / Save Mail).',
+			displayOptions: op(...MAIL_PATH_MODE_OPS),
+		},
+		{
+			displayName: 'Save Directory',
+			name: 'saveDirectory',
 			type: 'string',
 			default: '',
-			placeholder: 'D:\\temp\\outlook-capture\\mail1.png',
-			description:
-				'Đường dẫn file đầy đủ (Capture Mail). Thay thế cho Save Directory + File Name.',
-			displayOptions: op(...CAPTURE_MAIL_OPS),
+			placeholder: 'D:\\temp\\outlook-capture',
+			description: 'Thư mục lưu trên máy worker. Dùng cùng File Name.',
+			displayOptions: {
+				show: {
+					operation: MAIL_PATH_MODE_OPS,
+					mailPathMode: ['directory'],
+				},
+			},
 		},
 		{
 			displayName: 'File Name',
@@ -274,8 +315,47 @@ export function getOutlookCommandShortcutProperties(): INodeProperties[] {
 			default: '',
 			placeholder: 'PR_check_{date}_{time}.png',
 			description:
-				'Tên file khi dùng Save Directory (Capture Mail). Placeholder: {subject} {date} {time} {entryId}.',
-			displayOptions: op(...CAPTURE_MAIL_OPS),
+				'Tên file khi dùng Save Directory. Placeholder: {subject} {date} {time} {entryId}.',
+			displayOptions: {
+				show: {
+					operation: MAIL_PATH_MODE_OPS,
+					mailPathMode: ['directory'],
+				},
+			},
+		},
+		{
+			displayName: 'Save Path',
+			name: 'savePath',
+			type: 'string',
+			default: '',
+			placeholder: 'D:\\temp\\outlook-capture\\mail1.png',
+			description: 'Đường dẫn file đầy đủ (Capture Mail / Save Mail).',
+			displayOptions: {
+				show: {
+					operation: MAIL_PATH_MODE_OPS,
+					mailPathMode: ['fullPath'],
+				},
+			},
+		},
+		{
+			displayName: 'Save Directory',
+			name: 'saveDirectory',
+			type: 'string',
+			default: '',
+			placeholder: 'D:\\temp\\outlook-msg\\thread1',
+			description:
+				'Thư mục lưu thread trên máy worker (Save / Capture Conversation).',
+			displayOptions: op(...CONVERSATION_FILE_OPS),
+		},
+		{
+			displayName: 'File Name',
+			name: 'fileName',
+			type: 'string',
+			default: '',
+			placeholder: 'mail_{index}_{subject}.msg',
+			description:
+				'Tên file thread — nên có {index}. Placeholder: {index} {subject} {date} {time} {entryId}.',
+			displayOptions: op(...CONVERSATION_FILE_OPS),
 		},
 		{
 			displayName: 'Format',
@@ -287,8 +367,8 @@ export function getOutlookCommandShortcutProperties(): INodeProperties[] {
 				{ name: 'MSG', value: 'msg' },
 			],
 			default: 'png',
-			description: 'Định dạng xuất Capture Mail: png (ảnh) / html / msg.',
-			displayOptions: op(...CAPTURE_MAIL_OPS),
+			description: 'Định dạng chụp: png (ảnh) / html / msg (Capture Mail / Capture Conversation).',
+			displayOptions: op(...CAPTURE_FORMAT_OPS),
 		},
 		{
 			displayName: 'Overwrite',
@@ -297,7 +377,7 @@ export function getOutlookCommandShortcutProperties(): INodeProperties[] {
 			default: true,
 			description:
 				'true = ghi đè file cùng tên trong saveDirectory/savePath. false = giữ file cũ, lưu bản mới thành ten_2.ext, ten_3.ext, …',
-			displayOptions: op(...SAVE_DIR_OPS),
+			displayOptions: op(...OVERWRITE_OPS),
 		},
 		{
 			displayName: 'Skip Embedded',

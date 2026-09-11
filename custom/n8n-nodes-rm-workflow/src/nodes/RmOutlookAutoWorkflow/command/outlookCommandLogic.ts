@@ -45,6 +45,38 @@ function boolStr(value: boolean): string {
 	return value ? 'true' : 'false';
 }
 
+function resolveMailPathMode(
+	s: (key: string) => string,
+): 'directory' | 'fullPath' {
+	const pathModeRaw = s('mailPathMode').trim() || s('capturePathMode').trim() || 'directory';
+	return pathModeRaw === 'fullPath' ? 'fullPath' : 'directory';
+}
+
+function applyMailPathParams(
+	s: (key: string) => string,
+	out: Record<string, string>,
+	requireFileName = false,
+): void {
+	const pathMode = resolveMailPathMode(s);
+	if (pathMode === 'fullPath') {
+		const savePath = s('savePath').trim();
+		if (!savePath) throw new Error('Thiếu savePath');
+		out.savePath = savePath;
+		return;
+	}
+	const saveDirectory = s('saveDirectory').trim();
+	if (!saveDirectory) throw new Error('Thiếu saveDirectory');
+	out.saveDirectory = saveDirectory;
+	const fileName = s('fileName').trim();
+	if (requireFileName && !fileName) throw new Error('Thiếu fileName');
+	if (fileName) out.fileName = fileName;
+}
+
+function applyCaptureFormat(s: (key: string) => string, out: Record<string, string>): void {
+	const formatRaw = s('format').trim().toLowerCase() || 'png';
+	out.format = ['png', 'html', 'msg'].includes(formatRaw) ? formatRaw : 'png';
+}
+
 function buildParamObject(
 	ctx: IExecuteFunctions,
 	itemIndex: number,
@@ -216,22 +248,63 @@ function buildParamObject(
 		case 'captureMail': {
 			const entryId = s('entryId').trim();
 			if (!entryId) throw new Error('Thiếu entryId');
-			const savePath = s('savePath').trim();
-			const saveDirectory = s('saveDirectory').trim();
-			const fileName = s('fileName').trim();
-			if (!savePath && !saveDirectory) {
-				throw new Error('Thiếu savePath hoặc saveDirectory (+ fileName)');
-			}
-			const formatRaw = s('format').trim().toLowerCase() || 'png';
-			const format = ['png', 'html', 'msg'].includes(formatRaw) ? formatRaw : 'png';
 			const out: Record<string, string> = {
 				entryId,
-				format,
 				overwrite: boolStr(b('overwrite', true)),
 			};
-			if (savePath) out.savePath = savePath;
-			if (saveDirectory) out.saveDirectory = saveDirectory;
+			applyCaptureFormat(s, out);
+			applyMailPathParams(s, out);
+			return out;
+		}
+		case 'saveMail': {
+			const entryId = s('entryId').trim();
+			if (!entryId) throw new Error('Thiếu entryId');
+			const out: Record<string, string> = {
+				entryId,
+				overwrite: boolStr(b('overwrite', true)),
+			};
+			applyMailPathParams(s, out);
+			return out;
+		}
+		case 'getConversation': {
+			const entryId = s('entryId').trim();
+			if (!entryId) throw new Error('Thiếu entryId');
+			const out: Record<string, string> = { entryId };
+			const maxCount = s('maxCount').trim();
+			if (maxCount) out.maxCount = maxCount;
+			return out;
+		}
+		case 'saveConversationMails': {
+			const entryId = s('entryId').trim();
+			if (!entryId) throw new Error('Thiếu entryId');
+			const saveDirectory = s('saveDirectory').trim();
+			if (!saveDirectory) throw new Error('Thiếu saveDirectory');
+			const out: Record<string, string> = {
+				entryId,
+				saveDirectory,
+				overwrite: boolStr(b('overwrite', true)),
+			};
+			const fileName = s('fileName').trim();
 			if (fileName) out.fileName = fileName;
+			const maxCount = s('maxCount').trim();
+			if (maxCount) out.maxCount = maxCount;
+			return out;
+		}
+		case 'captureConversation': {
+			const entryId = s('entryId').trim();
+			if (!entryId) throw new Error('Thiếu entryId');
+			const saveDirectory = s('saveDirectory').trim();
+			if (!saveDirectory) throw new Error('Thiếu saveDirectory');
+			const out: Record<string, string> = {
+				entryId,
+				saveDirectory,
+				overwrite: boolStr(b('overwrite', true)),
+			};
+			applyCaptureFormat(s, out);
+			const fileName = s('fileName').trim();
+			if (fileName) out.fileName = fileName;
+			const maxCount = s('maxCount').trim();
+			if (maxCount) out.maxCount = maxCount;
 			return out;
 		}
 		case 'closeInspector': {

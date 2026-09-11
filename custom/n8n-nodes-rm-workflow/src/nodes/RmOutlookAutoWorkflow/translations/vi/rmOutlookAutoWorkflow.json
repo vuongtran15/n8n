@@ -69,8 +69,28 @@
 				},
 				"captureMail": {
 					"displayName": "Chụp mail",
-					"description": "Chụp/lưu email ra file. format: png / html / msg. Đường dẫn: savePath hoặc saveDirectory + fileName ({'{'}subject{'}'} {'{'}date{'}'} {'{'}time{'}'} {'{'}entryId{'}'}). overwrite mặc định true.",
-					"action": "Chụp mail"
+					"description": "Chụp ảnh 1 email (png; cũng hỗ trợ html/msg). Đường dẫn: savePath hoặc saveDirectory + fileName.",
+					"action": "Chụp ảnh mail"
+				},
+				"saveMail": {
+					"displayName": "Lưu mail",
+					"description": "Lưu 1 email ra file .msg. Đường dẫn: savePath hoặc saveDirectory + fileName ({'{'}subject{'}'} {'{'}date{'}'} {'{'}time{'}'} {'{'}entryId{'}'}).",
+					"action": "Lưu mail .msg"
+				},
+				"getConversation": {
+					"displayName": "Lấy hội thoại",
+					"description": "Liệt kê email nối (thread): entryId, maxCount tùy chọn. Trả Count, RelatedCount, Mails[].",
+					"action": "Lấy hội thoại"
+				},
+				"saveConversationMails": {
+					"displayName": "Lưu hội thoại",
+					"description": "Lưu cả email nối ra .msg: saveDirectory + fileName (nên có {'{'}index{'}'}). Trả Count, RelatedCount, Files[].",
+					"action": "Lưu hội thoại .msg"
+				},
+				"captureConversation": {
+					"displayName": "Chụp hội thoại",
+					"description": "Chụp ảnh cả thread (png). saveDirectory + fileName (nên có {'{'}index{'}'}), maxCount tùy chọn.",
+					"action": "Chụp ảnh hội thoại"
 				},
 				"getSelectedMail": {
 					"displayName": "Mail đang chọn",
@@ -190,7 +210,7 @@
 		},
 		"maxCount": {
 			"displayName": "Số lượng tối đa",
-			"description": "Số mail tối đa trả về (List / Search). Để trống = server mặc định.",
+			"description": "Số mail tối đa (List / Search / Conversation). Để trống = server mặc định.",
 			"placeholder": "20"
 		},
 		"unreadOnly": {
@@ -207,7 +227,7 @@
 		},
 		"entryId": {
 			"displayName": "Entry ID",
-			"description": "EntryID mail Outlook (Read, Capture, Reply, Move, Delete, …)."
+			"description": "EntryID mail Outlook (Read, Capture, Save, Conversation, Reply, …)."
 		},
 		"to": {
 			"displayName": "Đến",
@@ -266,22 +286,46 @@
 		},
 		"saveDirectory": {
 			"displayName": "Thư mục lưu",
-			"description": "Thư mục lưu trên máy worker (Save Attachment / Save All / Capture Mail). Capture: dùng cùng File Name, hoặc dùng Save Path.",
+			"description": "Thư mục lưu trên máy worker (Save Attachment / Save All / Capture Mail).",
 			"placeholder": "C:\\temp\\attachments"
+		},
+		"capturePathMode": {
+			"displayName": "Kiểu đường dẫn",
+			"description": "Chọn một cách lưu — thư mục + tên file, hoặc đường dẫn file đầy đủ (Capture Mail / Save Mail).",
+			"options": {
+				"directory": {
+					"displayName": "Thư mục + tên file"
+				},
+				"fullPath": {
+					"displayName": "Đường dẫn đầy đủ"
+				}
+			}
+		},
+		"mailPathMode": {
+			"displayName": "Kiểu đường dẫn",
+			"description": "Chọn một cách lưu — thư mục + tên file, hoặc đường dẫn file đầy đủ (Capture Mail / Save Mail).",
+			"options": {
+				"directory": {
+					"displayName": "Thư mục + tên file"
+				},
+				"fullPath": {
+					"displayName": "Đường dẫn đầy đủ"
+				}
+			}
 		},
 		"savePath": {
 			"displayName": "Đường dẫn file",
-			"description": "Đường dẫn file đầy đủ (Capture Mail). Thay thế cho Thư mục lưu + Tên file.",
+			"description": "Đường dẫn file đầy đủ (Capture Mail / Save Mail).",
 			"placeholder": "D:\\temp\\outlook-capture\\mail1.png"
 		},
 		"fileName": {
 			"displayName": "Tên file",
-			"description": "Tên file khi dùng Thư mục lưu (Capture Mail). Placeholder: {'{'}subject{'}'} {'{'}date{'}'} {'{'}time{'}'} {'{'}entryId{'}'}.",
+			"description": "Tên file khi dùng Thư mục lưu. Placeholder: {'{'}subject{'}'} {'{'}date{'}'} {'{'}time{'}'} {'{'}entryId{'}'} (thread: thêm {'{'}index{'}'}).",
 			"placeholder": "PR_check_{'{'}date{'}'}_{'{'}time{'}'}.png"
 		},
 		"format": {
 			"displayName": "Định dạng",
-			"description": "Định dạng xuất Capture Mail: png (ảnh) / html / msg.",
+			"description": "Định dạng chụp: png (ảnh) / html / msg (Capture Mail / Capture Conversation).",
 			"options": {
 				"png": {
 					"displayName": "PNG"

@@ -92,8 +92,11 @@ Response: `{ "Success": true, "Message": "OK", "Result": { ... } }`.
 | `ListMails` | `folderPath`, `maxCount`, `unreadOnly`, `subjectContains`. Mỗi mail: `SenderEmail` (SMTP), `ToEmails`/`CcEmails`, `ConversationId` |
 | `ReadMail` | `entryId` → SMTP fields + `ConversationId` + `ConversationCount` (số mail trong thread) |
 | `DisplayMail` | Mở Inspector |
-| `CaptureMail` | Chụp/lưu email. `format`: `png`/`html`/`msg`. Đường dẫn: `savePath` **hoặc** `saveDirectory` + `fileName` (tự đặt tên ảnh). Placeholder: `{subject}` `{date}` `{time}` `{entryId}`. `overwrite` mặc định true |
-| `GetConversation` | Email nối (thread): `entryId`, `maxCount`. Trả `Count`, `RelatedCount` (= Count−1), `Mails[]` |
+| `CaptureMail` | Chụp **ảnh** 1 email (`png`; cũng hỗ trợ `html`/`msg`). Dùng khi cần screenshot |
+| `SaveMail` | **API lưu email** ra file `.msg` (mặc định) — dễ nhận biết. `saveDirectory`+`fileName` hoặc `savePath` |
+| `SaveConversationMails` | Lưu **cả email nối** ra `.msg`: `Count`, `RelatedCount`, `Files[]`. `fileName` nên có `{index}` |
+| `CaptureConversation` | Chụp ảnh cả thread (png). Chỉ cần `.msg` → dùng `SaveConversationMails` |
+| `GetConversation` | Chỉ liệt kê email nối: `Count`, `RelatedCount`, `Mails[]` |
 | `SendMail` | `to`, `subject`, `body`, `cc`, `bcc`, `htmlBody`, `attachmentPaths` (`;` / `|`), `displayBeforeSend` (`false` = gửi ngay). Sau gửi thành công: `EntryId` lấy từ bản trong **Sent Items** (Save trước Send). |
 | `ReplyMail` | `entryId`, `body`, `replyAll`, `sendImmediately` |
 | `ForwardMail` | `entryId`, `to`, `body`, `sendImmediately` |
@@ -117,6 +120,37 @@ Response: `{ "Success": true, "Message": "OK", "Result": { ... } }`.
 
 `Inbox`, `Sent` / `Sent Items`, `Drafts`, `Deleted` / `Deleted Items`, `Outbox`, `Junk` — hoặc đường dẫn `Inbox/SubFolder`.
 
+### Ví dụ SaveMail (.msg)
+
+```json
+{
+  "sessionId": "...",
+  "function": "SaveMail",
+  "paramObject": {
+    "entryId": "<EntryId>",
+    "saveDirectory": "D:\\temp\\outlook-msg",
+    "fileName": "PR_{subject}_{date}.msg",
+    "overwrite": "true"
+  }
+}
+```
+
+### Ví dụ SaveConversationMails (email nối → .msg)
+
+```json
+{
+  "sessionId": "...",
+  "function": "SaveConversationMails",
+  "paramObject": {
+    "entryId": "<EntryId bất kỳ trong thread>",
+    "saveDirectory": "D:\\temp\\outlook-msg\\thread1",
+    "fileName": "mail_{index}_{subject}.msg",
+    "maxCount": "20",
+    "overwrite": "true"
+  }
+}
+```
+
 ### Ví dụ CaptureMail (đặt tên ảnh)
 
 ```json
@@ -133,7 +167,27 @@ Response: `{ "Success": true, "Message": "OK", "Result": { ... } }`.
 }
 ```
 
-Hoặc `savePath`: `"D:\\temp\\outlook-capture\\mail1.png"`. Placeholder trong `fileName`: `{subject}`, `{date}`, `{time}`, `{entryId}`.
+Hoặc `savePath`: `"D:\\temp\\outlook-capture\\mail1.png"`. Placeholder: `{subject}`, `{date}`, `{time}`, `{entryId}`.
+
+### Ví dụ CaptureConversation (email nối)
+
+```json
+{
+  "sessionId": "...",
+  "function": "CaptureConversation",
+  "paramObject": {
+    "entryId": "<EntryId bất kỳ trong thread>",
+    "saveDirectory": "D:\\temp\\outlook-capture\\thread1",
+    "fileName": "mail_{index}_{subject}.png",
+    "format": "png",
+    "maxCount": "20",
+    "overwrite": "true"
+  }
+}
+```
+
+- `Count` = tổng mail trong hội thoại; `RelatedCount` = số mail nối (Count−1)
+- File lần lượt: `mail_01_....png`, `mail_02_....png`, …
 
 ### Ví dụ lưu tất cả attachment
 
@@ -242,7 +296,7 @@ Chỉ Enter:
 
 1. `POST /outlook-auto/connect` → giữ `sessionId`
 2. `ListMails` / `SearchMails` → lấy `entryId`
-3. `ReadMail` / `CaptureMail` / `ReplyMail` / `MoveMail` / …
+3. `ReadMail` / `SaveMail` / `CaptureMail` / `SaveConversationMails` / …
 4. `POST /outlook-auto/disconnect` khi xong
 
 Gateway: cùng path trên `http://<gateway-host>:8080/...` (proxy tới worker).
