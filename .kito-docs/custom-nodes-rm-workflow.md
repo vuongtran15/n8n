@@ -34,4 +34,12 @@ pnpm build
 # Restart n8n / hard refresh browser
 ```
 
-**Deploy server khác:** commit + pull repo → `pnpm build` trong `custom/n8n-nodes-rm-workflow` → đảm bảo `.env` trỏ đúng path trên server đó.
+**Deploy server khác:** commit + pull repo → chạy `pull-and-build.bat` (hoặc `start-n8n-pm2.bat`).
+
+Bat sẽ:
+1. Copy `docker/kito-n8n/n8n.env` → `packages/cli/bin/.env`
+2. **Tự ghi `N8N_CUSTOM_EXTENSIONS` = path tuyệt đối trên máy đó** (không giữ `D:/CODE/...` của máy khác)
+3. `pnpm build` trong `custom/n8n-nodes-rm-workflow`
+4. Restart PM2
+
+Nếu node vẫn hiện `?`: chạy `check-rm-custom-nodes.bat` trên server — xem path trong `.env` có tồn tại không.

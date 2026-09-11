@@ -62,9 +62,10 @@ echo Build OK.
 echo.
 
 if exist "%ROOT%\docker\kito-n8n\n8n.env" (
-  echo [4a] Copy docker\kito-n8n\n8n.env -^> packages\cli\bin\.env
-  if not exist "%ROOT%\packages\cli\bin" mkdir "%ROOT%\packages\cli\bin"
-  copy /Y "%ROOT%\docker\kito-n8n\n8n.env" "%ROOT%\packages\cli\bin\.env" >nul
+  echo [4a] Sync env ^(N8N_CUSTOM_EXTENSIONS = path may nay^)
+  set "ROOT=%ROOT%"
+  call "%ROOT%\scripts\sync-n8n-env.cmd"
+  if errorlevel 1 goto :END
   echo Env OK.
   echo.
 )

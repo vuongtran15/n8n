@@ -36,17 +36,9 @@ if not exist "%BIN%\n8n" (
 )
 
 echo [0/5] Sync env + build custom nodes
-if exist "%ROOT%\docker\kito-n8n\n8n.env" (
-  echo   Copy docker\kito-n8n\n8n.env -^> packages\cli\bin\.env
-  if not exist "%BIN%" mkdir "%BIN%"
-  copy /Y "%ROOT%\docker\kito-n8n\n8n.env" "%BIN%\.env" >nul
-) else (
-  if not exist "%BIN%\.env" (
-    echo ERROR: Thieu packages\cli\bin\.env va docker\kito-n8n\n8n.env
-    goto :END
-  )
-  echo   Dung .env san co ^(khong co docker\kito-n8n\n8n.env^)
-)
+set "ROOT=%ROOT%"
+call "%ROOT%\scripts\sync-n8n-env.cmd"
+if errorlevel 1 goto :END
 
 if exist "%CUSTOM_NODES%\package.json" (
   echo   Build custom: n8n-nodes-rm-workflow
