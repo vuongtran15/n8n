@@ -1,12 +1,12 @@
 import type { INodeProperties } from 'n8n-workflow';
 
-import { DEFAULT_WECOM_BASE_URL, DEFAULT_WECOM_TIMEOUT_SECONDS } from '../shared/wecomApi';
+import { DEFAULT_WECOM_TIMEOUT_SECONDS } from '../shared/wecomApi';
 
 function op(...operations: string[]): INodeProperties['displayOptions'] {
 	return { show: { operation: [...operations] } };
 }
 
-/** Field chung + theo operation. */
+/** Field chung + theo operation. Base URL ẩn UI — luôn dùng DEFAULT (override qua JSON input nếu cần). */
 export function getWecomPropertiesForWorkflow(): INodeProperties[] {
 	return [
 		{
@@ -18,16 +18,7 @@ export function getWecomPropertiesForWorkflow(): INodeProperties[] {
 				theme: 'info',
 			},
 			description:
-				'Không cần đăng nhập / Bearer. Ưu tiên field từ JSON input item: webhook (hoặc key/id), content, mentionedList, mentionedMobileList, binaryPropertyName, filename. Markdown: content/text/markdown (mention bằng <@userid> trong content). Tùy chọn: baseUrl, requestTimeoutSeconds.',
-		},
-		{
-			displayName: 'Base URL',
-			name: 'baseUrl',
-			type: 'string',
-			default: DEFAULT_WECOM_BASE_URL,
-			placeholder: DEFAULT_WECOM_BASE_URL,
-			description:
-				'Portal WeCom API base (không trailing slash). Mặc định host RMAI /api/n8n/wecom.',
+				'Không cần đăng nhập / Bearer. Portal WeCom cố định (không hiện Base URL). Ưu tiên field từ JSON input: webhook (hoặc key/id), content, mentionedList, mentionedMobileList, binaryPropertyName, filename. Tùy chọn: requestTimeoutSeconds.',
 		},
 		{
 			displayName: 'Request Timeout (Seconds)',
@@ -44,7 +35,7 @@ export function getWecomPropertiesForWorkflow(): INodeProperties[] {
 			default: '',
 			placeholder: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
 			description:
-				'Bot key (UUID) hoặc full URL https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=… Alias JSON: key, id, botid.',
+				'Bot key (UUID) hoặc full URL webhook WeCom. Alias JSON: key, id, botid.',
 			displayOptions: op('sendText', 'sendMarkdown', 'sendImage', 'sendFile'),
 		},
 		{

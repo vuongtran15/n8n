@@ -20,12 +20,9 @@ export function resolveWecomExecutionContext(
 	const items = ctx.getInputData();
 	const itemJson = items[itemIndex]?.json ?? {};
 
-	const formBaseUrl = (ctx.getNodeParameter('baseUrl', itemIndex, '') as string).trim();
+	// Base URL ẩn trên UI — mặc định portal cố định; chỉ override qua JSON input nếu cần.
 	const baseUrl = normalizeWecomBaseUrl(
-		preferStr(itemJson, 'baseUrl', formBaseUrl || DEFAULT_WECOM_BASE_URL, [
-			'wecomBaseUrl',
-			'wecomUrl',
-		]),
+		preferStr(itemJson, 'baseUrl', DEFAULT_WECOM_BASE_URL, ['wecomBaseUrl', 'wecomUrl']),
 	);
 
 	const formTimeout = ctx.getNodeParameter(

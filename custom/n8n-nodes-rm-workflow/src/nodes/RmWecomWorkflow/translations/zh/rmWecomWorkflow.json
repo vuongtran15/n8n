@@ -39,11 +39,7 @@
 		},
 		"connectionFieldsSourceInfo": {
 			"displayName": "连接字段来源",
-			"description": "无需登录 / Bearer。优先使用 JSON input：webhook（或 key/id）、content、mentionedList、mentionedMobileList、binaryPropertyName、filename。Markdown：content/text/markdown（用 <@userid> @人）。可选：baseUrl、requestTimeoutSeconds。"
-		},
-		"baseUrl": {
-			"displayName": "Base URL",
-			"description": "企业微信门户 API 根地址（无斜杠）。默认 RMAI /api/n8n/wecom。"
+			"description": "无需登录 / Bearer。企业微信门户固定（不显示 Base URL）。优先 JSON input：webhook、content、mentionedList… 可选：requestTimeoutSeconds。"
 		},
 		"requestTimeoutSeconds": {
 			"displayName": "请求超时（秒）",

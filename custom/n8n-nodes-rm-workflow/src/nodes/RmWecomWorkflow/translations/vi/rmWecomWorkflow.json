@@ -39,11 +39,7 @@
 		},
 		"connectionFieldsSourceInfo": {
 			"displayName": "Nguồn field kết nối",
-			"description": "Không cần đăng nhập / Bearer. Ưu tiên field từ JSON input item: webhook (hoặc key/id), content, mentionedList, mentionedMobileList, binaryPropertyName, filename. Markdown: content/text/markdown (mention bằng <@userid>). Tùy chọn: baseUrl, requestTimeoutSeconds."
-		},
-		"baseUrl": {
-			"displayName": "Base URL",
-			"description": "Portal WeCom API base (không trailing slash). Mặc định host RMAI /api/n8n/wecom."
+			"description": "Không cần đăng nhập / Bearer. Portal WeCom cố định (không hiện Base URL). Ưu tiên JSON input: webhook, content, mentionedList, … Tùy chọn: requestTimeoutSeconds."
 		},
 		"requestTimeoutSeconds": {
 			"displayName": "Timeout request (giây)",
