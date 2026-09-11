@@ -23,11 +23,11 @@ if not exist "%BIN%\n8n" (
   goto :END
 )
 
-if not exist "%BIN%\.env" (
-  if exist "%ROOT%\docker\kito-n8n\n8n.env" (
-    echo Copy docker\kito-n8n\n8n.env -^> packages\cli\bin\.env
-    copy /Y "%ROOT%\docker\kito-n8n\n8n.env" "%BIN%\.env" >nul
-  ) else (
+if exist "%ROOT%\docker\kito-n8n\n8n.env" (
+  echo Copy docker\kito-n8n\n8n.env -^> packages\cli\bin\.env
+  copy /Y "%ROOT%\docker\kito-n8n\n8n.env" "%BIN%\.env" >nul
+) else (
+  if not exist "%BIN%\.env" (
     echo ERROR: Thieu packages\cli\bin\.env
     goto :END
   )

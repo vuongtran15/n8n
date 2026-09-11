@@ -61,6 +61,14 @@ if errorlevel 1 (
 echo Build OK.
 echo.
 
+if exist "%ROOT%\docker\kito-n8n\n8n.env" (
+  echo [4a] Copy docker\kito-n8n\n8n.env -^> packages\cli\bin\.env
+  if not exist "%ROOT%\packages\cli\bin" mkdir "%ROOT%\packages\cli\bin"
+  copy /Y "%ROOT%\docker\kito-n8n\n8n.env" "%ROOT%\packages\cli\bin\.env" >nul
+  echo Env OK.
+  echo.
+)
+
 if exist "%CUSTOM_NODES%\package.json" (
   echo [4b] Build custom nodes: n8n-nodes-rm-workflow
   pushd "%CUSTOM_NODES%"
