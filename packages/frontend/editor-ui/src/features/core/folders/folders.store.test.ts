@@ -178,6 +178,37 @@ describe('folders.store', () => {
 		});
 	});
 
+	describe('renameFolder', () => {
+		it('should update breadcrumbs cache name after rename', async () => {
+			const projectId = faker.string.alphanumeric(10);
+			const folderId = faker.string.alphanumeric(10);
+			foldersStore.cacheFolders([
+				{ id: folderId, name: 'Old name', parentFolder: undefined },
+			]);
+			vi.spyOn(foldersApi, 'renameFolder').mockResolvedValue();
+
+			await foldersStore.renameFolder(projectId, folderId, 'New name');
+
+			expect(foldersApi.renameFolder).toHaveBeenCalledWith(
+				rootStore.restApiContext,
+				projectId,
+				folderId,
+				'New name',
+			);
+			expect(foldersStore.breadcrumbsCache[folderId]?.name).toBe('New name');
+		});
+	});
+
+	describe('cacheFolders', () => {
+		it('should refresh name when folder is already cached', () => {
+			const folderId = faker.string.alphanumeric(10);
+			foldersStore.cacheFolders([{ id: folderId, name: 'Old name', parentFolder: 'parent-1' }]);
+			foldersStore.cacheFolders([{ id: folderId, name: 'New name', parentFolder: 'parent-1' }]);
+
+			expect(foldersStore.breadcrumbsCache[folderId]?.name).toBe('New name');
+		});
+	});
+
 	describe('fetchFolderUsedCredentials', () => {
 		const projectId = faker.string.alphanumeric(10);
 		const folderId = faker.string.alphanumeric(10);

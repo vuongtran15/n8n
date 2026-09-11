@@ -717,6 +717,42 @@ const onWorkflowDeleted = async (id: string) => {
 	removeWorkflowFromList(id, { updateCount: false });
 };
 
+/** Insert a just-created duplicate into the list; refetch can race and omit it. */
+const insertDuplicatedWorkflowInList = (newWorkflowId: string) => {
+	if (workflowsAndFolders.value.some((item) => item.id === newWorkflowId)) {
+		return;
+	}
+
+	const workflow = workflowsListStore.getWorkflowById(newWorkflowId);
+	if (!workflow?.id) {
+		return;
+	}
+
+	const {
+		nodes: _nodes,
+		connections: _connections,
+		pinData: _pinData,
+		usedCredentials: _usedCredentials,
+		meta: _meta,
+		...listFields
+	} = workflow;
+
+	const listItem: WorkflowListItem = {
+		...listFields,
+		resource: 'workflow',
+	};
+
+	workflowsAndFolders.value = [listItem, ...workflowsAndFolders.value];
+	workflowsListStore.totalWorkflowCount += 1;
+	foldersStore.totalWorkflowCount += 1;
+};
+
+const onWorkflowDuplicated = async (payload: { newWorkflowId: string; name: string }) => {
+	insertDuplicatedWorkflowInList(payload.newWorkflowId);
+	await refreshWorkflows();
+	insertDuplicatedWorkflowInList(payload.newWorkflowId);
+};
+
 const onWorkflowArchived = async (id: string) => {
 	if (filters.value.showArchived) {
 		markWorkflowArchivedInList(id, true);
@@ -804,7 +840,7 @@ onMounted(async () => {
 	}
 
 	workflowListEventBus.on('resource-moved', fetchWorkflows);
-	workflowListEventBus.on('workflow-duplicated', fetchWorkflows);
+	workflowListEventBus.on('workflow-duplicated', onWorkflowDuplicated);
 	workflowListEventBus.on('folder-deleted', onFolderDeleted);
 	workflowListEventBus.on('folder-moved', moveFolder);
 	workflowListEventBus.on('folder-transferred', onFolderTransferred);
@@ -814,7 +850,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
 	workflowListEventBus.off('resource-moved', fetchWorkflows);
-	workflowListEventBus.off('workflow-duplicated', fetchWorkflows);
+	workflowListEventBus.off('workflow-duplicated', onWorkflowDuplicated);
 	workflowListEventBus.off('folder-deleted', onFolderDeleted);
 	workflowListEventBus.off('folder-moved', moveFolder);
 	workflowListEventBus.off('folder-transferred', onFolderTransferred);
@@ -1343,6 +1379,24 @@ const getFolderListItem = (folderId: string): FolderListItem | undefined => {
 	);
 };
 
+/** Keep list name in sync after rename — refetch can race and return a stale name. */
+const applyFolderNameInList = (folderId: string, name: string) => {
+	workflowsAndFolders.value = workflowsAndFolders.value.map((resource) => {
+		if (resource.resource !== 'folder' || resource.id !== folderId) {
+			return resource;
+		}
+		return {
+			...resource,
+			name,
+			updatedAt: new Date().toISOString(),
+		};
+	});
+	const cached = foldersStore.breadcrumbsCache[folderId];
+	if (cached) {
+		foldersStore.breadcrumbsCache[folderId] = { ...cached, name };
+	}
+};
+
 const getFolderContent = async (folderId: string) => {
 	const folderListItem = getFolderListItem(folderId);
 	if (folderListItem) {
@@ -1868,14 +1922,16 @@ const renameFolder = async (folderId: string) => {
 		const newFolderName = promptResponse.value;
 		try {
 			await foldersStore.renameFolder(currentProject.value?.id, folderId, newFolderName);
-			foldersStore.breadcrumbsCache[folderId].name = newFolderName;
+			// Update locally first — refetch can race and return the old name.
+			applyFolderNameInList(folderId, newFolderName);
 			toast.showMessage({
 				title: i18n.baseText('folders.rename.success.message', {
 					interpolate: { folderName: newFolderName },
 				}),
 				type: 'success',
 			});
-			await fetchWorkflows();
+			await refreshWorkflows();
+			applyFolderNameInList(folderId, newFolderName);
 			telemetry.track('User renamed folder', {
 				folder_id: folderId,
 			});
@@ -2222,8 +2278,9 @@ const onNameSubmit = async (name: string) => {
 		return;
 	} else {
 		try {
-			await foldersStore.renameFolder(currentProject.value?.id, currentFolder.value.id, newName);
-			foldersStore.breadcrumbsCache[currentFolder.value.id].name = newName;
+			const folderId = currentFolder.value.id;
+			await foldersStore.renameFolder(currentProject.value?.id, folderId, newName);
+			applyFolderNameInList(folderId, newName);
 			toast.showMessage({
 				title: i18n.baseText('folders.rename.success.message', {
 					interpolate: { folderName: newName },
@@ -2231,7 +2288,7 @@ const onNameSubmit = async (name: string) => {
 				type: 'success',
 			});
 			telemetry.track('User renamed folder', {
-				folder_id: currentFolder.value.id,
+				folder_id: folderId,
 			});
 		} catch (error) {
 			toast.showError(error, i18n.baseText('folders.rename.error.title'));
@@ -2503,7 +2560,7 @@ const onNameSubmit = async (name: string) => {
 					@workflow:archived="onWorkflowArchived"
 					@workflow:unarchived="onWorkflowUnarchived"
 					@workflow:moved="fetchWorkflows"
-					@workflow:duplicated="fetchWorkflows"
+					@workflow:duplicated="onWorkflowDuplicated"
 					@workflow:unpublished="onWorkflowUnpublished"
 					@workflow:active-toggle="onWorkflowActiveToggle"
 					@action:move-to-folder="moveWorkflowToFolder"

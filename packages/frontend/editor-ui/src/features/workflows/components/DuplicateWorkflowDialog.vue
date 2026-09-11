@@ -130,10 +130,13 @@ const save = async (): Promise<void> => {
 			closeDialog();
 			telemetry.track('User duplicated workflow', {
 				old_workflow_id: currentWorkflowId,
-				workflow_id: props.data.id,
-				sharing_role: workflowHelpers.getWorkflowProjectRole(props.data.id),
+				workflow_id: duplicatedWorkflowId,
+				sharing_role: workflowHelpers.getWorkflowProjectRole(currentWorkflowId),
 			});
-			props.data.externalEventBus?.emit('workflow-duplicated', { id: props.data.id });
+			props.data.externalEventBus?.emit('workflow-duplicated', {
+				newWorkflowId: duplicatedWorkflowId,
+				name: workflowName,
+			});
 		}
 	} catch (error) {
 		if (error.httpStatusCode === 403) {

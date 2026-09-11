@@ -39,13 +39,12 @@ export const useFoldersStore = defineStore(STORES.FOLDERS, () => {
 
 	const cacheFolders = (folders: FolderShortInfo[]) => {
 		folders.forEach((folder) => {
-			if (!breadcrumbsCache.value[folder.id]) {
-				breadcrumbsCache.value[folder.id] = {
-					id: folder.id,
-					name: folder.name,
-					parentFolder: folder.parentFolder,
-				};
-			}
+			const existing = breadcrumbsCache.value[folder.id];
+			breadcrumbsCache.value[folder.id] = {
+				id: folder.id,
+				name: folder.name,
+				parentFolder: folder.parentFolder ?? existing?.parentFolder,
+			};
 		});
 	};
 
@@ -124,6 +123,10 @@ export const useFoldersStore = defineStore(STORES.FOLDERS, () => {
 
 	async function renameFolder(projectId: string, folderId: string, name: string) {
 		await foldersApi.renameFolder(rootStore.restApiContext, projectId, folderId, name);
+		const cached = breadcrumbsCache.value[folderId];
+		if (cached) {
+			breadcrumbsCache.value[folderId] = { ...cached, name };
+		}
 		useFavoritesStore().renameFavorite(folderId, 'folder', name);
 	}
 

@@ -419,6 +419,30 @@ describe('WorkflowCard', () => {
 		expect(emitted()['workflow:archived']).toEqual([[data.id]]);
 	});
 
+	it('should remove ghost workflow from list when archive returns 404', async () => {
+		const data = createWorkflow({
+			active: false,
+			isArchived: false,
+			scopes: ['workflow:delete'],
+		});
+		const { ResponseError } = await import('@n8n/rest-api-client');
+		workflowsStore.archiveWorkflow.mockRejectedValueOnce(
+			new ResponseError(`Workflow with ID "${data.id}" not found.`, { httpStatusCode: 404 }),
+		);
+
+		const { getByTestId, emitted } = renderComponent({
+			props: { data },
+		});
+		await userEvent.click(within(getByTestId('workflow-card-actions')).getByRole('button'));
+		await userEvent.click(getByTestId('action-archive'));
+
+		expect(workflowsStore.archiveWorkflow).toHaveBeenCalledWith(data.id);
+		expect(toast.showError).not.toHaveBeenCalled();
+		expect(toast.showMessage).toHaveBeenCalled();
+		expect(emitted()['workflow:deleted']).toEqual([[data.id]]);
+		expect(emitted()['workflow:archived']).toBeUndefined();
+	});
+
 	it('should show a "Delete permanently" link in the archive toast that deletes the archived workflow', async () => {
 		const data = createWorkflow({
 			active: false,

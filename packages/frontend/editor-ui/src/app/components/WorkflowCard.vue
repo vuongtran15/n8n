@@ -33,6 +33,7 @@ import {
 import type { PathItem } from '@n8n/design-system';
 import { useFoldersStore } from '@/features/core/folders/folders.store';
 import { useFavoritesStore } from '@/app/stores/favorites.store';
+import { ResponseError } from '@n8n/rest-api-client';
 
 import {
 	N8nActionToggle,
@@ -459,6 +460,10 @@ async function toggleMCPAccess(enabled: boolean) {
 	}
 }
 
+function isWorkflowMissingError(error: unknown): boolean {
+	return error instanceof ResponseError && error.httpStatusCode === 404;
+}
+
 async function deleteWorkflow() {
 	await deleteWorkflowById(props.data.id, props.data.name);
 }
@@ -487,6 +492,17 @@ async function deleteWorkflowById(id: WorkflowResource['id'], name: WorkflowReso
 	try {
 		await workflowsListStore.deleteWorkflow(id);
 	} catch (error) {
+		// Already gone on the server but still in a stale list — drop it from the UI.
+		if (isWorkflowMissingError(error)) {
+			toast.showMessage({
+				title: locale.baseText('mainSidebar.showMessage.handleSelect1.title', {
+					interpolate: { workflowName: name },
+				}),
+				type: 'success',
+			});
+			emit('workflow:deleted', id);
+			return;
+		}
 		toast.showError(error, locale.baseText('generic.deleteWorkflowError'));
 		return;
 	}
@@ -530,6 +546,17 @@ async function archiveWorkflow() {
 	try {
 		await workflowsStore.archiveWorkflow(archivedWorkflowId);
 	} catch (error) {
+		// Ghost row: server has no workflow (or share), but the list still shows it.
+		if (isWorkflowMissingError(error)) {
+			toast.showMessage({
+				title: locale.baseText('mainSidebar.showMessage.handleSelect1.title', {
+					interpolate: { workflowName: archivedWorkflowName },
+				}),
+				type: 'success',
+			});
+			emit('workflow:deleted', archivedWorkflowId);
+			return;
+		}
 		toast.showError(error, locale.baseText('generic.archiveWorkflowError'));
 		return;
 	}

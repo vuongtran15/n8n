@@ -77,7 +77,10 @@ export type WorkflowListEventMap = {
 		resourceType: ResourceType;
 		targetProjectId: string;
 	};
-	'workflow-duplicated': undefined;
+	'workflow-duplicated': {
+		newWorkflowId: string;
+		name: string;
+	};
 	'folder-deleted': {
 		folderId: string;
 		workflowCount: number;
