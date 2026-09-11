@@ -132,6 +132,26 @@ describe('useWorkflowsListStore', () => {
 
 			expect(workflowsListStore.workflowsById['123'].name).toBe('Updated');
 		});
+
+		it('should keep fresher name when a stale list refetch arrives', () => {
+			workflowsListStore.addWorkflow(
+				createTestWorkflow({
+					id: '123',
+					name: 'Renamed',
+					updatedAt: '2026-09-11T10:00:00.000Z',
+				}),
+			);
+			workflowsListStore.addWorkflow(
+				createTestWorkflow({
+					id: '123',
+					name: 'Old name',
+					updatedAt: '2026-09-11T09:00:00.000Z',
+				}),
+			);
+
+			expect(workflowsListStore.workflowsById['123'].name).toBe('Renamed');
+			expect(workflowsListStore.workflowsById['123'].updatedAt).toBe('2026-09-11T10:00:00.000Z');
+		});
 	});
 
 	describe('removeWorkflow', () => {

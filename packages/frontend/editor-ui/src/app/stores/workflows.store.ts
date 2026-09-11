@@ -359,6 +359,9 @@ export const useWorkflowsStore = defineStore(STORES.WORKFLOWS, () => {
 			usersStore.setEasyAIWorkflowOnboardingDone();
 		}
 
+		// Keep workflows list cache in sync (name/updatedAt) so list UI isn't stale after save.
+		workflowsListStore.addWorkflow(updatedWorkflow);
+
 		return updatedWorkflow;
 	}
 

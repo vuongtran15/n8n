@@ -1001,7 +1001,31 @@ const fetchWorkflows = async () => {
 			breadcrumbsLoading.value = false;
 		}
 
-		workflowsAndFolders.value = fetchedResources;
+		// Prefer fresher cached names when list refetch races a just-saved rename.
+		workflowsAndFolders.value = fetchedResources.map((resource) => {
+			if (resource.resource === 'folder') {
+				return resource;
+			}
+			const cached = workflowsListStore.getWorkflowById(resource.id);
+			if (!cached?.name || !cached.updatedAt || !resource.updatedAt) {
+				return resource;
+			}
+			const cachedTime = Date.parse(String(cached.updatedAt));
+			const resourceTime = Date.parse(String(resource.updatedAt));
+			if (
+				!Number.isNaN(cachedTime) &&
+				!Number.isNaN(resourceTime) &&
+				cachedTime > resourceTime &&
+				cached.name !== resource.name
+			) {
+				return {
+					...resource,
+					name: cached.name,
+					updatedAt: cached.updatedAt,
+				};
+			}
+			return resource;
+		});
 
 		// Async-fetch dependency counts for visible workflows (fire-and-forget)
 		// in the overview page we don't have a resource type

@@ -34,6 +34,7 @@ import { N8nBadge, N8nInlineTextEdit } from '@n8n/design-system';
 import { useUIStore } from '@/app/stores/ui.store';
 import { useWorkflowsStore } from '@/app/stores/workflows.store';
 import { useWorkflowsListStore } from '@/app/stores/workflowsList.store';
+import { useFavoritesStore } from '@/app/stores/favorites.store';
 import { WorkflowDocumentStoreKey } from '@/app/constants/injectionKeys';
 
 const props = defineProps<{
@@ -132,6 +133,8 @@ function onNameSubmit(name: string) {
 	// Update workflow name in store and mark state as dirty
 	workflowDocumentStore?.value?.setName(newName);
 	uiStore.markStateDirty('metadata');
+	workflowsListStore.updateWorkflowInCache(props.id, { name: newName });
+	useFavoritesStore().renameFavorite(props.id, 'workflow', newName);
 
 	documentTitle.setDocumentTitle(newName, 'IDLE');
 	renameInput.value?.forceCancel();

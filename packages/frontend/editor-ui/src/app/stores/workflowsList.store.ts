@@ -56,12 +56,34 @@ export const useWorkflowsListStore = defineStore(STORES.WORKFLOWS_LIST, () => {
 	}
 
 	function addWorkflow(workflow: IWorkflowDb) {
+		const existing = workflowsById.value[workflow.id];
+		const incoming = deepCopy(workflow);
+		let merged: IWorkflowDb = {
+			...existing,
+			...incoming,
+		};
+
+		// Refetch can race a just-saved rename and return an older row — keep the fresher name.
+		if (existing?.updatedAt && incoming.updatedAt) {
+			const existingTime = Date.parse(String(existing.updatedAt));
+			const incomingTime = Date.parse(String(incoming.updatedAt));
+			if (
+				!Number.isNaN(existingTime) &&
+				!Number.isNaN(incomingTime) &&
+				existingTime > incomingTime &&
+				existing.name
+			) {
+				merged = {
+					...merged,
+					name: existing.name,
+					updatedAt: existing.updatedAt,
+				};
+			}
+		}
+
 		workflowsById.value = {
 			...workflowsById.value,
-			[workflow.id]: {
-				...workflowsById.value[workflow.id],
-				...deepCopy(workflow),
-			},
+			[workflow.id]: merged,
 		};
 	}
 
