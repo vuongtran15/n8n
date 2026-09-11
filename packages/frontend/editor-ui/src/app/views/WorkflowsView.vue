@@ -1819,26 +1819,29 @@ const createFolder = async (
 					params: { projectId, folderId: parent.id },
 				});
 			} else {
-				// If we are on an empty list, just add the new folder to the list
-				if (!workflowsAndFolders.value.length) {
-					workflowsAndFolders.value = [
-						{
-							id: newFolder.id,
-							name: newFolder.name,
-							resource: 'folder',
-							createdAt: newFolder.createdAt,
-							updatedAt: newFolder.updatedAt,
-							homeProject: currentBreadcrumbsProject.value as ProjectSharingData,
-							workflowCount: 0,
-							subFolderCount: 0,
-						},
-					];
-					foldersStore.cacheFolders([
-						{ id: newFolder.id, name: newFolder.name, parentFolder: currentFolder.value?.id },
-					]);
-				} else {
-					// Else fetch again with same filters & pagination applied
-					await fetchWorkflows();
+				const folderListItem = {
+					id: newFolder.id,
+					name: newFolder.name,
+					resource: 'folder' as const,
+					createdAt: newFolder.createdAt,
+					updatedAt: newFolder.updatedAt,
+					homeProject: currentBreadcrumbsProject.value as ProjectSharingData,
+					workflowCount: 0,
+					subFolderCount: 0,
+				};
+				// Always insert locally first — refetch can race and return a stale list
+				// without the new folder (same pattern as archive/delete refresh).
+				if (!workflowsAndFolders.value.some((item) => item.id === newFolder.id)) {
+					workflowsAndFolders.value = [folderListItem, ...workflowsAndFolders.value];
+					workflowsListStore.totalWorkflowCount += 1;
+					foldersStore.totalWorkflowCount += 1;
+				}
+				foldersStore.cacheFolders([
+					{ id: newFolder.id, name: newFolder.name, parentFolder: currentFolder.value?.id },
+				]);
+				await refreshWorkflows();
+				if (!workflowsAndFolders.value.some((item) => item.id === newFolder.id)) {
+					workflowsAndFolders.value = [folderListItem, ...workflowsAndFolders.value];
 				}
 			}
 		} catch (error) {
