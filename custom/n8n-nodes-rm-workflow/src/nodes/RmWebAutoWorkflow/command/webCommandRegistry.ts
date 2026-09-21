@@ -14,6 +14,7 @@ export type WebCommandParamKind =
 	| 'queryHtml'
 	| 'filePath'
 	| 'filePathEncoding'
+	| 'downloadActivePage'
 	| 'waitSelector'
 	| 'waitLoadState'
 	| 'waitTimeout'
@@ -24,6 +25,7 @@ export type WebCommandParamKind =
 	| 'scriptFile'
 	| 'scriptRun'
 	| 'pageIndex'
+	| 'keepPageIndex'
 	| 'setInputFiles'
 	| 'newPage';
 
@@ -222,6 +224,15 @@ export const WEB_COMMAND_DEFINITIONS: WebCommandDefinition[] = [
 		params: 'filePathEncoding',
 	},
 	{
+		operation: 'downloadActivePageToFile',
+		function: 'DownloadActivePageToFile',
+		displayName: 'Download Active Page To File',
+		description:
+			'GET URL tab active qua cookie/session browser, ghi bytes ra file trên worker (PDF inline, …).',
+		action: 'Download active page to file',
+		params: 'downloadActivePage',
+	},
+	{
 		operation: 'findElements',
 		function: 'FindElements',
 		displayName: 'Find Elements',
@@ -353,6 +364,24 @@ export const WEB_COMMAND_DEFINITIONS: WebCommandDefinition[] = [
 	},
 	// Tab
 	{
+		operation: 'clickAndWaitForNewPage',
+		function: 'ClickAndWaitForNewPage',
+		displayName: 'Click And Wait For New Page',
+		description:
+			'Click trên tab active và chờ tab/cửa sổ mới (window.open, target=_blank). Tab mới → active. Result.Value JSON.',
+		action: 'Click and wait for new page',
+		params: 'selectorForce',
+	},
+	{
+		operation: 'waitForNewPage',
+		function: 'WaitForNewPage',
+		displayName: 'Wait For New Page',
+		description:
+			'Chờ tab mới xuất hiện (đã Click trước đó, không kèm click). Tab mới → active. Result.Value JSON.',
+		action: 'Wait for new page',
+		params: 'timeoutOnly',
+	},
+	{
 		operation: 'newPage',
 		function: 'NewPage',
 		displayName: 'New Page',
@@ -367,6 +396,15 @@ export const WEB_COMMAND_DEFINITIONS: WebCommandDefinition[] = [
 		description: 'Đóng tab theo chỉ số pageIndex (0-based).',
 		action: 'Close tab',
 		params: 'pageIndex',
+	},
+	{
+		operation: 'closeAllPagesExcept',
+		function: 'CloseAllPagesExcept',
+		displayName: 'Close All Pages Except',
+		description:
+			'Đóng tất cả tab trừ tab giữ lại (mặc định keepPageIndex=0). Tab giữ → active. Result.Value JSON.',
+		action: 'Close all pages except',
+		params: 'keepPageIndex',
 	},
 	{
 		operation: 'switchPage',

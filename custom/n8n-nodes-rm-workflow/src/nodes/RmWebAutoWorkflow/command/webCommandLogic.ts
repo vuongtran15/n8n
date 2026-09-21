@@ -170,6 +170,19 @@ function buildParamObject(
 			const encodingName = s('encodingName').trim();
 			return encodingName ? { filePath, encodingName } : { filePath };
 		}
+		case 'downloadActivePage': {
+			const filePath = s('filePath');
+			if (!filePath.trim()) throw new Error('Thiếu File Path');
+			const base: Record<string, string> = { filePath };
+			const failOnHttpError = preferBool(
+				useInputJsonFields,
+				itemJson,
+				'failOnHttpError',
+				ctx.getNodeParameter('downloadFailOnHttpError', itemIndex, true) as boolean,
+			);
+			if (!failOnHttpError) base.failOnHttpError = 'false';
+			return withTimeout(base);
+		}
 		case 'setInputFiles': {
 			const filePath = s('filePath');
 			if (!filePath.trim()) throw new Error('Thiếu File Path');
@@ -245,6 +258,8 @@ function buildParamObject(
 		}
 		case 'pageIndex':
 			return { pageIndex: String(n('pageIndex', 0)) };
+		case 'keepPageIndex':
+			return { keepPageIndex: String(n('keepPageIndex', 0)) };
 		default:
 			return undefined;
 	}

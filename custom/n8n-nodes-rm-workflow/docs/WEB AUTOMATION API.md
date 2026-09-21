@@ -24,59 +24,39 @@ Cấu hình HTTP server chung (port, firewall, `server-config.txt`): `RMIV.WF.CL
 
 ## 1) Cài đặt Playwright
 
-Project tham chiếu NuGet **`Microsoft.Playwright`**. Trên máy chạy worker (`RMIV.WF.CLIENT`), cần cài browser binary **một lần** sau khi build.
+Project tham chiếu NuGet **`Microsoft.Playwright`**. Trên máy chạy worker cần **Chromium** trong `%LOCALAPPDATA%\ms-playwright\` (hoặc `PLAYWRIGHT_BROWSERS_PATH`).
 
-### Cách 1 — Windows PowerShell (khuyến nghị, **không cần `pwsh`**)
+### Cách khuyến nghị — Offline qua Gateway (máy user không cần internet ngoài / CDN)
 
-Từ thư mục chứa `RMIV.WF.CLIENT.exe` (sau build, thường `RMIV.WF.CLIENT\bin\Debug\`):
+**Tách file:** `worker.zip` nhẹ (update thường xuyên); `chrome-auto.zip` ~200MB tải **một lần** qua menu.
+
+1. **Máy build** (có mạng):
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Install-PlaywrightBrowsers.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Pack-ChromeAutoPlugin.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Publish-WorkerPackage.ps1 -Upload
+```
+
+FTP `/worker/`: `worker-version.txt`, `worker.zip`, `chrome-auto.zip` (riêng).
+
+2. **Máy client:** Tải worker → Gateway **Download plugin → Chrome Auto** (tải `chrome-auto.zip` rồi giải nén local). Lần sau update worker **không** tải lại Chromium.
+
+### Cách 2 — Cài trực tiếp trên máy (cần mạng ngoài)
+
+Từ thư mục chứa `RMIV.WF.CLIENT.exe`:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\playwright.ps1 install chromium
 ```
 
-Cài thêm engine khác:
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\playwright.ps1 install firefox
-powershell -NoProfile -ExecutionPolicy Bypass -File .\playwright.ps1 install webkit
-powershell -NoProfile -ExecutionPolicy Bypass -File .\playwright.ps1 install
-```
-
-(`install` không tham số = cài chromium + firefox + webkit.)
-
-**Lưu ý:** File là `playwright.ps1` **cạnh** `Microsoft.Playwright.dll` / `.exe`, không nằm trong `.playwright\`.
-
-### Cách 2 — Script trong repo
+Hoặc:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Install-PlaywrightBrowsers.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Install-PlaywrightBrowsers.ps1 -Browsers chromium,firefox
 ```
 
-### Cách 3 — Node.js (nếu đã cài Node)
-
-Trong thư mục output worker (có thư mục `.playwright\package`):
-
-```powershell
-node .playwright\package\cli.js install chromium
-```
-
-Hoặc (cần `npm i -D playwright` trong project Node riêng):
-
-```powershell
-npx playwright install chromium
-```
-
-### Cách 4 — Cài PowerShell 7 (`pwsh`) tùy chọn
-
-Chỉ khi muốn dùng đúng lệnh trong tài liệu Playwright upstream:
-
-```powershell
-winget install Microsoft.PowerShell
-pwsh .\playwright.ps1 install chromium
-```
-
-Browser được tải về `%LOCALAPPDATA%\ms-playwright\`. Nếu thiếu browser, `/web-auto/connect` sẽ lỗi khi launch.
+Browser tải về `%LOCALAPPDATA%\ms-playwright\`. Nếu thiếu browser, `/web-auto/connect` sẽ lỗi khi launch.
 
 ---
 
@@ -112,7 +92,9 @@ using (var web = WebAutomationManager.Create(options))
 | `UserAgent` | `null` | User-Agent tùy chỉnh |
 | `DefaultTimeoutMs` | `null` | Timeout mặc định cho selector/navigation |
 
-Mỗi instance `WebAutomationManager` = **một browser + một context + một hoặc nhiều tab** (`IPage`). Tab đang active dùng cho mọi lệnh (trừ `NewPage`, `ClosePage`, `SwitchPage`, `ListPages`).
+Mỗi instance `WebAutomationManager` = **một browser + một context + một hoặc nhiều tab** (`IPage`). Tab đang active dùng cho mọi lệnh (trừ `NewPage`, `ClosePage`, `SwitchPage`, `ListPages`, …).
+
+**Tab từ `window.open` / `target="_blank"`:** Khi trang web mở cửa sổ/tab mới, Playwright gắn page vào cùng context. Worker **tự đăng ký** tab đó (`context.Page`) — `ListPages` / `SwitchPage` thấy được. Để click và **chờ** tab mới trước khi bước tiếp theo, dùng `ClickAndWaitForNewPage` (khuyến nghị) hoặc `Click` + `WaitForNewPage`.
 
 ---
 
@@ -123,10 +105,10 @@ Mỗi instance `WebAutomationManager` = **một browser + một context + một 
 | `WebAccessResponse` | `Success`, `Message` — thao tác không trả payload |
 | `WebTextResponse` | thêm `Value` (string) |
 | `WebBoolResponse` | thêm `Value` (bool) |
-| `WebBytesResponse` | `ContentBase64`, `ContentByteLength` — ảnh chụp màn hình |
+| `WebBytesResponse` | `ContentBase64`, `ContentByteLength`, `ContentMd5` — ảnh chụp màn hình |
 | `WebScriptResponse` | `ResultJson` — kết quả `Evaluate` / `RunJavaScript` / `RunScript` (JSON string) |
 | `WebListResponse` | `Values` (mảng string), `Count` — danh sách kết quả tìm element |
-| `WebDownloadHtmlResponse` | `SavedFullPath`, `ContentByteLength` — lưu HTML ra file |
+| `WebDownloadHtmlResponse` | `SavedFullPath`, `ContentByteLength` — lưu file (`DownloadFullHtml`, `DownloadActivePageToFile`) |
 | `WebApiResponse` | `StatusCode`, `StatusText`, `ContentType`, `Body`, `HeadersJson` — HTTP request qua session browser |
 
 Factory: `WebAccessResponse.Ok()`, `WebAccessResponse.Fail(message)`.
@@ -430,6 +412,22 @@ Lưu toàn bộ HTML document ra file trên **máy worker** (khác `GetContent` 
 
 ---
 
+#### `DownloadActivePageToFile`
+
+GET URL của **tab active** qua cookie/session browser (cùng cơ chế `FetchApi`), ghi **bytes** ra file trên worker — dùng khi tab mới hiển thị **PDF inline** (Chrome PDF viewer) sau `ClickAndWaitForNewPage` / `Navigate`.
+
+| Input | Kiểu | Bắt buộc | Mặc định | Mô tả |
+|-------|------|----------|----------|--------|
+| `filePath` | `string` | **Có** | — | Đường dẫn file đích (vd. `D:\temp\po.pdf`) |
+| `timeoutMs` | `int?` | Không | `null` | Timeout HTTP GET (ms) |
+| `failOnHttpError` | `bool` | Không | `true` | `false` = vẫn lưu body khi HTTP 4xx/5xx |
+
+**Output:** `WebDownloadHtmlResponse` — `SavedFullPath`, `ContentByteLength`.
+
+**Lưu ý:** Không dùng `file-auto` `DownloadFromUrl` cho URL cần cookie đăng nhập — dùng hàm này hoặc `FetchApi` cùng `sessionId` web.
+
+---
+
 #### `FindElements`
 
 Tìm **tất cả** element khớp `queryType` / `queryValue`; trả **list** giá trị đọc được.
@@ -607,92 +605,32 @@ var api = web.FetchApi("https://portal.example.com/api/user/profile");
 
 ### 4.7 Ảnh chụp & JavaScript
 
-#### Ảnh chụp màn hình
-
-`Screenshot` và `ScreenshotElement` trả về **PNG** qua `WebBytesResponse` (`ContentBase64`, `ContentByteLength`). Qua HTTP, giải mã Base64 ở phía client để lưu file hoặc nhúng ảnh.
-
-**Luồng xử lý trước khi chụp (cả hai hàm):**
-
-1. Chờ font trên trang sẵn sàng (`document.fonts.ready`).
-2. Nếu `delayMs` > 0 — chờ thêm số ms đó.
-3. Gọi Playwright screenshot (viewport / full page / clip element) với tùy chọn animation tương ứng `disableAnimations`.
-
----
-
 #### `Screenshot`
-
-Chụp **tab đang active**: mặc định chỉ vùng viewport; `fullPage=true` chụp toàn bộ chiều cao trang cuộn.
 
 | Input | Kiểu | Bắt buộc | Mặc định | Mô tả |
 |-------|------|----------|----------|--------|
-| `fullPage` | `bool` | Không | `false` | `true` = chụp cả trang cuộn; `false` = chỉ viewport hiện tại |
-| `delayMs` | `int?` | Không | `null` | Chờ thêm (ms) **sau bước chờ font**, trước khi chụp. `null` hoặc `≤ 0` = không chờ thêm. Dùng khi biểu đồ / canvas vẽ chậm (vd. `1000`) |
-| `disableAnimations` | `bool` | Không | `false` | `false` = Playwright `Animations.Allow` (animation chạy tự nhiên). `true` = `Animations.Disabled` — tua nhanh animation hữu hạn, animation vô hạn reset về frame đầu |
+| `fullPage` | `bool` | Không | `false` | `true` = chụp cả trang cuộn; `false` = chỉ viewport |
+| `delayMs` | `int?` | Không | `null` | Chờ thêm (ms) sau khi font sẵn sàng, trước khi chụp — dùng cho biểu đồ (vd. `1000`) |
+| `disableAnimations` | `bool` | Không | `false` | `true` = tắt CSS animation khi chụp (hành vi Playwright cũ); `false` = cho phép animation hoàn tất |
 
-**Output:** `WebBytesResponse` — `ContentBase64` (PNG), `ContentByteLength`.
+**Output:** `WebBytesResponse` — `ContentBase64` (PNG), `ContentByteLength`, `ContentMd5` (hex lowercase của bytes PNG gốc).
 
-**Biểu đồ (Highcharts, ECharts, Chart.js, …):** data label (số %, giá trị điểm) thường vẽ **sau** animation series. Nếu chụp quá sớm, ảnh có thể chỉ còn đường line mà thiếu số. Khuyến nghị:
-
-- `disableAnimations=false` (mặc định) — để animation hoàn tất.
-- `delayMs` khoảng `800`–`1500` tùy độ phức tạp biểu đồ, hoặc gọi `WaitForTimeout` / `WaitForLoadState` trước `Screenshot`.
-- Tránh `disableAnimations=true` khi cần data label — Playwright có thể tua animation trước khi label được vẽ.
-
-**Ví dụ HTTP** — viewport:
-
-```json
-{
-  "function": "Screenshot",
-  "paramObject": {}
-}
-```
-
-**Ví dụ HTTP** — toàn trang + chờ biểu đồ:
-
-```json
-{
-  "function": "Screenshot",
-  "paramObject": {
-    "fullPage": "true",
-    "delayMs": "1000",
-    "disableAnimations": "false"
-  }
-}
-```
-
-`Result.ContentBase64` = PNG mã hóa Base64; `Result.ContentByteLength` = kích thước file (byte).
+**Biểu đồ (Highcharts, ECharts, …):** data label (số %) thường vẽ **sau** animation series. Nếu chụp quá sớm hoặc `disableAnimations=true`, ảnh có thể chỉ còn đường line mà thiếu số. Gọi `Screenshot` với `delayMs: 1000` (hoặc `WaitForTimeout` trước đó) và để `disableAnimations=false`.
 
 ---
 
 #### `ScreenshotElement`
 
-Chụp **một element** theo Playwright selector — ảnh crop theo bounding box của element (chỉ phần đang hiển thị trong viewport nếu element nằm trong vùng scroll).
-
 | Input | Kiểu | Bắt buộc | Mặc định | Mô tả |
 |-------|------|----------|----------|--------|
-| `selector` | `string` | **Có** | — | Element cần chụp (CSS, `text=...`, `xpath=...`) |
-| `timeoutMs` | `int?` | Không | `null` | Chờ element xuất hiện (ms). `null` = kiểm tra ngay — không có element → lỗi (xem [Kiểm tra element](#kiểm-tra-element-trước-khi-thực-hiện-lệnh)) |
-| `delayMs` | `int?` | Không | `null` | Chờ thêm (ms) sau font, trước khi chụp — cùng ý nghĩa `Screenshot` |
-| `disableAnimations` | `bool` | Không | `false` | Cùng ý nghĩa `Screenshot` |
+| `selector` | `string` | **Có** | — | Element cần chụp |
+| `timeoutMs` | `int?` | Không | `null` | Chờ element (ms) |
+| `delayMs` | `int?` | Không | `null` | Chờ thêm (ms) trước khi chụp — xem `Screenshot` |
+| `disableAnimations` | `bool` | Không | `false` | `true` = tắt CSS animation khi chụp |
 
-**Output:** `WebBytesResponse` — `ContentBase64` (PNG), `ContentByteLength`.
+**Output:** `WebBytesResponse` — cùng field với `Screenshot` (`ContentBase64`, `ContentByteLength`, `ContentMd5`).
 
-**Lưu ý selector:**
-
-- Chọn **container biểu đồ đủ lớn** (bao gồm data label phía trên điểm), tránh phần tử con bị `overflow: hidden` làm cắt mất số.
-- Element bị element khác che hoàn toàn có thể không hiển thị đúng trên ảnh clip.
-
-**Ví dụ HTTP:**
-
-```json
-{
-  "function": "ScreenshotElement",
-  "paramObject": {
-    "selector": "#chart-container",
-    "timeoutMs": "5000",
-    "delayMs": "1000"
-  }
-}
-```
+**Lưu ý:** Chọn selector là **container biểu đồ đủ lớn** (bao gồm data label phía trên điểm), tránh phần tử con bị `overflow: hidden` làm cắt mất số.
 
 ---
 
@@ -784,7 +722,75 @@ Chạy mã **như gõ trong DevTools Console** (`eval` trên trang). Không cầ
 
 ---
 
-### 4.8 Quản lý tab
+### 4.8 Quản lý tab & `window.open`
+
+#### `ClickAndWaitForNewPage`
+
+Click trên tab active và **chờ** tab/cửa sổ mới (JavaScript `window.open`, link `target="_blank"`). Tab mới được đăng ký và trở thành **active**.
+
+| Input | Kiểu | Bắt buộc | Mặc định | Mô tả |
+|-------|------|----------|----------|--------|
+| `selector` | `string` | **Có** | — | Element cần click |
+| `timeoutMs` | `int?` | Không | `null` | Chờ tab mới (ms); không gửi → `DefaultTimeoutMs` hoặc **30000** |
+| `force` | `bool` | Không | `false` | Playwright `force` click |
+
+**Output:** `WebTextResponse` — `Value` = JSON:
+
+```json
+{ "pageIndex": 1, "url": "https://...", "active": true }
+```
+
+**Ví dụ HTTP:**
+
+```json
+{
+  "sessionId": "...",
+  "function": "ClickAndWaitForNewPage",
+  "paramObject": {
+    "selector": "a[title='Purchase Order PDF']",
+    "timeoutMs": "60000"
+  }
+}
+```
+
+---
+
+#### `WaitForNewPage`
+
+Chờ tab mới xuất hiện **không** kèm click (đã click tay hoặc `Click` trước đó). Tab mới → active.
+
+| Input | Kiểu | Bắt buộc | Mặc định | Mô tả |
+|-------|------|----------|----------|--------|
+| `timeoutMs` | `int?` | Không | `null` | Giống `ClickAndWaitForNewPage` |
+
+**Output:** `WebTextResponse` — `Value` = JSON cùng format (`pageIndex`, `url`, `active`).
+
+---
+
+#### Luồng mẫu: click → PDF popup → lưu file
+
+1. `web-auto/connect` (đã login portal).
+2. `ClickAndWaitForNewPage` — selector nút/link mở PO PDF.
+3. (Tuỳ chọn) `WaitForLoadState` với `networkidle` hoặc `WaitForTimeout` vài giây.
+4. `GetUrl` — xác nhận URL PDF (vd. `dyncon?...`).
+5. `DownloadActivePageToFile` — `filePath`: `D:\temp\PO-4500715007.pdf`.
+
+```json
+{
+  "sessionId": "...",
+  "function": "DownloadActivePageToFile",
+  "paramObject": {
+    "filePath": "D:\\temp\\PO-4500715007.pdf",
+    "timeoutMs": "120000"
+  }
+}
+```
+
+6. `CloseAllPagesExcept` — `keepPageIndex`: `0` (đóng popup, về trang list).
+
+**Thay thế:** `GetAttribute(href)` + `Navigate` nếu link có URL tĩnh — không cần tab mới.
+
+---
 
 #### `NewPage`
 
@@ -803,6 +809,37 @@ Chạy mã **như gõ trong DevTools Console** (`eval` trên trang). Không cầ
 | `pageIndex` | `int` | **Có** | — | Chỉ số tab (0-based), xem `ListPages` |
 
 **Output:** `WebAccessResponse`. Nếu đóng tab active, chuyển sang tab cuối còn lại.
+
+---
+
+#### `CloseAllPagesExcept`
+
+Đóng **tất cả tab** trừ một tab giữ lại (sau popup `window.open` — thường giữ **`0`** = trang thao tác gốc). Tab giữ lại → **active**.
+
+| Input | Kiểu | Bắt buộc | Mặc định | Mô tả |
+|-------|------|----------|----------|--------|
+| `keepPageIndex` | `int` | Không | `0` | Chỉ số tab không đóng (0-based) |
+
+**Output:** `WebTextResponse` — `Value` = JSON:
+
+```json
+{
+  "closedCount": 2,
+  "keepPageIndex": 0,
+  "remainingPages": 1,
+  "activeUrl": "https://portal.../list"
+}
+```
+
+**Ví dụ HTTP** — đóng popup PDF, về tab list:
+
+```json
+{
+  "sessionId": "...",
+  "function": "CloseAllPagesExcept",
+  "paramObject": { "keepPageIndex": "0" }
+}
+```
 
 ---
 
@@ -830,6 +867,8 @@ Chạy mã **như gõ trong DevTools Console** (`eval` trên trang). Không cầ
   { "index": 1, "url": "https://...", "active": false }
 ]
 ```
+
+Trước khi liệt kê, server **đồng bộ** tab từ Playwright context (phòng tab `window.open` chưa kịp gắn listener).
 
 ---
 
@@ -977,45 +1016,17 @@ Kết quả trong `Result`: `{ "Success": true, "Value": "..." }`.
 
 ### 5.9 Ví dụ `command` — chụp màn hình / JavaScript / disconnect
 
-**Chụp viewport (mặc định):**
-
-```json
-{
-  "sessionId": "6b4c0d13-cf0d-4d30-b2fc-a1a31f252d44",
-  "function": "Screenshot",
-  "paramObject": {}
-}
-```
-
-**Chụp toàn trang + chờ biểu đồ render:**
-
 ```json
 {
   "sessionId": "6b4c0d13-cf0d-4d30-b2fc-a1a31f252d44",
   "function": "Screenshot",
   "paramObject": {
-    "fullPage": "true",
-    "delayMs": "1000",
-    "disableAnimations": "false"
+    "fullPage": "true"
   }
 }
 ```
 
-**Chụp một element (biểu đồ):**
-
-```json
-{
-  "sessionId": "6b4c0d13-cf0d-4d30-b2fc-a1a31f252d44",
-  "function": "ScreenshotElement",
-  "paramObject": {
-    "selector": "#sales-chart",
-    "timeoutMs": "5000",
-    "delayMs": "1000"
-  }
-}
-```
-
-`Result.ContentBase64` = PNG mã hóa Base64; `Result.ContentByteLength` = kích thước byte.
+`Result.ContentBase64` = PNG mã hóa Base64; `Result.ContentMd5` = MD5 hex của bytes PNG.
 
 ```json
 {
@@ -1087,6 +1098,13 @@ Tên field trong **`paramObject`** trùng tên tham số C#. Cột **Bắt buộ
 | **GetTitle** / **GetUrl** / **GetContent** | — | — | — | — | Không input |
 | **DownloadFullHtml** | `filePath` | string | Có | — | Lưu HTML ra file worker |
 | | `encodingName` | string | Không | utf-8 | |
+| **DownloadActivePageToFile** | `filePath` | string | Có | — | GET URL tab active (cookie) → file bytes (PDF, …) |
+| | `timeoutMs` | int | Không | null | |
+| | `failOnHttpError` | bool | Không | true | |
+| **ClickAndWaitForNewPage** | `selector` | string | Có | — | Click + chờ `window.open` / tab mới → `Value` JSON |
+| | `timeoutMs` | int | Không | null | |
+| | `force` | bool | Không | false | |
+| **WaitForNewPage** | `timeoutMs` | int | Không | null | Chờ tab mới (sau click trước đó) |
 | **FindElements** | `queryType`, `queryValue` | string | Có | — | id / class / xpath / css / tag |
 | | `valueKind` | string | Không | innerText | innerText, href, … |
 | | `timeoutMs` | int | Không | null | |
@@ -1107,13 +1125,13 @@ Tên field trong **`paramObject`** trùng tên tham số C#. Cột **Bắt buộ
 | **WaitForLoadState** | `state` | string | Không | `load` | `networkidle`, … |
 | | `timeoutMs` | int | Không | null | |
 | **WaitForTimeout** | `milliseconds` | int | Có | — | Chờ cố định (ms) |
-| **Screenshot** | `fullPage` | bool | Không | false | `true` = toàn trang cuộn → `Result.ContentBase64` (PNG) |
-| | `delayMs` | int | Không | null | Chờ thêm sau font, trước chụp (ms) |
-| | `disableAnimations` | bool | Không | false | `true` = tắt/tua animation Playwright |
-| **ScreenshotElement** | `selector` | string | Có | — | Clip theo bounding box element |
-| | `timeoutMs` | int | Không | null | Chờ element (ms) |
-| | `delayMs` | int | Không | null | Chờ thêm sau font (ms) |
-| | `disableAnimations` | bool | Không | false | Giống `Screenshot` |
+| **Screenshot** | `fullPage` | bool | Không | false | → `Result.ContentBase64`, `ContentMd5` |
+| | `delayMs` | int | Không | null | Chờ thêm trước khi chụp (biểu đồ) |
+| | `disableAnimations` | bool | Không | false | `true` = hành vi Playwright cũ |
+| **ScreenshotElement** | `selector` | string | Có | — | → `Result.ContentBase64`, `ContentMd5` |
+| | `timeoutMs` | int | Không | null | |
+| | `delayMs` | int | Không | null | |
+| | `disableAnimations` | bool | Không | false | |
 | **Evaluate** / **RunJavaScript** | `script` | string | Có | — | Hàm JS |
 | | `argJson` | string | Không | null | JSON đối số |
 | **RunJavaScriptFile** | `filePath` | string | Có | — | File .js trên worker |
@@ -1122,6 +1140,7 @@ Tên field trong **`paramObject`** trùng tên tham số C#. Cột **Bắt buộ
 | | `argJson` | string | Không | null | Biến `__arg` |
 | **NewPage** | `url` | string | Không | null | Tab mới |
 | **ClosePage** / **SwitchPage** | `pageIndex` | int | Có | — | 0-based |
+| **CloseAllPagesExcept** | `keepPageIndex` | int | Không | 0 | Đóng hết tab trừ tab giữ; → JSON `closedCount`, `activeUrl` |
 | **ListPages** | — | — | — | — | → JSON array tab |
 
 **Output chung:** `ApiResponse.Result` chứa `Success`, `Message`, và `Value` / `ContentBase64` / `ResultJson` / `Body` + `StatusCode` (FetchApi) tùy hàm.

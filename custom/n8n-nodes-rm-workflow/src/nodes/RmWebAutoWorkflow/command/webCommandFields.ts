@@ -41,9 +41,14 @@ const TIMEOUT_ONLY_OPS = operationsWithParamKind(
 	'setInputFiles',
 	'navigate',
 	'fetchApi',
+	'downloadActivePage',
 );
 const QUERY_OPS = operationsWithParamKind('queryElements', 'queryHtml');
-const FILE_PATH_OPS = operationsWithParamKind('filePathEncoding', 'scriptFile');
+const FILE_PATH_OPS = operationsWithParamKind(
+	'filePathEncoding',
+	'scriptFile',
+	'downloadActivePage',
+);
 const WAIT_SELECTOR_OPS = operationsWithParamKind('waitSelector');
 const WAIT_LOAD_OPS = operationsWithParamKind('waitLoadState');
 const WAIT_TIMEOUT_OPS = operationsWithParamKind('waitTimeout');
@@ -53,7 +58,9 @@ const SCRIPT_EVAL_OPS = operationsWithParamKind('scriptEvaluate');
 const SCRIPT_FILE_OPS = operationsWithParamKind('scriptFile');
 const SCRIPT_RUN_OPS = operationsWithParamKind('scriptRun');
 const PAGE_INDEX_OPS = operationsWithParamKind('pageIndex');
+const KEEP_PAGE_INDEX_OPS = operationsWithParamKind('keepPageIndex');
 const FORCE_OPS = operationsWithParamKind('selectorForce');
+const DOWNLOAD_ACTIVE_OPS = operationsWithParamKind('downloadActivePage');
 
 /** Field bổ sung cho POST /web-auto/command (không gồm block Connect). */
 export function getWebCommandShortcutProperties(): INodeProperties[] {
@@ -119,6 +126,15 @@ export function getWebCommandShortcutProperties(): INodeProperties[] {
 			default: false,
 			description: 'true = lỗi khi HTTP status không phải 2xx/3xx (Fetch API).',
 			displayOptions: op(...FETCH_API_OPS),
+		},
+		{
+			displayName: 'Fail On HTTP Error',
+			name: 'downloadFailOnHttpError',
+			type: 'boolean',
+			default: true,
+			description:
+				'true = lỗi khi HTTP status không phải 2xx/3xx (Download Active Page To File). Mặc định true.',
+			displayOptions: op(...DOWNLOAD_ACTIVE_OPS),
 		},
 		{
 			displayName: 'Value',
@@ -311,6 +327,16 @@ export function getWebCommandShortcutProperties(): INodeProperties[] {
 			default: 0,
 			description: 'Chỉ số tab 0-based (Close Page, Switch Page).',
 			displayOptions: op(...PAGE_INDEX_OPS),
+		},
+		{
+			displayName: 'Keep Page Index',
+			name: 'keepPageIndex',
+			type: 'number',
+			typeOptions: { minValue: 0 },
+			default: 0,
+			description:
+				'Chỉ số tab giữ lại khi Close All Pages Except (0-based). Mặc định 0 = tab gốc.',
+			displayOptions: op(...KEEP_PAGE_INDEX_OPS),
 		},
 	];
 }

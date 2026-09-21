@@ -137,6 +137,11 @@
 					"description": "Lưu HTML trang ra file trên máy worker. filePath bắt buộc; encodingName 默认 utf-8.",
 					"action": "下载完整 HTML"
 				},
+				"downloadActivePageToFile": {
+					"displayName": "下载活动页到文件",
+					"description": "GET URL tab active qua cookie/session browser, ghi bytes ra file trên worker (PDF inline, …).",
+					"action": "下载活动页到文件"
+				},
 				"findElements": {
 					"displayName": "查找元素",
 					"description": "/class/xpath/css/tag",
@@ -212,6 +217,16 @@
 					"description": "Chạy mã kiểu DevTools Console. Biến __arg từ argJson. Result.ResultJson.",
 					"action": "运行控制台脚本"
 				},
+				"clickAndWaitForNewPage": {
+					"displayName": "点击并等待新标签页",
+					"description": "Click trên tab active và chờ tab/cửa sổ mới (window.open, target=_blank). Tab mới → active. Result.Value JSON.",
+					"action": "点击并等待新标签页"
+				},
+				"waitForNewPage": {
+					"displayName": "等待新标签页",
+					"description": "Chờ tab mới xuất hiện (đã Click trước đó, không kèm click). Tab mới → active. Result.Value JSON.",
+					"action": "等待新标签页"
+				},
 				"newPage": {
 					"displayName": "新建标签页",
 					"description": "Mở tab mới; url tùy chọn. Tab mới trở thành active.",
@@ -221,6 +236,11 @@
 					"displayName": "关闭标签页",
 					"description": "Đóng tab theo chỉ số pageIndex (0-based).",
 					"action": "关闭标签页"
+				},
+				"closeAllPagesExcept": {
+					"displayName": "关闭其余标签页",
+					"description": "Đóng tất cả tab trừ tab giữ lại (mặc định keepPageIndex=0). Tab giữ → active. Result.Value JSON.",
+					"action": "关闭其余标签页"
 				},
 				"switchPage": {
 					"displayName": "切换标签页",
@@ -462,6 +482,14 @@
 		"pageIndex": {
 			"displayName": "页索引",
 			"description": "Chỉ số tab 0-based (Close Page, Switch Page)."
+		},
+		"keepPageIndex": {
+			"displayName": "保留页索引",
+			"description": "Chỉ số tab giữ lại khi Close All Pages Except (0-based). Mặc định 0 = tab gốc."
+		},
+		"downloadFailOnHttpError": {
+			"displayName": "HTTP 错误时失败",
+			"description": "true = lỗi khi HTTP status không phải 2xx/3xx (Download Active Page To File). Mặc định true."
 		}
 	}
 }

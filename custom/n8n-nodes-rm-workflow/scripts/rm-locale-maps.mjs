@@ -21,6 +21,7 @@ export const LABEL_VI = {
 	Selector: 'Selector',
 	URL: 'URL',
 	'HTTP Method': 'Phương thức HTTP',
+	'Keep Page Index': 'Giữ Page Index',
 };
 
 export const OP_NAME_VI = {
@@ -86,6 +87,7 @@ export const OP_NAME_VI = {
 	'Get URL': 'Get URL',
 	'Get Content': 'Get nội dung trang',
 	'Download Full HTML': 'Tải HTML đầy đủ',
+	'Download Active Page To File': 'Tải trang active ra file',
 	'Find Elements': 'Tìm phần tử',
 	'Get HTML': 'Get HTML',
 	'Is Visible': 'Có hiển thị',
@@ -101,8 +103,11 @@ export const OP_NAME_VI = {
 	'Run JavaScript': 'Chạy JavaScript',
 	'Run JavaScript File': 'Chạy file JS',
 	'Run Script': 'Chạy script console',
+	'Click And Wait For New Page': 'Click và chờ tab mới',
+	'Wait For New Page': 'Chờ tab mới',
 	'New Page': 'Tab mới',
 	'Close Page': 'Đóng tab',
+	'Close All Pages Except': 'Đóng hết tab trừ',
 	'Switch Page': 'Chuyển tab',
 	'List Pages': 'Liệt kê tab',
 	'Session Check': 'Kiểm tra session',
@@ -175,6 +180,7 @@ export const ACTION_VI = {
 	'Get current URL': 'Get URL hiện tại',
 	'Get page content': 'Get nội dung trang',
 	'Download full HTML': 'Tải HTML đầy đủ',
+	'Download active page to file': 'Tải trang active ra file',
 	'Find elements': 'Tìm phần tử',
 	'Get element HTML': 'Get HTML phần tử',
 	'Is visible': 'Có hiển thị',
@@ -190,8 +196,11 @@ export const ACTION_VI = {
 	'Run JavaScript': 'Chạy JavaScript',
 	'Run JS file': 'Chạy file JS',
 	'Run console script': 'Chạy script console',
+	'Click and wait for new page': 'Click và chờ tab mới',
+	'Wait for new page': 'Chờ tab mới',
 	'Open new tab': 'Mở tab mới',
 	'Close tab': 'Đóng tab',
+	'Close all pages except': 'Đóng hết tab trừ',
 	'Switch tab': 'Chuyển tab',
 	'List tabs': 'Liệt kê tab',
 };
