@@ -268,16 +268,34 @@
 		},
 		"browserType": {
 			"displayName": "浏览器类型",
-			"description": "Engine Playwright: chromium, firefox, webkit.",
+			"description": "chromium/firefox/webkit = Playwright 捆绑包。chrome/msedge = worker 机上已安装的浏览器通道。详见 WEB AUTOMATION API §1。",
 			"options": {
 				"chromium": {
-					"displayName": "Chromium"
+					"displayName": "Chromium（Playwright 捆绑）"
 				},
 				"firefox": {
-					"displayName": "Firefox"
+					"displayName": "Firefox（Playwright 捆绑）"
 				},
 				"webkit": {
-					"displayName": "WebKit"
+					"displayName": "WebKit（Playwright 捆绑）"
+				},
+				"chrome": {
+					"displayName": "Google Chrome（已安装）"
+				},
+				"chrome-beta": {
+					"displayName": "Google Chrome Beta"
+				},
+				"chrome-dev": {
+					"displayName": "Google Chrome Dev"
+				},
+				"msedge": {
+					"displayName": "Microsoft Edge（已安装）"
+				},
+				"msedge-beta": {
+					"displayName": "Microsoft Edge Beta"
+				},
+				"msedge-dev": {
+					"displayName": "Microsoft Edge Dev"
 				}
 			}
 		},

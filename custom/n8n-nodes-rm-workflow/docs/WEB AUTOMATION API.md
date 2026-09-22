@@ -11,6 +11,7 @@ Thư viện C# (.NET Framework 4.8) điều khiển trình duyệt qua **Microso
 | Nội dung | Mục |
 |----------|-----|
 | Cài đặt Playwright | [1) Cài đặt](#1-cài-đặt-playwright) |
+| **Chọn loại trình duyệt** (`browserType`) | [§1 bảng `browserType`](#1-cài-đặt-playwright) · [§5.5 `connect`](#55-trường-json-cho-connect) · [§5.6 ví dụ `chrome`](#56-ví-dụ-connect) |
 | Khởi tạo session | [2) Khởi tạo](#2-khởi-tạo-và-cấu-hình-launch) |
 | Kiểu kết quả | [3) Response types](#3-kiểu-kết-quả) |
 | API `WebAutomationManager` | [4) API chi tiết](#4-api-webautomationmanager) |
@@ -58,6 +59,22 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Install-Playwright
 
 Browser tải về `%LOCALAPPDATA%\ms-playwright\`. Nếu thiếu browser, `/web-auto/connect` sẽ lỗi khi launch.
 
+### Google Chrome / Microsoft Edge đã cài trên máy worker
+
+Không cần gói `chrome-auto.zip` nếu dùng **`browserType`: `chrome`** hoặc **`msedge`** (alias **`edge`**): Playwright launch **binary Chrome/Edge** trong Program Files (channel Playwright).
+
+| `browserType` | Nguồn trình duyệt |
+|---------------|-------------------|
+| `chromium` (mặc định) | Chromium bundle trong `%LOCALAPPDATA%\ms-playwright\` |
+| `firefox` | Firefox bundle Playwright |
+| `webkit` | WebKit bundle Playwright |
+| `chrome`, `chrome-beta`, `chrome-dev` | Google Chrome / Beta / Dev **cài trên máy worker** |
+| `msedge`, `edge`, `msedge-beta`, `edge-beta`, `msedge-dev`, `edge-dev` | Microsoft Edge **cài trên máy worker** |
+
+**Lưu ý:** Session vẫn là **profile automation riêng** (context Playwright), không tự dùng profile Chrome/Edge bạn mở tay hàng ngày — cần login lại trên session API (cookie lưu trong context đó). Dùng `chrome` khi site/PDF viewer hành xử khác Chromium bundle (vd. nút tải PDF trên viewer).
+
+Nếu chưa cài Chrome/Edge, connect với `browserType: "chrome"` sẽ lỗi (Playwright không tìm được channel).
+
 ---
 
 ## 2) Khởi tạo và cấu hình launch
@@ -65,7 +82,7 @@ Browser tải về `%LOCALAPPDATA%\ms-playwright\`. Nếu thiếu browser, `/web
 ```csharp
 var options = new WebLaunchOptions
 {
-    BrowserType = "chromium",   // chromium | firefox | webkit
+    BrowserType = "chromium",   // chromium | firefox | webkit | chrome | msedge
     Headless = false,
     StartUrl = "https://example.com",
     ViewportWidth = 1280,
@@ -84,7 +101,7 @@ using (var web = WebAutomationManager.Create(options))
 
 | Thuộc tính `WebLaunchOptions` | Mặc định | Mô tả |
 |-------------------------------|----------|--------|
-| `BrowserType` | `chromium` | Engine Playwright |
+| `BrowserType` | `chromium` | `chromium` / `firefox` / `webkit` (bundle); `chrome` / `msedge` (trình cài trên máy). Chi tiết: [§1](#1-cài-đặt-playwright) |
 | `Headless` | `false` | `true` = không hiện cửa sổ |
 | `StartUrl` | `null` | Mở URL ngay sau launch |
 | `ViewportWidth` / `ViewportHeight` | `null` | Kích thước viewport (cả hai cùng có giá trị mới áp dụng) |
@@ -418,9 +435,11 @@ GET URL của **tab active** qua cookie/session browser (cùng cơ chế `FetchA
 
 | Input | Kiểu | Bắt buộc | Mặc định | Mô tả |
 |-------|------|----------|----------|--------|
-| `filePath` | `string` | **Có** | — | Đường dẫn file đích (vd. `D:\temp\po.pdf`) |
+| `filePath` | `string` | **Có** | — | File đích (`D:\temp\po.pdf`) **hoặc thư mục** (`E:\History\NEXUS\DATA\`) — nếu là folder thì bắt buộc `fileName` |
+| `fileName` | `string` | Không | null | Tên file khi `filePath` là thư mục; không gửi → lấy từ `Content-Disposition` / `download.pdf` |
 | `timeoutMs` | `int?` | Không | `null` | Timeout HTTP GET (ms) |
 | `failOnHttpError` | `bool` | Không | `true` | `false` = vẫn lưu body khi HTTP 4xx/5xx |
+| `requirePdfSignature` | `bool` | Không | `true` | `false` = không kiểm tra header `%PDF` (tránh lưu nhầm HTML — icon Windows “lạ”, mở không được) |
 
 **Output:** `WebDownloadHtmlResponse` — `SavedFullPath`, `ContentByteLength`.
 
@@ -928,16 +947,18 @@ Payload chung: `sessionId`, `function`, `param`, `params`, `paramObject`, `logUr
 | Field | Bắt buộc | Mô tả |
 |-------|----------|--------|
 | `sessionId` | Có | GUID |
-| `browserType` | Không | `chromium` / `firefox` / `webkit` |
+| `browserType` | Không | `chromium` / `firefox` / `webkit`; hoặc `chrome` / `chrome-beta` / `chrome-dev`; `msedge` / `edge` (+ `-beta` / `-dev`). Mặc định `chromium`. Xem [§1](#1-cài-đặt-playwright) |
 | `headless` | Không | `true` / `false` (mặc định `false`) |
 | `startUrl` | Không | URL mở ngay sau launch |
 | `viewportWidth` / `viewportHeight` | Không | Số nguyên |
 | `slowMo` | Không | ms |
 | `userAgent` | Không | Chuỗi |
 | `defaultTimeoutMs` | Không | Timeout mặc định (ms) |
-| `idleTimeoutMinutes` | Không | Web: mặc định **5** phút idle tự đóng; gửi số khác để ghi đè. |
+| `idleTimeoutMinutes` | Không | Web: mặc định **5** phút idle tự đóng. Gửi khi **`connect`** hoặc bất kỳ **`command`** để ghi đè (vd. `120` = 2 giờ không gọi API mới mới đóng). |
 
 ### 5.6 Ví dụ `connect`
+
+**Chromium bundle (mặc định):**
 
 ```json
 {
@@ -948,6 +969,18 @@ Payload chung: `sessionId`, `function`, `param`, `params`, `paramObject`, `logUr
   "viewportWidth": 1280,
   "viewportHeight": 720,
   "idleTimeoutMinutes": 30
+}
+```
+
+**Google Chrome cài trên máy worker** (không dùng gói offline Chromium):
+
+```json
+{
+  "sessionId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "browserType": "chrome",
+  "headless": false,
+  "startUrl": "https://portal.example.com/",
+  "idleTimeoutMinutes": 0
 }
 ```
 
@@ -1152,7 +1185,7 @@ Tên field trong **`paramObject`** trùng tên tham số C#. Cột **Bắt buộ
 | Hành vi | Chi tiết |
 |---------|----------|
 | `MaxWebSessions` | Mặc định **5** session web đồng thời |
-| Idle timeout | **Mặc định 5 phút** không có request (`command`, `connect`…) → tự đóng browser. Ghi đè bằng `idleTimeoutMinutes` khi connect. Timer quét mỗi **1 phút**. |
+| Idle timeout | **Mặc định 5 phút** không có request → tự đóng browser. Ghi đè `idleTimeoutMinutes` khi **`connect`** hoặc trên từng **`command`** (cùng body JSON). Timer quét mỗi **1 phút**. |
 | `GET /web-auto/session/list` | Liệt kê mọi session (headless + có UI). Cần `api-key`. |
 | `GET /web-auto/sessions` | Alias của `session/list`. |
 | `POST /web-auto/session/kill-all` | Đóng **hết** browser web; body tùy chọn `{ "reason": "..." }`. |
@@ -1214,7 +1247,7 @@ Content-Type: application/json
 | `400` | Thiếu/sai `api-key`, thiếu `sessionId`, GUID sai, thiếu `function` |
 | `404` | Sai path (ví dụ `/webauto/` thay vì `/web-auto/`) |
 | `500` | Playwright chưa cài, thiếu `System.Text.Json.dll`, selector timeout |
-| `Success: false` khi connect | Chưa `playwright.ps1 install chromium` trên máy worker |
+| `Success: false` khi connect | `chromium`: chưa cài bundle (`playwright.ps1 install chromium` hoặc menu Cài Chromium). `chrome` / `msedge`: chưa cài Google Chrome / Edge trên **máy worker** |
 
 Message lỗi Playwright nằm trong `ApiResponse.Message` hoặc `Result.Message`.
 

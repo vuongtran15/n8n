@@ -268,16 +268,34 @@
 		},
 		"browserType": {
 			"displayName": "Loại trình duyệt",
-			"description": "Engine Playwright: chromium, firefox, webkit.",
+			"description": "chromium/firefox/webkit = bundle Playwright. chrome/msedge = trình duyệt đã cài trên máy worker (channel). Xem WEB AUTOMATION API §1.",
 			"options": {
 				"chromium": {
-					"displayName": "Chromium"
+					"displayName": "Chromium (Playwright bundle)"
 				},
 				"firefox": {
-					"displayName": "Firefox"
+					"displayName": "Firefox (Playwright bundle)"
 				},
 				"webkit": {
-					"displayName": "WebKit"
+					"displayName": "WebKit (Playwright bundle)"
+				},
+				"chrome": {
+					"displayName": "Google Chrome (đã cài)"
+				},
+				"chrome-beta": {
+					"displayName": "Google Chrome Beta"
+				},
+				"chrome-dev": {
+					"displayName": "Google Chrome Dev"
+				},
+				"msedge": {
+					"displayName": "Microsoft Edge (đã cài)"
+				},
+				"msedge-beta": {
+					"displayName": "Microsoft Edge Beta"
+				},
+				"msedge-dev": {
+					"displayName": "Microsoft Edge Dev"
 				}
 			}
 		},

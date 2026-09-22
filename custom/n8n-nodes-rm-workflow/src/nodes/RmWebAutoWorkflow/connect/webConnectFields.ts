@@ -23,12 +23,19 @@ const connectOnlyFields: Array<Omit<INodeProperties, 'displayOptions'>> = [
 		name: 'browserType',
 		type: 'options',
 		options: [
-			{ name: 'Chromium', value: 'chromium' },
-			{ name: 'Firefox', value: 'firefox' },
-			{ name: 'WebKit', value: 'webkit' },
+			{ name: 'Chromium (Playwright bundle)', value: 'chromium' },
+			{ name: 'Firefox (Playwright bundle)', value: 'firefox' },
+			{ name: 'WebKit (Playwright bundle)', value: 'webkit' },
+			{ name: 'Google Chrome (installed)', value: 'chrome' },
+			{ name: 'Google Chrome Beta', value: 'chrome-beta' },
+			{ name: 'Google Chrome Dev', value: 'chrome-dev' },
+			{ name: 'Microsoft Edge (installed)', value: 'msedge' },
+			{ name: 'Microsoft Edge Beta', value: 'msedge-beta' },
+			{ name: 'Microsoft Edge Dev', value: 'msedge-dev' },
 		],
 		default: 'chromium',
-		description: 'Engine Playwright: chromium, firefox, webkit.',
+		description:
+			'chromium/firefox/webkit = bundle Playwright. chrome/msedge = trình duyệt đã cài trên máy worker (channel). Xem WEB AUTOMATION API §1.',
 	},
 	{
 		displayName: 'Headless',
