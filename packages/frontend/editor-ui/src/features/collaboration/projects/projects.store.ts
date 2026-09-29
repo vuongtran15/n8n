@@ -96,6 +96,16 @@ export const useProjectsStore = defineStore(STORES.PROJECTS, () => {
 		currentProject.value = project;
 	};
 
+	/** Clear project selection/lists on logout so the next user never inherits them. */
+	const reset = () => {
+		projects.value = [];
+		myProjects.value = [];
+		personalProject.value = null;
+		currentProject.value = null;
+		projectsCount.value = { personal: 0, team: 0, public: 0 };
+		projectNavActiveIdState.value = null;
+	};
+
 	const getAllProjects = async () => {
 		projects.value = await projectsApi.getAllProjects(rootStore.restApiContext);
 	};
@@ -368,6 +378,7 @@ export const useProjectsStore = defineStore(STORES.PROJECTS, () => {
 		globalProjectPermissions,
 		projectNavActiveId,
 		setCurrentProject,
+		reset,
 		searchProjects,
 		searchShareableProjects,
 		getAllProjects,

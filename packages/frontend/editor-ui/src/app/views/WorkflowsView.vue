@@ -773,6 +773,13 @@ const onWorkflowUnarchived = async (id: string) => {
 	markWorkflowArchivedInList(id, false);
 };
 
+/** Drag/drop or modal move that leaves the current list — drop locally before/after refetch. */
+const onResourceMoved = async (payload: WorkflowListEventMap['resource-moved']) => {
+	removeWorkflowFromList(payload.resourceId);
+	await refreshWorkflows();
+	removeWorkflowFromList(payload.resourceId, { updateCount: false });
+};
+
 const onFolderDeleted = async (payload: {
 	folderId: string;
 	workflowCount: number;
@@ -839,7 +846,7 @@ onMounted(async () => {
 		void initialize();
 	}
 
-	workflowListEventBus.on('resource-moved', fetchWorkflows);
+	workflowListEventBus.on('resource-moved', onResourceMoved);
 	workflowListEventBus.on('workflow-duplicated', onWorkflowDuplicated);
 	workflowListEventBus.on('folder-deleted', onFolderDeleted);
 	workflowListEventBus.on('folder-moved', moveFolder);
@@ -849,7 +856,7 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(() => {
-	workflowListEventBus.off('resource-moved', fetchWorkflows);
+	workflowListEventBus.off('resource-moved', onResourceMoved);
 	workflowListEventBus.off('workflow-duplicated', onWorkflowDuplicated);
 	workflowListEventBus.off('folder-deleted', onFolderDeleted);
 	workflowListEventBus.off('folder-moved', moveFolder);
@@ -1890,6 +1897,11 @@ const createFolder = async (
 			telemetry.track('User created folder', {
 				folder_id: newFolder.id,
 			});
+			const parentFolderId = parent.type === 'folder' ? parent.id : undefined;
+			foldersStore.cacheFolders([
+				{ id: newFolder.id, name: newFolder.name, parentFolder: parentFolderId },
+			]);
+
 			if (options.openAfterCreate) {
 				// Navigate to parent folder id option specified by the caller
 				await router.push({
@@ -1897,15 +1909,24 @@ const createFolder = async (
 					params: { projectId, folderId: parent.id },
 				});
 			} else {
-				const folderListItem = {
+				const folderListItem: FolderListItem = {
 					id: newFolder.id,
 					name: newFolder.name,
-					resource: 'folder' as const,
+					resource: 'folder',
 					createdAt: newFolder.createdAt,
 					updatedAt: newFolder.updatedAt,
 					homeProject: currentBreadcrumbsProject.value as ProjectSharingData,
 					workflowCount: 0,
 					subFolderCount: 0,
+					...(parentFolderId
+						? {
+								parentFolder: {
+									id: parentFolderId,
+									name: parent.name,
+									parentFolderId: null,
+								},
+							}
+						: {}),
 				};
 				// Always insert locally first — refetch can race and return a stale list
 				// without the new folder (same pattern as archive/delete refresh).
@@ -1914,9 +1935,18 @@ const createFolder = async (
 					workflowsListStore.totalWorkflowCount += 1;
 					foldersStore.totalWorkflowCount += 1;
 				}
-				foldersStore.cacheFolders([
-					{ id: newFolder.id, name: newFolder.name, parentFolder: currentFolder.value?.id },
-				]);
+				// Bump parent folder card counts when creating a nested folder in-place.
+				if (parentFolderId) {
+					workflowsAndFolders.value = workflowsAndFolders.value.map((resource) => {
+						if (resource.resource !== 'folder' || resource.id !== parentFolderId) {
+							return resource;
+						}
+						return {
+							...resource,
+							subFolderCount: (resource.subFolderCount ?? 0) + 1,
+						};
+					});
+				}
 				await refreshWorkflows();
 				if (!workflowsAndFolders.value.some((item) => item.id === newFolder.id)) {
 					workflowsAndFolders.value = [folderListItem, ...workflowsAndFolders.value];
@@ -2050,7 +2080,10 @@ const moveFolder = async (payload: WorkflowListEventMap['folder-moved']) => {
 				type: 'success',
 			});
 			if (!payload.options?.skipFetch) {
-				await fetchWorkflows();
+				// Optimistic remove — refetch can still include the folder in the old parent.
+				removeWorkflowFromList(payload.folder.id);
+				await refreshWorkflows();
+				removeWorkflowFromList(payload.folder.id, { updateCount: false });
 			}
 		}
 	} catch (error) {
@@ -2088,7 +2121,9 @@ const onFolderTransferred = async (payload: WorkflowListEventMap['folder-transfe
 				});
 			}
 		} else {
+			removeWorkflowFromList(payload.source.folder.id);
 			await refreshWorkflows();
+			removeWorkflowFromList(payload.source.folder.id, { updateCount: false });
 
 			if (payload.destination.canAccess) {
 				toast.showToast({
@@ -2157,7 +2192,9 @@ const moveWorkflowToFolder = async (payload: {
 const onWorkflowTransferred = async (payload: WorkflowListEventMap['workflow-transferred']) => {
 	loading.value = true;
 	try {
+		removeWorkflowFromList(payload.source.workflow.id);
 		await refreshWorkflows();
+		removeWorkflowFromList(payload.source.workflow.id, { updateCount: false });
 
 		if (payload.destination.canAccess) {
 			toast.showToast({
@@ -2223,7 +2260,10 @@ const onWorkflowMoved = async (payload: WorkflowListEventMap['workflow-moved']) 
 			});
 		}
 		if (!payload.options?.skipFetch) {
-			await fetchWorkflows();
+			// Optimistic remove — refetch can race and still show the workflow in the old folder.
+			removeWorkflowFromList(payload.workflow.id);
+			await refreshWorkflows();
+			removeWorkflowFromList(payload.workflow.id, { updateCount: false });
 		}
 		toast.showToast({
 			title: i18n.baseText('folders.move.workflow.success.title'),

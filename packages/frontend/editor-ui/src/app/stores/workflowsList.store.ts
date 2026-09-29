@@ -101,6 +101,15 @@ export const useWorkflowsListStore = defineStore(STORES.WORKFLOWS_LIST, () => {
 		}
 	}
 
+	/** Drop all list/cache state — required on logout so the next user never sees prior workflows. */
+	function reset() {
+		totalWorkflowCount.value = 0;
+		workflowsById.value = {};
+		activeWorkflows.value = [];
+		allWorkflowsFetched.value = false;
+		allWorkflowsFetchedByProjectKey.value = {};
+	}
+
 	function getAllWorkflowsFetchedKey(projectId?: string) {
 		return projectId ?? ALL_PROJECTS_KEY;
 	}
@@ -336,6 +345,7 @@ export const useWorkflowsListStore = defineStore(STORES.WORKFLOWS_LIST, () => {
 		addWorkflow,
 		removeWorkflow,
 		updateWorkflowInCache,
+		reset,
 		hasFetchedAllWorkflows,
 		setWorkflowActiveInCache,
 		setWorkflowInactiveInCache,

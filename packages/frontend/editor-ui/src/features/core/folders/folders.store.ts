@@ -117,6 +117,15 @@ export const useFoldersStore = defineStore(STORES.FOLDERS, () => {
 		});
 	};
 
+	/** Drop folder breadcrumbs + counts — required on logout between users. */
+	const reset = () => {
+		breadcrumbsCache.value = {};
+		totalWorkflowCount.value = 0;
+		workflowsCountLoaded.value = false;
+		draggedElement.value = null;
+		activeDropTarget.value = null;
+	};
+
 	async function deleteFolder(projectId: string, folderId: string, newParentId?: string) {
 		await foldersApi.deleteFolder(rootStore.restApiContext, projectId, folderId, newParentId);
 	}
@@ -359,6 +368,7 @@ export const useFoldersStore = defineStore(STORES.FOLDERS, () => {
 		workflowsCountLoaded,
 		deleteFolder,
 		deleteFoldersFromCache,
+		reset,
 		renameFolder,
 		fetchProjectFolders,
 		fetchFoldersAvailableForMove,

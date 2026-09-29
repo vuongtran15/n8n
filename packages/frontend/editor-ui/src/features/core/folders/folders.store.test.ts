@@ -182,9 +182,7 @@ describe('folders.store', () => {
 		it('should update breadcrumbs cache name after rename', async () => {
 			const projectId = faker.string.alphanumeric(10);
 			const folderId = faker.string.alphanumeric(10);
-			foldersStore.cacheFolders([
-				{ id: folderId, name: 'Old name', parentFolder: undefined },
-			]);
+			foldersStore.cacheFolders([{ id: folderId, name: 'Old name', parentFolder: undefined }]);
 			vi.spyOn(foldersApi, 'renameFolder').mockResolvedValue();
 
 			await foldersStore.renameFolder(projectId, folderId, 'New name');
@@ -206,6 +204,21 @@ describe('folders.store', () => {
 			foldersStore.cacheFolders([{ id: folderId, name: 'New name', parentFolder: 'parent-1' }]);
 
 			expect(foldersStore.breadcrumbsCache[folderId]?.name).toBe('New name');
+		});
+	});
+
+	describe('reset', () => {
+		it('should clear breadcrumbs cache and counts', () => {
+			const folderId = faker.string.alphanumeric(10);
+			foldersStore.cacheFolders([{ id: folderId, name: 'Folder', parentFolder: 'parent-1' }]);
+			foldersStore.totalWorkflowCount = 5;
+			foldersStore.workflowsCountLoaded = true;
+
+			foldersStore.reset();
+
+			expect(foldersStore.breadcrumbsCache).toEqual({});
+			expect(foldersStore.totalWorkflowCount).toBe(0);
+			expect(foldersStore.workflowsCountLoaded).toBe(false);
 		});
 	});
 

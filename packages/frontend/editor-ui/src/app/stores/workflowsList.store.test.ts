@@ -43,6 +43,26 @@ describe('useWorkflowsListStore', () => {
 		});
 	});
 
+	describe('reset', () => {
+		it('should clear workflows cache and counts', async () => {
+			vi.mocked(workflowsApi).getWorkflows.mockResolvedValue({
+				count: 1,
+				data: [createTestWorkflow({ id: '1', name: 'A' })],
+			});
+			workflowsListStore.totalWorkflowCount = 2;
+			workflowsListStore.activeWorkflows = ['1'];
+			await workflowsListStore.fetchAllWorkflows('project-1');
+			expect(workflowsListStore.hasFetchedAllWorkflows('project-1')).toBe(true);
+
+			workflowsListStore.reset();
+
+			expect(workflowsListStore.workflowsById).toEqual({});
+			expect(workflowsListStore.totalWorkflowCount).toBe(0);
+			expect(workflowsListStore.activeWorkflows).toEqual([]);
+			expect(workflowsListStore.hasFetchedAllWorkflows('project-1')).toBe(false);
+		});
+	});
+
 	describe('allWorkflows', () => {
 		it('should return sorted workflows by name', () => {
 			workflowsListStore.setWorkflows([

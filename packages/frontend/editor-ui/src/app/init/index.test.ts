@@ -331,6 +331,27 @@ describe('Init', () => {
 			expect(cloudStoreSpy).toHaveBeenCalledTimes(2);
 		});
 
+		it('clears user-scoped workflow/folder/project caches on logout', async () => {
+			state.initialized = false;
+			const registerLogoutHookSpy = vi.spyOn(usersStore, 'registerLogoutHook');
+			await initializeCore();
+			const registeredLogoutHook = registerLogoutHookSpy.mock.calls[0][0];
+
+			const { useWorkflowsListStore } = await import('@/app/stores/workflowsList.store');
+			const { useFoldersStore } = await import('@/features/core/folders/folders.store');
+			const { useProjectsStore } = await import('@/features/collaboration/projects/projects.store');
+
+			const workflowsResetSpy = vi.spyOn(useWorkflowsListStore(), 'reset');
+			const foldersResetSpy = vi.spyOn(useFoldersStore(), 'reset');
+			const projectsResetSpy = vi.spyOn(useProjectsStore(), 'reset');
+
+			await registeredLogoutHook();
+
+			expect(workflowsResetSpy).toHaveBeenCalledTimes(1);
+			expect(foldersResetSpy).toHaveBeenCalledTimes(1);
+			expect(projectsResetSpy).toHaveBeenCalledTimes(1);
+		});
+
 		it('re-runs module registration on the next login, without a duplicate-registration warning', async () => {
 			// Force registerAuthenticationHooks() (only runs once) to run again.
 			state.initialized = false;

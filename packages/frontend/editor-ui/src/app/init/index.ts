@@ -35,6 +35,8 @@ import { h } from 'vue';
 import { useRolesStore } from '@n8n/stores/roles.store';
 import { useDataTableStore } from '@/features/core/dataTable/dataTable.store';
 import { useFavoritesStore } from '@/app/stores/favorites.store';
+import { useWorkflowsListStore } from '@/app/stores/workflowsList.store';
+import { useFoldersStore } from '@/features/core/folders/folders.store';
 import { hasPermission } from '@/app/utils/rbac/permissions';
 
 export const state = {
@@ -309,6 +311,11 @@ function registerAuthenticationHooks() {
 		telemetry.reset();
 		RBACStore.setGlobalScopes([]);
 		favoritesStore.reset();
+		// Soft logout (/signin, session expiry on auth pages) does not always hard-reload.
+		// Drop user-scoped Pinia caches so the next login cannot flash the previous user's data.
+		useWorkflowsListStore().reset();
+		useFoldersStore().reset();
+		useProjectsStore().reset();
 		// So a soft-redirect re-login (no page reload) re-fetches per-user data.
 		authenticatedFeaturesInitialized = false;
 	});
