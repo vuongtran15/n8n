@@ -9,7 +9,6 @@ import {
 } from '../shared/sapSessionContext';
 import {
 	rosWecomMessagePost,
-	rosTempPasswordPost,
 	sapAutoPost,
 	sapLogPost,
 	wecomGroupMessagePost,
@@ -687,8 +686,6 @@ export async function executeCommandShortcutItem(
 const ROS_WECOM_TEXT_URL = 'https://ros.reginamiracle.com:82/api/msg/text';
 const ROS_WECOM_API_KEY = '349EAF1F-B78B-4B0D-AEF0-9577B8E2F111';
 const WECOM_GROUP_WEBHOOK_BASE_URL = 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=';
-const ROS_TEMP_PASSWORD_URL =
-	'https://ros.reginamiracle.com:200/api/portal/share/ros/auth/temp-password';
 
 /** Parse danh sách mention: mảng JSON, hoặc chuỗi phân tách bằng , ; | xuống dòng. */
 function parseWecomMentionList(raw: unknown): string[] {
@@ -852,33 +849,6 @@ export async function executeRosWecomSendMessageItem(
 	}
 
 	return rosWecomMessagePost(ctx, ROS_WECOM_TEXT_URL, ROS_WECOM_API_KEY, empids, message, wecom.timeoutMs);
-}
-
-export async function executeRosTempPasswordItem(
-	ctx: IExecuteFunctions,
-	itemIndex: number,
-): Promise<INodeExecutionData> {
-	const wecom = resolveWecomExecutionContext(ctx, itemIndex);
-	const empId = preferStr(
-		wecom.useInputJsonFields,
-		wecom.itemJson,
-		'EmpId',
-		ctx.getNodeParameter('empId', itemIndex, '') as string,
-	).trim();
-	const securityKey = preferStr(
-		wecom.useInputJsonFields,
-		wecom.itemJson,
-		'SecurityKey',
-		ctx.getNodeParameter('securityKey', itemIndex, '') as string,
-	).trim();
-	if (!empId) {
-		throw new Error('EmpId không được rỗng.');
-	}
-	if (!securityKey) {
-		throw new Error('SecurityKey không được rỗng.');
-	}
-
-	return rosTempPasswordPost(ctx, ROS_TEMP_PASSWORD_URL, empId, securityKey, wecom.timeoutMs);
 }
 
 export async function executeLogItem(

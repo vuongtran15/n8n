@@ -22,6 +22,7 @@
       "dist/nodes/RMWorkflow/RmUuid.node.js",
       "dist/nodes/RMWorkflow/RmHasData.node.js",
       "dist/nodes/RMWorkflow/RmCopyContext.node.js",
+      "dist/nodes/RMWorkflow/RmRosTempPassword.node.js",
       "dist/nodes/RmSapWorkflow/RmSapWorkflow.node.js",
       "dist/nodes/RmWebAutoWorkflow/RmWebAutoWorkflow.node.js",
       "dist/nodes/RmFileAutoWorkflow/RmFileAutoWorkflow.node.js",

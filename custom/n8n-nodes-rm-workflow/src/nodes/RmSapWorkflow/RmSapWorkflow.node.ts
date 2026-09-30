@@ -15,7 +15,6 @@ import {
 	executeKillByAccountItem,
 	executeLogItem,
 	executeRosWecomSendMessageItem,
-	executeRosTempPasswordItem,
 	executeSessionByAccountItem,
 	executeWecomGroupMessageItem,
 } from './command/sapCommandLogic';
@@ -106,13 +105,6 @@ export class RmSapWorkflow implements INodeType {
 						action: 'Send ROS Wecom message',
 					},
 					{
-						name: 'ROS Temp Password',
-						value: 'rosTempPassword',
-						description:
-							'POST https://ros.reginamiracle.com:200/api/portal/share/ros/auth/temp-password',
-						action: 'Get ROS temp password',
-					},
-					{
 						name: 'Wecom Group Message',
 						value: 'wecomGroupMessage',
 						description: 'POST https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=',
@@ -154,8 +146,6 @@ export class RmSapWorkflow implements INodeType {
 				returnData.push(await executeLogItem(this, i));
 			} else if (operation === 'rosWecomSendMessage') {
 				returnData.push(await executeRosWecomSendMessageItem(this, i));
-			} else if (operation === 'rosTempPassword') {
-				returnData.push(await executeRosTempPasswordItem(this, i));
 			} else if (operation === 'wecomGroupMessage') {
 				returnData.push(await executeWecomGroupMessageItem(this, i));
 			} else if (SAP_COMMAND_OPERATION_KEYS.has(operation)) {

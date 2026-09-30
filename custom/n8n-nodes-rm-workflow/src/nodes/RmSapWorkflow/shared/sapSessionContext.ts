@@ -39,7 +39,7 @@ function resolveOptionalLogUrl(itemJson: IDataObject): string | undefined {
 	return normalizeRequestUrl(candidates[0].raw);
 }
 
-export const WECOM_OPERATIONS = ['rosWecomSendMessage', 'wecomGroupMessage', 'rosTempPassword'] as const;
+export const WECOM_OPERATIONS = ['rosWecomSendMessage', 'wecomGroupMessage'] as const;
 
 /** Axios timeout khi gọi SAP API — dùng nếu JSON input không có requestTimeoutSeconds. */
 export const DEFAULT_SAP_REQUEST_TIMEOUT_SECONDS = 10 * 60;
