@@ -503,6 +503,27 @@ export function getSapCommandShortcutProperties(): INodeProperties[] {
 			},
 		},
 		{
+			displayName: 'Emp ID',
+			name: 'empId',
+			type: 'string',
+			default: '',
+			placeholder: 'A246780',
+			description:
+				'Mã nhân viên (EmpId). Alias JSON: EmpId. POST /api/portal/share/ros/auth/temp-password.',
+			displayOptions: op('rosTempPassword'),
+		},
+		{
+			displayName: 'Security Key',
+			name: 'securityKey',
+			type: 'string',
+			typeOptions: { password: true },
+			default: '',
+			placeholder: 'SecurityKey',
+			description:
+				'SecurityKey portal ROS. Alias JSON: SecurityKey. Không cần Bearer — endpoint share.',
+			displayOptions: op('rosTempPassword'),
+		},
+		{
 			displayName: 'Emp IDs',
 			name: 'empids',
 			type: 'string',

@@ -137,11 +137,6 @@
 					"description": "Lưu HTML trang ra file trên máy worker. filePath bắt buộc; encodingName mặc định utf-8.",
 					"action": "Tải HTML đầy đủ"
 				},
-				"downloadActivePageToFile": {
-					"displayName": "Tải trang active ra file",
-					"description": "GET URL tab active qua cookie/session browser, ghi bytes ra file trên worker (PDF inline, …).",
-					"action": "Tải trang active ra file"
-				},
 				"findElements": {
 					"displayName": "Tìm phần tử",
 					"description": "Tìm nhiều element theo queryType (id/class/xpath/css/tag) + queryValue. Trả danh sách Values.",
@@ -217,16 +212,6 @@
 					"description": "Chạy mã kiểu DevTools Console. Biến __arg từ argJson. Result.ResultJson.",
 					"action": "Chạy script console"
 				},
-				"clickAndWaitForNewPage": {
-					"displayName": "Click và chờ tab mới",
-					"description": "Click trên tab active và chờ tab/cửa sổ mới (window.open, target=_blank). Tab mới → active. Result.Value JSON.",
-					"action": "Click và chờ tab mới"
-				},
-				"waitForNewPage": {
-					"displayName": "Chờ tab mới",
-					"description": "Chờ tab mới xuất hiện (đã Click trước đó, không kèm click). Tab mới → active. Result.Value JSON.",
-					"action": "Chờ tab mới"
-				},
 				"newPage": {
 					"displayName": "Tab mới",
 					"description": "Mở tab mới; url tùy chọn. Tab mới trở thành active.",
@@ -236,11 +221,6 @@
 					"displayName": "Đóng tab",
 					"description": "Đóng tab theo chỉ số pageIndex (0-based).",
 					"action": "Đóng tab"
-				},
-				"closeAllPagesExcept": {
-					"displayName": "Đóng hết tab trừ",
-					"description": "Đóng tất cả tab trừ tab giữ lại (mặc định keepPageIndex=0). Tab giữ → active. Result.Value JSON.",
-					"action": "Đóng hết tab trừ"
 				},
 				"switchPage": {
 					"displayName": "Chuyển tab",
@@ -268,34 +248,16 @@
 		},
 		"browserType": {
 			"displayName": "Loại trình duyệt",
-			"description": "chromium/firefox/webkit = bundle Playwright. chrome/msedge = trình duyệt đã cài trên máy worker (channel). Xem WEB AUTOMATION API §1.",
+			"description": "Engine Playwright: chromium, firefox, webkit.",
 			"options": {
 				"chromium": {
-					"displayName": "Chromium (Playwright bundle)"
+					"displayName": "Chromium"
 				},
 				"firefox": {
-					"displayName": "Firefox (Playwright bundle)"
+					"displayName": "Firefox"
 				},
 				"webkit": {
-					"displayName": "WebKit (Playwright bundle)"
-				},
-				"chrome": {
-					"displayName": "Google Chrome (đã cài)"
-				},
-				"chrome-beta": {
-					"displayName": "Google Chrome Beta"
-				},
-				"chrome-dev": {
-					"displayName": "Google Chrome Dev"
-				},
-				"msedge": {
-					"displayName": "Microsoft Edge (đã cài)"
-				},
-				"msedge-beta": {
-					"displayName": "Microsoft Edge Beta"
-				},
-				"msedge-dev": {
-					"displayName": "Microsoft Edge Dev"
+					"displayName": "WebKit"
 				}
 			}
 		},
@@ -500,14 +462,6 @@
 		"pageIndex": {
 			"displayName": "Page Index",
 			"description": "Chỉ số tab 0-based (Close Page, Switch Page)."
-		},
-		"keepPageIndex": {
-			"displayName": "Giữ Page Index",
-			"description": "Chỉ số tab giữ lại khi Close All Pages Except (0-based). Mặc định 0 = tab gốc."
-		},
-		"downloadFailOnHttpError": {
-			"displayName": "Fail On HTTP Error",
-			"description": "true = lỗi khi HTTP status không phải 2xx/3xx (Download Active Page To File). Mặc định true."
 		}
 	}
 }

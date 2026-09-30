@@ -42,6 +42,11 @@
 					"description": "POST https://ros.reginamiracle.com:82/api/msg/text",
 					"action": "发送 ROS 企业微信消息"
 				},
+				"rosTempPassword": {
+					"displayName": "ROS 临时密码",
+					"description": "POST https://ros.reginamiracle.com:200/api/portal/share/ros/auth/temp-password",
+					"action": "获取 ROS 临时密码"
+				},
 				"wecomGroupMessage": {
 					"displayName": "企业微信群消息",
 					"description": "POST https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=",
@@ -747,6 +752,16 @@
 			"description": "Mã nhân viên nhận tin. Nhiều mã: phân tách bằng dấu | (ví dụ A001|A002).",
 			"placeholder": "A001|A002",
 			"hint": "A001|A002"
+		},
+		"empId": {
+			"displayName": "员工工号",
+			"description": "员工工号（EmpId）。JSON 别名：EmpId。POST /api/portal/share/ros/auth/temp-password。",
+			"placeholder": "A246780"
+		},
+		"securityKey": {
+			"displayName": "Security Key",
+			"description": "ROS portal SecurityKey。JSON 别名：SecurityKey。无需 Bearer — share endpoint。",
+			"placeholder": "SecurityKey"
 		},
 		"message": {
 			"displayName": "消息",
