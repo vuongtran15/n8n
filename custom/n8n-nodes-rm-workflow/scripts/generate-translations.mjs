@@ -184,6 +184,7 @@ const OP_NAME_ZH = {
 	Log: '日志',
 	'ROS Wecom Send Message': 'ROS 企业微信发消息',
 	'ROS Temp Password': 'ROS 临时密码',
+	'RM ROS PASS': 'RM ROS PASS',
 	'Wecom Group Message': '企业微信群消息',
 	Connect: '连接',
 	Reconnect: '重新连接',

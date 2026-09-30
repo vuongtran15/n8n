@@ -35,6 +35,7 @@ export const OP_NAME_VI = {
 	Log: 'Ghi log',
 	'ROS Wecom Send Message': 'Gửi tin ROS Wecom',
 	'ROS Temp Password': 'ROS Temp Password',
+	'RM ROS PASS': 'RM ROS PASS',
 	'Wecom Group Message': 'Tin nhóm Wecom',
 	Connect: 'Kết nối',
 	Reconnect: 'Kết nối lại',

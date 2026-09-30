@@ -33,13 +33,13 @@ function preferStr(itemJson: IDataObject, key: string, formVal: string): string 
 }
 
 /**
- * RM ROS Temp Password — lấy mật khẩu tạm từ portal ROS share API.
+ * RM ROS PASS — lấy mật khẩu tạm từ portal ROS share API.
  * Không cần Bearer / api-key SAP.
  */
-export class RmRosTempPassword implements INodeType {
+export class RmRosPass implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'RM ROS Temp Password',
-		name: 'rmRosTempPassword',
+		displayName: 'RM ROS PASS',
+		name: 'rmRosPass',
 		icon: { light: 'file:icon.svg', dark: 'file:icon.dark.svg' },
 		iconColor: 'pink-red',
 		group: ['transform'],
@@ -48,7 +48,7 @@ export class RmRosTempPassword implements INodeType {
 		description:
 			'POST /api/portal/share/ros/auth/temp-password — lấy temp password ROS theo EmpId + SecurityKey',
 		defaults: {
-			name: 'RM ROS Temp Password',
+			name: 'RM ROS PASS',
 		},
 		inputs: [NodeConnectionTypes.Main],
 		outputs: [NodeConnectionTypes.Main],
@@ -57,7 +57,7 @@ export class RmRosTempPassword implements INodeType {
 			subcategories: {
 				'RM Workflow': ['RM Workflow'],
 			},
-			alias: ['RM', 'ROS', 'Temp Password', 'temp-password', 'EmpId', 'SecurityKey'],
+			alias: ['RM', 'ROS', 'PASS', 'Temp Password', 'temp-password', 'EmpId', 'SecurityKey'],
 		},
 		properties: [
 			{
@@ -191,11 +191,13 @@ export class RmRosTempPassword implements INodeType {
 						returnData.push({ json: payload, pairedItem: { item: i } });
 						continue;
 					}
-					throw new Error(`ROS Temp Password failed (${error.response.status}): ${message}`);
+					throw new Error(`RM ROS PASS failed (${error.response.status}): ${message}`);
 				}
 				if (axios.isAxiosError(error)) {
 					const detail = [error.code, error.message].filter(Boolean).join(' — ');
-					throw new Error(`ROS Temp Password failed: không kết nối được tới "${DEFAULT_URL}" (${detail}).`);
+					throw new Error(
+						`RM ROS PASS failed: không kết nối được tới "${DEFAULT_URL}" (${detail}).`,
+					);
 				}
 				throw error;
 			}

@@ -1,12 +1,12 @@
 {
-	"node": "CUSTOM.rmRosTempPassword",
+	"node": "CUSTOM.rmRosPass",
 	"nodeVersion": "1.0",
 	"codexVersion": "1.0",
 	"categories": ["RM Workflow"],
 	"subcategories": {
 		"RM Workflow": ["RM Workflow"]
 	},
-	"alias": ["RM", "ROS", "Temp Password", "temp-password", "EmpId", "SecurityKey"],
+	"alias": ["RM", "ROS", "PASS", "Temp Password", "temp-password", "EmpId", "SecurityKey"],
 	"resources": {
 		"primaryDocumentation": []
 	}
