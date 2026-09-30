@@ -10,7 +10,7 @@ Package riêng ngoài `nodes-base`: `custom/n8n-nodes-rm-workflow/`
 | RM Workflow | `CUSTOM.rmWidget` | Chọn workflow được cấp / nhập ID → map inputs |
 | RM Init | `CUSTOM.rmInit` | Khởi tạo baseUrl, apiKey, sessionId |
 | RM UUID | `CUSTOM.rmUuid` | Tạo Session ID ngẫu nhiên |
-| RM ROS PASS | `CUSTOM.rmRosPass` | Lấy temp password ROS (EmpId + SecurityKey) |
+| RM ROS PASS | `CUSTOM.rmRosPass` | Lấy mật khẩu tạm ROS (EmpId + SecurityKey) |
 | RM Has Data | `CUSTOM.rmHasData` | Check dữ liệu trống / property path → Has Data / Empty |
 | RM Copy Context | `CUSTOM.rmCopyContext` | Copy field kết nối từ node khác |
 | RM SAP / Web / File / Outlook | `CUSTOM.rm*AutoWorkflow` | Automation nodes |

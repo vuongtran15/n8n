@@ -33,8 +33,7 @@ function preferStr(itemJson: IDataObject, key: string, formVal: string): string 
 }
 
 /**
- * RM ROS PASS — lấy mật khẩu tạm từ portal ROS share API.
- * Không cần Bearer / api-key SAP.
+ * RM ROS PASS — lấy mật khẩu tạm ROS theo EmpId + SecurityKey.
  */
 export class RmRosPass implements INodeType {
 	description: INodeTypeDescription = {
@@ -45,8 +44,7 @@ export class RmRosPass implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["empId"]}}',
-		description:
-			'POST /api/portal/share/ros/auth/temp-password — lấy temp password ROS theo EmpId + SecurityKey',
+		description: 'Lấy mật khẩu tạm ROS theo EmpId và SecurityKey',
 		defaults: {
 			name: 'RM ROS PASS',
 		},
@@ -57,7 +55,7 @@ export class RmRosPass implements INodeType {
 			subcategories: {
 				'RM Workflow': ['RM Workflow'],
 			},
-			alias: ['RM', 'ROS', 'PASS', 'Temp Password', 'temp-password', 'EmpId', 'SecurityKey'],
+			alias: ['RM', 'ROS', 'PASS', 'Temp Password', 'EmpId', 'SecurityKey'],
 		},
 		properties: [
 			{
@@ -67,7 +65,7 @@ export class RmRosPass implements INodeType {
 				default: '',
 				typeOptions: { theme: 'info' },
 				description:
-					'Không cần đăng nhập / Bearer. Ưu tiên field từ JSON input: EmpId, SecurityKey (hoặc empId, securityKey). Tùy chọn: requestTimeoutSeconds.',
+					'Ưu tiên field từ JSON input: EmpId, SecurityKey (hoặc empId, securityKey). Tùy chọn: requestTimeoutSeconds.',
 			},
 			{
 				displayName: 'Emp ID',
@@ -86,7 +84,7 @@ export class RmRosPass implements INodeType {
 				default: '',
 				required: true,
 				placeholder: 'SecurityKey',
-				description: 'SecurityKey portal ROS. Alias JSON: SecurityKey / securityKey.',
+				description: 'SecurityKey. Alias JSON: SecurityKey / securityKey.',
 			},
 			{
 				displayName: 'Request Timeout (Seconds)',
@@ -94,7 +92,7 @@ export class RmRosPass implements INodeType {
 				type: 'number',
 				typeOptions: { minValue: 1 },
 				default: DEFAULT_TIMEOUT_SECONDS,
-				description: 'Timeout HTTP khi gọi portal ROS.',
+				description: 'Timeout HTTP (giây).',
 			},
 		],
 	};
@@ -166,8 +164,6 @@ export class RmRosPass implements INodeType {
 						Success: failedExplicit
 							? false
 							: successExplicit || (response.status >= 200 && response.status < 300),
-						statusCode: response.status,
-						rosTempPasswordUrl: DEFAULT_URL,
 						EmpId: empId,
 					} as IDataObject,
 					pairedItem: { item: i },
@@ -183,8 +179,6 @@ export class RmRosPass implements INodeType {
 						...(typeof data === 'object' && data !== null ? data : {}),
 						Success: false,
 						Message: message,
-						statusCode: error.response.status,
-						rosTempPasswordUrl: DEFAULT_URL,
 						EmpId: empId,
 					};
 					if (this.continueOnFail()) {
@@ -195,9 +189,7 @@ export class RmRosPass implements INodeType {
 				}
 				if (axios.isAxiosError(error)) {
 					const detail = [error.code, error.message].filter(Boolean).join(' — ');
-					throw new Error(
-						`RM ROS PASS failed: không kết nối được tới "${DEFAULT_URL}" (${detail}).`,
-					);
+					throw new Error(`RM ROS PASS failed: không kết nối được (${detail}).`);
 				}
 				throw error;
 			}

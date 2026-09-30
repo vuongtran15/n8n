@@ -6,7 +6,7 @@
 	"subcategories": {
 		"RM Workflow": ["RM Workflow"]
 	},
-	"alias": ["RM", "ROS", "PASS", "Temp Password", "temp-password", "EmpId", "SecurityKey"],
+	"alias": ["RM", "ROS", "PASS", "Temp Password", "EmpId", "SecurityKey"],
 	"resources": {
 		"primaryDocumentation": []
 	}
