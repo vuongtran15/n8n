@@ -20,13 +20,14 @@ Point n8n at this folder (`docker/kito-n8n/n8n.env`):
 N8N_CUSTOM_EXTENSIONS=D:/CODE/N8N/n8n/custom/n8n-nodes-rm-workflow
 ```
 
-Node type ids: `CUSTOM.rmWidget`, `CUSTOM.rmInit`, `CUSTOM.rmUuid`, `CUSTOM.rmHasData`, …
+Node type ids: `CUSTOM.rmWidget`, `CUSTOM.rmRosPass`, `CUSTOM.rmInit`, `CUSTOM.rmUuid`, `CUSTOM.rmHasData`, …
 
 ## Layout
 
 ```
-src/nodes/RMWorkflow/     # RM Workflow group folder
+src/nodes/RMWorkflow/     # RM Workflow group folder (cùng cấp với RM Widget)
   RMWidget.node.ts
+  RmRosPass.node.ts
   RmInit.node.ts
   RmUuid.node.ts
   RmHasData.node.ts

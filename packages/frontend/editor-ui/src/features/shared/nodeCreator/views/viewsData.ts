@@ -531,11 +531,11 @@ export function RegularView(nodes: SimplifiedNodeType[]) {
 					// Always surface RM custom nodes even if codex/locale subcategory matching fails
 					forceIncludeNodes: [
 						'CUSTOM.rmWidget',
+						'CUSTOM.rmRosPass',
 						'CUSTOM.rmInit',
 						'CUSTOM.rmUuid',
 						'CUSTOM.rmHasData',
 						'CUSTOM.rmCopyContext',
-						'CUSTOM.rmRosPass',
 						'CUSTOM.rmSapWorkflow',
 						'CUSTOM.rmWebAutoWorkflow',
 						'CUSTOM.rmFileAutoWorkflow',
