@@ -107,11 +107,19 @@ const delayedLoading = debounce(() => {
 }, 300);
 
 const fetchDataTables = async () => {
-	const projectIdFilter = projectPages.isOverviewSubPage ? '' : projectsStore.currentProjectId;
+	// Prefer the route param so a hard refresh (F5) still scopes correctly before
+	// projectsStore.currentProject has finished loading.
+	const routeProjectId =
+		typeof route.params.projectId === 'string' && route.params.projectId.length > 0
+			? route.params.projectId
+			: undefined;
+	const projectIdFilter = projectPages.isOverviewSubPage
+		? ''
+		: (routeProjectId ?? projectsStore.currentProjectId ?? '');
 	try {
 		delayedLoading();
 		await dataTableStore.fetchDataTables(
-			projectIdFilter ?? '',
+			projectIdFilter,
 			currentPage.value,
 			pageSize.value,
 			{
@@ -148,10 +156,24 @@ const onPaginationUpdate = async (payload: SortingAndPaginationUpdates) => {
 	}
 };
 
-const onAddModalClick = () => {
+const onAddModalClick = async () => {
+	let projectId = currentProject.value?.id;
+	if (!projectId && projectPages.isOverviewSubPage) {
+		if (!projectsStore.personalProject) {
+			await projectsStore.getPersonalProject();
+		}
+		projectId = projectsStore.personalProject?.id;
+	}
+	if (!projectId) {
+		toast.showError(
+			new Error(i18n.baseText('dataTable.add.error')),
+			i18n.baseText('dataTable.add.error'),
+		);
+		return;
+	}
 	void router.push({
 		name: PROJECT_DATA_TABLES,
-		params: { projectId: currentProject.value?.id, new: 'new' },
+		params: { projectId, new: 'new' },
 	});
 };
 

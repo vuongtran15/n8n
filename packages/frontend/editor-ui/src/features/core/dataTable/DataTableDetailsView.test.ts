@@ -43,6 +43,7 @@ vi.mock('@n8n/i18n', () => {
 
 const mockRouter = {
 	push: vi.fn(),
+	replace: vi.fn(),
 };
 
 const mockToast = {
@@ -210,7 +211,10 @@ describe('DataTableDetailsView', () => {
 
 			await waitFor(() => {
 				expect(mockToast.showError).toHaveBeenCalled();
-				expect(mockRouter.push).toHaveBeenCalled();
+				expect(mockRouter.push).toHaveBeenCalledWith({
+					name: 'project-data-tables',
+					params: { projectId: 'proj1' },
+				});
 			});
 		});
 
@@ -227,7 +231,32 @@ describe('DataTableDetailsView', () => {
 					error,
 					'Error fetching data table details',
 				);
-				expect(mockRouter.push).toHaveBeenCalled();
+				expect(mockRouter.push).toHaveBeenCalledWith({
+					name: 'project-data-tables',
+					params: { projectId: 'proj1' },
+				});
+			});
+		});
+
+		it('should resolve data table by id when projectId is missing', async () => {
+			const pinia = createTestingPinia({ stubActions: false });
+			const dataTableStore = useDataTableStore();
+			vi.spyOn(dataTableStore, 'fetchDataTableById').mockResolvedValue(DEFAULT_DATA_TABLE);
+			vi.spyOn(dataTableStore, 'fetchOrFindDataTable');
+
+			const { queryByTestId } = renderComponent({
+				pinia,
+				props: { id: 'ds1', projectId: '' },
+			});
+
+			await waitFor(() => {
+				expect(dataTableStore.fetchDataTableById).toHaveBeenCalledWith('ds1');
+				expect(dataTableStore.fetchOrFindDataTable).not.toHaveBeenCalled();
+				expect(mockRouter.replace).toHaveBeenCalledWith({
+					name: 'data-table-details',
+					params: { projectId: 'proj1', id: 'ds1' },
+				});
+				expect(queryByTestId('data-table-details-loading')).not.toBeInTheDocument();
 			});
 		});
 	});

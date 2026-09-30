@@ -146,7 +146,7 @@ describe('DataTableView', () => {
 			await waitAllPromises();
 
 			expect(dataTableStore.fetchDataTables).toHaveBeenCalledWith(
-				'',
+				'test-project',
 				1,
 				25,
 				{ name: undefined, projectId: undefined },

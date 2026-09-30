@@ -185,6 +185,14 @@ const onColumnIncludedChange = () => {
 	revalidateAllColumns();
 };
 
+const resolveProjectId = (): string | undefined => {
+	const fromRoute = route.params.projectId;
+	if (typeof fromRoute === 'string' && fromRoute.length > 0) {
+		return fromRoute;
+	}
+	return undefined;
+};
+
 const reset = (clearTableName = false) => {
 	if (clearTableName) {
 		dataTableName.value = '';
@@ -217,7 +225,13 @@ const handleFileChange = async (uploadFile: UploadFile) => {
 	const baseName = deriveNameFromFileName(file.name);
 	if (!baseName) return;
 
-	const projectId = route.params.projectId as string;
+	const projectId = resolveProjectId();
+	if (!projectId) {
+		if (selectedFile.value === file && !dataTableName.value) {
+			dataTableName.value = baseName;
+		}
+		return;
+	}
 	try {
 		const suggested = await dataTableStore.findAvailableDataTableName(baseName, projectId);
 		if (selectedFile.value === file && !dataTableName.value) {
@@ -265,15 +279,21 @@ const uploadFile = async () => {
 };
 
 const onSubmit = async () => {
+	const projectId = resolveProjectId();
+	if (!projectId) {
+		toast.showError(
+			new Error(i18n.baseText('dataTable.add.error')),
+			i18n.baseText('dataTable.add.error'),
+		);
+		return;
+	}
+
 	isLoading.value = true;
 	try {
 		let newDataTable;
 
 		if (selectedOption.value === 'scratch') {
-			newDataTable = await dataTableStore.createDataTable(
-				dataTableName.value,
-				route.params.projectId as string,
-			);
+			newDataTable = await dataTableStore.createDataTable(dataTableName.value, projectId);
 		} else if (creationMode.value === 'import' && uploadedFileId.value) {
 			const hasColumnChanges = csvColumns.value.some(
 				(col) => !col.included || col.name !== col.csvColumnName.replace(/\s+/g, '_'),
@@ -281,7 +301,7 @@ const onSubmit = async () => {
 
 			newDataTable = await dataTableStore.createDataTable(
 				dataTableName.value,
-				route.params.projectId as string,
+				projectId,
 				includedColumns.value.map((col) => ({
 					name: col.name,
 					type: col.type,
@@ -295,7 +315,7 @@ const onSubmit = async () => {
 		if (newDataTable) {
 			telemetry.track('User created data table', {
 				data_table_id: newDataTable.id,
-				data_table_project_id: newDataTable.project?.id,
+				data_table_project_id: newDataTable.projectId ?? newDataTable.project?.id,
 				creation_mode: selectedOption.value,
 			});
 			reset(true);
@@ -303,6 +323,7 @@ const onSubmit = async () => {
 			void router.push({
 				name: DATA_TABLE_DETAILS,
 				params: {
+					projectId: newDataTable.projectId || projectId,
 					id: newDataTable.id,
 				},
 			});
@@ -319,7 +340,15 @@ const goBack = () => {
 };
 
 const redirectToDataTables = () => {
-	void router.replace({ name: PROJECT_DATA_TABLES });
+	const projectId = resolveProjectId();
+	if (!projectId) {
+		void router.replace({ name: PROJECT_DATA_TABLES });
+		return;
+	}
+	void router.replace({
+		name: PROJECT_DATA_TABLES,
+		params: { projectId },
+	});
 };
 </script>
 
