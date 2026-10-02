@@ -8,11 +8,11 @@ import {
 	type INodeTypeDescription,
 } from 'n8n-workflow';
 
-type ValueType = 'number' | 'text' | 'object';
+type ValueType = 'number' | 'text' | 'object' | 'autoIncrement';
 type Operation = 'get' | 'set' | 'increment' | 'reset';
 
 type StoredVar = {
-	type: ValueType;
+	type: 'number' | 'text' | 'object';
 	value: unknown;
 };
 
@@ -28,8 +28,14 @@ function getStore(staticData: IDataObject): Record<string, StoredVar> {
 	return created;
 }
 
+/** autoIncrement is stored/parsed as number */
+function storageTypeOf(valueType: ValueType): 'number' | 'text' | 'object' {
+	return valueType === 'autoIncrement' ? 'number' : valueType;
+}
+
 function parseByType(raw: unknown, valueType: ValueType): unknown {
-	if (valueType === 'number') {
+	const kind = storageTypeOf(valueType);
+	if (kind === 'number') {
 		if (typeof raw === 'number' && Number.isFinite(raw)) return raw;
 		const n = Number(String(raw ?? '').trim());
 		if (!Number.isFinite(n)) {
@@ -38,7 +44,7 @@ function parseByType(raw: unknown, valueType: ValueType): unknown {
 		return n;
 	}
 
-	if (valueType === 'text') {
+	if (kind === 'text') {
 		if (raw === undefined || raw === null) return '';
 		return String(raw);
 	}
@@ -63,9 +69,21 @@ function parseByType(raw: unknown, valueType: ValueType): unknown {
 }
 
 function defaultForType(valueType: ValueType): unknown {
-	if (valueType === 'number') return 0;
-	if (valueType === 'text') return '';
+	const kind = storageTypeOf(valueType);
+	if (kind === 'number') return 0;
+	if (kind === 'text') return '';
 	return {};
+}
+
+/**
+ * Kiểu Tự tăng: mỗi lần chạy sẽ +Step (kể cả Operation = Set).
+ * Get = chỉ đọc; Reset = về Default.
+ */
+function resolveOperation(operation: Operation, valueType: ValueType): Operation {
+	if (valueType === 'autoIncrement' && (operation === 'set' || operation === 'increment')) {
+		return 'increment';
+	}
+	return operation;
 }
 
 /**
@@ -113,7 +131,7 @@ export class RmGlobalVar implements INodeType {
 				default: '',
 				typeOptions: { theme: 'info' },
 				description:
-					'Lưu biến trong Global Static Data của workflow (sống qua nhiều lần chạy). Operation Increment = tự tăng số — không cần Code node. Reset ghi lại Default Value. Scope: theo từng workflow.',
+					'Lưu biến trong Global Static Data của workflow. Chọn Kiểu = Tự tăng (hoặc Operation = Tự tăng) để đếm +Step mỗi lần chạy — không cần Code. Reset ghi lại Default Value.',
 			},
 			{
 				displayName: 'Operation',
@@ -130,11 +148,11 @@ export class RmGlobalVar implements INodeType {
 					{
 						name: 'Set',
 						value: 'set',
-						description: 'Ghi giá trị mới',
+						description: 'Ghi giá trị mới (với kiểu Tự tăng: Set cũng sẽ +Step)',
 						action: 'Set global variable',
 					},
 					{
-						name: 'Increment',
+						name: 'Tự tăng',
 						value: 'increment',
 						description: 'Tự tăng số (counter). Nếu chưa có thì lấy Default Value rồi cộng Step',
 						action: 'Increment global counter',
@@ -163,11 +181,30 @@ export class RmGlobalVar implements INodeType {
 				type: 'options',
 				noDataExpression: true,
 				options: [
-					{ name: 'Number', value: 'number', description: 'Số — dùng Increment' },
+					{
+						name: 'Tự tăng',
+						value: 'autoIncrement',
+						description: 'Số tự tăng mỗi lần Execute (+Step). Không cần đổi Operation.',
+					},
+					{ name: 'Number', value: 'number', description: 'Số thường — Set/Get/Reset; Increment để cộng' },
 					{ name: 'Text', value: 'text', description: 'Chuỗi' },
 					{ name: 'Object (JSON)', value: 'object', description: 'Object JSON' },
 				],
-				default: 'number',
+				default: 'autoIncrement',
+			},
+			{
+				displayName: 'Tips — Tự tăng',
+				name: 'autoIncrementTips',
+				type: 'notice',
+				default: '',
+				typeOptions: { theme: 'info' },
+				description:
+					'Mỗi lần Execute step sẽ +Step vào biến (kể cả khi Operation đang là Set). Dùng Get để chỉ đọc, Reset để về Default / Reset Value.',
+				displayOptions: {
+					show: {
+						valueType: ['autoIncrement'],
+					},
+				},
 			},
 			{
 				displayName: 'Value',
@@ -201,11 +238,10 @@ export class RmGlobalVar implements INodeType {
 				name: 'step',
 				type: 'number',
 				default: 1,
-				description: 'Bước tăng mỗi lần Increment (có thể âm để giảm)',
+				description: 'Bước tăng mỗi lần tự tăng (có thể âm để giảm)',
 				displayOptions: {
 					show: {
-						operation: ['increment'],
-						valueType: ['number'],
+						valueType: ['autoIncrement', 'number'],
 					},
 				},
 			},
@@ -216,7 +252,7 @@ export class RmGlobalVar implements INodeType {
 				default: '0',
 				placeholder: '0',
 				description:
-					'Dùng khi Reset, hoặc khi Increment mà biến chưa tồn tại. Object: JSON string.',
+					'Dùng khi Reset, hoặc khi tự tăng mà biến chưa tồn tại. Object: JSON string.',
 			},
 			{
 				displayName: 'Reset Value (form)',
@@ -268,7 +304,9 @@ export class RmGlobalVar implements INodeType {
 
 		const operation = this.getNodeParameter('operation', 0) as Operation;
 		const key = String(this.getNodeParameter('key', 0, 'counter')).trim();
-		const valueType = this.getNodeParameter('valueType', 0, 'number') as ValueType;
+		const valueType = this.getNodeParameter('valueType', 0, 'autoIncrement') as ValueType;
+		const effectiveOperation = resolveOperation(operation, valueType);
+		const storageType = storageTypeOf(valueType);
 		const outputField =
 			String(this.getNodeParameter('outputField', 0, 'value')).trim() || 'value';
 		const includeMeta = this.getNodeParameter('includeMeta', 0, true) as boolean;
@@ -277,10 +315,10 @@ export class RmGlobalVar implements INodeType {
 			throw new NodeOperationError(this.getNode(), 'Tên biến không được để trống');
 		}
 
-		if (operation === 'increment' && valueType !== 'number') {
+		if (effectiveOperation === 'increment' && storageType !== 'number') {
 			throw new NodeOperationError(
 				this.getNode(),
-				'Increment chỉ dùng với kiểu Number. Đổi Kiểu giá trị sang Number.',
+				'Tự tăng chỉ dùng với kiểu Number hoặc Tự tăng.',
 			);
 		}
 
@@ -301,21 +339,21 @@ export class RmGlobalVar implements INodeType {
 		}
 
 		try {
-			switch (operation) {
+			switch (effectiveOperation) {
 				case 'get': {
 					nextValue = existing ? existing.value : parsedReset;
 					if (!existing) {
-						store[key] = { type: valueType, value: nextValue };
+						store[key] = { type: storageType, value: nextValue };
 					}
 					break;
 				}
 				case 'set': {
 					const rawValue =
-						valueType === 'object'
+						storageType === 'object'
 							? this.getNodeParameter('valueJson', 0, {})
 							: this.getNodeParameter('value', 0, defaultForType(valueType));
 					nextValue = parseByType(rawValue, valueType);
-					store[key] = { type: valueType, value: nextValue };
+					store[key] = { type: storageType, value: nextValue };
 					break;
 				}
 				case 'increment': {
@@ -330,11 +368,11 @@ export class RmGlobalVar implements INodeType {
 				}
 				case 'reset': {
 					nextValue = parsedReset;
-					store[key] = { type: valueType, value: nextValue };
+					store[key] = { type: storageType, value: nextValue };
 					break;
 				}
 				default:
-					throw new Error(`Unknown operation: ${String(operation)}`);
+					throw new Error(`Unknown operation: ${String(effectiveOperation)}`);
 			}
 		} catch (error) {
 			throw new NodeOperationError(
@@ -349,7 +387,7 @@ export class RmGlobalVar implements INodeType {
 			out[outputField] = nextValue as IDataObject[string];
 			if (includeMeta) {
 				out.key = key;
-				out.operation = operation;
+				out.operation = effectiveOperation;
 				out.valueType = valueType;
 				out.previousValue = (previousValue ?? null) as IDataObject[string];
 			}

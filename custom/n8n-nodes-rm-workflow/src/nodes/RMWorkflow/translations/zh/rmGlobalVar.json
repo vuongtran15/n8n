@@ -6,7 +6,7 @@
 	"nodeView": {
 		"tips": {
 			"displayName": "提示",
-			"description": "变量保存在工作流 Global Static Data（跨多次执行）。Increment = 数字自增，无需 Code。Reset 写回 Default Value。作用域：单个工作流。"
+			"description": "变量保存在工作流 Global Static Data。选择类型「自增」（或操作「自增」）即可每次运行 +Step，无需 Code。Reset 写回 Default Value。"
 		},
 		"operation": {
 			"displayName": "操作",
@@ -17,10 +17,10 @@
 				},
 				"set": {
 					"displayName": "Set",
-					"description": "写入新值"
+					"description": "写入新值（自增类型下 Set 也会 +Step）"
 				},
 				"increment": {
-					"displayName": "Increment",
+					"displayName": "自增",
 					"description": "数字自增。若尚不存在则从 Default Value 起再加 Step"
 				},
 				"reset": {
@@ -37,9 +37,13 @@
 		"valueType": {
 			"displayName": "值类型",
 			"options": {
+				"autoIncrement": {
+					"displayName": "自增",
+					"description": "每次 Execute 自动 +Step。不必改 Operation。"
+				},
 				"number": {
 					"displayName": "Number",
-					"description": "数字 — 用于 Increment"
+					"description": "普通数字 — Set/Get/Reset；Increment 用于累加"
 				},
 				"text": {
 					"displayName": "Text",
@@ -50,6 +54,10 @@
 					"description": "JSON 对象"
 				}
 			}
+		},
+		"autoIncrementTips": {
+			"displayName": "提示 — 自增",
+			"description": "每次 Execute 会对变量 +Step（即使 Operation 仍是 Set）。用 Get 只读，用 Reset 回到 Default / Reset Value。"
 		},
 		"value": {
 			"displayName": "Value",
@@ -62,11 +70,11 @@
 		},
 		"step": {
 			"displayName": "Step",
-			"description": "每次 Increment 的步长（可为负数）"
+			"description": "每次自增的步长（可为负数）"
 		},
 		"resetValue": {
 			"displayName": "Default / Reset Value",
-			"description": "Reset 时使用；Increment 且变量不存在时也用此值。Object 填 JSON 字符串。",
+			"description": "Reset 时使用；自增且变量不存在时也用此值。Object 填 JSON 字符串。",
 			"placeholder": "0"
 		},
 		"resetValueButton": {
