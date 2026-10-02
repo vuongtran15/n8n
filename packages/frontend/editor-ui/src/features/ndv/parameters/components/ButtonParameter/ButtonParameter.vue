@@ -62,9 +62,13 @@ const isGenerateUuidButton = computed(() => {
 	const action = props.parameter.typeOptions?.buttonConfig?.action;
 	return typeof action === 'object' && action?.type === 'generateUuid';
 });
+const isSetParameterValueButton = computed(() => {
+	const action = props.parameter.typeOptions?.buttonConfig?.action;
+	return typeof action === 'object' && action?.type === 'setParameterValue';
+});
 const isSubmitEnabled = computed(() => {
 	if (props.isReadOnly) return false;
-	if (isGenerateUuidButton.value) return true;
+	if (isGenerateUuidButton.value || isSetParameterValueButton.value) return true;
 	if (isAiTransformButton.value && !askAi.value) return false;
 	if (!hasExecutionData.value || !prompt.value) return false;
 
@@ -118,6 +122,26 @@ async function onSubmit() {
 		showMessage({
 			type: 'success',
 			title: 'Session ID đã tạo (GUID)',
+		});
+		return;
+	}
+
+	if (type === 'setParameterValue') {
+		if (!target) return;
+		let nextValue: string | number | boolean = action.value ?? '';
+		if (action.source && activeNode.value?.parameters) {
+			const fromSource = activeNode.value.parameters[action.source];
+			if (fromSource !== undefined && fromSource !== null) {
+				nextValue = fromSource as string | number | boolean;
+			}
+		}
+		emit('valueChanged', {
+			name: getPath(target),
+			value: nextValue,
+		});
+		showMessage({
+			type: 'success',
+			title: i18n.baseText('generic.reset') || 'Reset',
 		});
 		return;
 	}
@@ -292,9 +316,10 @@ async function updateCursorPositionOnMouseMove(event: MouseEvent, activeDrop: bo
 					</N8nButton>
 				</div>
 				<template #content>
+					<span v-if="isGenerateUuidButton" v-text="'Generate a new GUID for Session ID'" />
 					<span
-						v-if="isGenerateUuidButton"
-						v-text="'Generate a new GUID for Session ID'"
+						v-else-if="isSetParameterValueButton"
+						v-text="'Reset field to default / reset value'"
 					/>
 					<span
 						v-else-if="!hasExecutionData"

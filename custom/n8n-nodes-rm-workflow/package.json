@@ -21,6 +21,7 @@
       "dist/nodes/RMWorkflow/RmRosPass.node.js",
       "dist/nodes/RMWorkflow/RmInit.node.js",
       "dist/nodes/RMWorkflow/RmUuid.node.js",
+      "dist/nodes/RMWorkflow/RmGlobalVar.node.js",
       "dist/nodes/RMWorkflow/RmHasData.node.js",
       "dist/nodes/RMWorkflow/RmCopyContext.node.js",
       "dist/nodes/RmSapWorkflow/RmSapWorkflow.node.js",

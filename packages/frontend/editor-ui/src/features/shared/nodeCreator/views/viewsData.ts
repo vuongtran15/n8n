@@ -534,6 +534,7 @@ export function RegularView(nodes: SimplifiedNodeType[]) {
 						'CUSTOM.rmRosPass',
 						'CUSTOM.rmInit',
 						'CUSTOM.rmUuid',
+						'CUSTOM.rmGlobalVar',
 						'CUSTOM.rmHasData',
 						'CUSTOM.rmCopyContext',
 						'CUSTOM.rmSapWorkflow',

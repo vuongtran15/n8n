@@ -1864,9 +1864,13 @@ export interface ILoadOptions {
 }
 
 export type NodePropertyAction = {
-	type: 'askAiCodeGeneration' | 'generateUuid';
+	type: 'askAiCodeGeneration' | 'generateUuid' | 'setParameterValue';
 	handler?: string;
 	target?: string;
+	/** Fixed value written into `target` when type is `setParameterValue`. */
+	value?: string | number | boolean;
+	/** Copy from another parameter on the same node when type is `setParameterValue`. */
+	source?: string;
 };
 
 export interface CalloutActionBase {

@@ -1,0 +1,86 @@
+{
+	"header": {
+		"displayName": "RM Global Var",
+		"description": "Biến global của workflow — get / set / tự tăng / reset (số, text, object). Không cần viết Code."
+	},
+	"nodeView": {
+		"tips": {
+			"displayName": "Gợi ý",
+			"description": "Lưu biến trong Global Static Data của workflow (sống qua nhiều lần chạy). Operation Increment = tự tăng số — không cần Code node. Reset ghi lại Default Value. Scope: theo từng workflow."
+		},
+		"operation": {
+			"displayName": "Thao tác",
+			"options": {
+				"get": {
+					"displayName": "Get",
+					"description": "Đọc giá trị hiện tại"
+				},
+				"set": {
+					"displayName": "Set",
+					"description": "Ghi giá trị mới"
+				},
+				"increment": {
+					"displayName": "Increment",
+					"description": "Tự tăng số (counter). Nếu chưa có thì lấy Default Value rồi cộng Step"
+				},
+				"reset": {
+					"displayName": "Reset",
+					"description": "Ghi lại Default Value vào biến"
+				}
+			}
+		},
+		"key": {
+			"displayName": "Tên biến",
+			"description": "Tên khóa lưu trong global static data (vd: counter, runId, flags)",
+			"placeholder": "counter"
+		},
+		"valueType": {
+			"displayName": "Kiểu giá trị",
+			"options": {
+				"number": {
+					"displayName": "Number",
+					"description": "Số — dùng Increment"
+				},
+				"text": {
+					"displayName": "Text",
+					"description": "Chuỗi"
+				},
+				"object": {
+					"displayName": "Object (JSON)",
+					"description": "Object JSON"
+				}
+			}
+		},
+		"value": {
+			"displayName": "Value",
+			"description": "Giá trị ghi vào khi Operation = Set (Number / Text)",
+			"placeholder": "0"
+		},
+		"valueJson": {
+			"displayName": "Value (JSON)",
+			"description": "Object JSON khi kiểu = Object và Operation = Set"
+		},
+		"step": {
+			"displayName": "Step",
+			"description": "Bước tăng mỗi lần Increment (có thể âm để giảm)"
+		},
+		"resetValue": {
+			"displayName": "Default / Reset Value",
+			"description": "Dùng khi Reset, hoặc khi Increment mà biến chưa tồn tại. Object: JSON string.",
+			"placeholder": "0"
+		},
+		"resetValueButton": {
+			"displayName": "Reset Value (form)",
+			"description": "Điền Default / Reset Value vào ô Value (tiện khi Set lại)"
+		},
+		"outputField": {
+			"displayName": "Tên field ghi ra",
+			"description": "Tên field trên item output chứa giá trị biến",
+			"placeholder": "value"
+		},
+		"includeMeta": {
+			"displayName": "Ghi thêm metadata",
+			"description": "Thêm key, operation, valueType, previousValue vào output"
+		}
+	}
+}

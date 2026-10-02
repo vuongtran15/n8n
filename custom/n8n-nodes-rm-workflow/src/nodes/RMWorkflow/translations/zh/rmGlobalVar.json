@@ -1,0 +1,86 @@
+{
+	"header": {
+		"displayName": "RM Global Var",
+		"description": "工作流全局变量 — 读取 / 写入 / 自增 / 重置（数字、文本、对象），无需写 Code"
+	},
+	"nodeView": {
+		"tips": {
+			"displayName": "提示",
+			"description": "变量保存在工作流 Global Static Data（跨多次执行）。Increment = 数字自增，无需 Code。Reset 写回 Default Value。作用域：单个工作流。"
+		},
+		"operation": {
+			"displayName": "操作",
+			"options": {
+				"get": {
+					"displayName": "Get",
+					"description": "读取当前值"
+				},
+				"set": {
+					"displayName": "Set",
+					"description": "写入新值"
+				},
+				"increment": {
+					"displayName": "Increment",
+					"description": "数字自增。若尚不存在则从 Default Value 起再加 Step"
+				},
+				"reset": {
+					"displayName": "Reset",
+					"description": "将变量写回 Default Value"
+				}
+			}
+		},
+		"key": {
+			"displayName": "变量名",
+			"description": "保存在 global static data 中的键名（如 counter、runId、flags）",
+			"placeholder": "counter"
+		},
+		"valueType": {
+			"displayName": "值类型",
+			"options": {
+				"number": {
+					"displayName": "Number",
+					"description": "数字 — 用于 Increment"
+				},
+				"text": {
+					"displayName": "Text",
+					"description": "字符串"
+				},
+				"object": {
+					"displayName": "Object (JSON)",
+					"description": "JSON 对象"
+				}
+			}
+		},
+		"value": {
+			"displayName": "Value",
+			"description": "Operation = Set 时写入的值（Number / Text）",
+			"placeholder": "0"
+		},
+		"valueJson": {
+			"displayName": "Value (JSON)",
+			"description": "类型为 Object 且 Operation = Set 时的 JSON"
+		},
+		"step": {
+			"displayName": "Step",
+			"description": "每次 Increment 的步长（可为负数）"
+		},
+		"resetValue": {
+			"displayName": "Default / Reset Value",
+			"description": "Reset 时使用；Increment 且变量不存在时也用此值。Object 填 JSON 字符串。",
+			"placeholder": "0"
+		},
+		"resetValueButton": {
+			"displayName": "Reset Value (form)",
+			"description": "将 Default / Reset Value 填入 Value 框（方便重新 Set）"
+		},
+		"outputField": {
+			"displayName": "输出字段名",
+			"description": "把变量值写到 item 的哪个 field",
+			"placeholder": "value"
+		},
+		"includeMeta": {
+			"displayName": "附加元数据",
+			"description": "在输出中附加 key、operation、valueType、previousValue"
+		}
+	}
+}
