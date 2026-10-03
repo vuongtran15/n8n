@@ -20,9 +20,10 @@ export function resolveWecomExecutionContext(
 	const items = ctx.getInputData();
 	const itemJson = items[itemIndex]?.json ?? {};
 
-	// Base URL ẩn trên UI — mặc định portal cố định; chỉ override qua JSON input nếu cần.
+	// Portal WeCom cố định — KHÔNG lấy `baseUrl` từ RM Init/SAP/Web (đó là tool API
+	// bắt buộc api-key). Chỉ override bằng wecomBaseUrl / wecomUrl nếu cần.
 	const baseUrl = normalizeWecomBaseUrl(
-		preferStr(itemJson, 'baseUrl', DEFAULT_WECOM_BASE_URL, ['wecomBaseUrl', 'wecomUrl']),
+		preferStr(itemJson, 'wecomBaseUrl', DEFAULT_WECOM_BASE_URL, ['wecomUrl']),
 	);
 
 	const formTimeout = ctx.getNodeParameter(
