@@ -5,7 +5,7 @@ import {
 	DEFAULT_WECOM_TIMEOUT_SECONDS,
 	normalizeWecomBaseUrl,
 } from './wecomApi';
-import { coalesceNumber, preferStr, valueFromItemJson } from './wecomItemJson';
+import { coalesceNumber, preferFormThenJson, preferStr, valueFromItemJson } from './wecomItemJson';
 
 export interface WecomExecutionContext {
 	itemJson: IDataObject;
@@ -50,16 +50,24 @@ export function resolveWecomExecutionContext(
 	};
 }
 
-/** webhook / key / id — 1 trong 3 theo API. */
+/** Bot key: ô Webhook trên form thắng. JSON chỉ dùng field WeCom, không lấy `key`/`id`/`sessionId` của node trước. */
 export function resolveWecomWebhook(
 	ctx: IExecuteFunctions,
 	itemIndex: number,
 	itemJson: IDataObject,
 ): string {
 	const formVal = (ctx.getNodeParameter('webhook', itemIndex, '') as string).trim();
-	const webhook = preferStr(itemJson, 'webhook', formVal, ['key', 'id', 'botid', 'botId']);
+	const webhook = preferFormThenJson(itemJson, formVal, [
+		'webhook',
+		'wecomWebhook',
+		'wecomKey',
+		'botid',
+		'botId',
+	]);
 	if (!webhook) {
-		throw new Error('Thiếu webhook (hoặc key / id) — bot key UUID hoặc full URL webhook WeCom.');
+		throw new Error(
+			'Thiếu webhook — dán bot key UUID trên form, hoặc JSON wecomWebhook / webhook / botid.',
+		);
 	}
 	return webhook;
 }

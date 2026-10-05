@@ -47,3 +47,24 @@ export function preferStr(
 	}
 	return formVal;
 }
+
+/**
+ * Ô trên form thắng. Chỉ đọc JSON khi form trống — tránh đè webhook/content
+ * bởi field trùng tên từ node trước (vd. RM Global Var ghi `key`).
+ */
+export function preferFormThenJson(
+	itemJson: IDataObject,
+	formVal: string,
+	jsonKeys: string[],
+): string {
+	const fromForm = formVal.trim();
+	if (fromForm) return fromForm;
+
+	for (const k of jsonKeys) {
+		const v = valueFromItemJson(itemJson, k);
+		if (v === undefined || v === null) continue;
+		const s = String(v).trim();
+		if (s !== '') return s;
+	}
+	return '';
+}

@@ -4,7 +4,7 @@ import {
 	resolveWecomExecutionContext,
 	resolveWecomWebhook,
 } from '../shared/wecomContext';
-import { preferStr, valueFromItemJson } from '../shared/wecomItemJson';
+import { preferFormThenJson, preferStr, valueFromItemJson } from '../shared/wecomItemJson';
 import { wecomJsonPost, wecomMultipartPost } from '../shared/wecomRequest';
 
 /** Parse danh sách mention: mảng JSON, hoặc chuỗi phân tách bằng , ; | xuống dòng. */
@@ -51,12 +51,11 @@ export async function executeSendTextItem(
 ): Promise<INodeExecutionData> {
 	const wecom = resolveWecomExecutionContext(ctx, itemIndex);
 	const webhook = resolveWecomWebhook(ctx, itemIndex, wecom.itemJson);
-	const content = preferStr(
+	const content = preferFormThenJson(
 		wecom.itemJson,
-		'content',
 		(ctx.getNodeParameter('content', itemIndex, '') as string).trim(),
-		['text'],
-	).trim();
+		['content', 'text'],
+	);
 	if (!content) {
 		throw new Error('Content (hoặc text) không được rỗng.');
 	}
@@ -94,12 +93,11 @@ export async function executeSendMarkdownItem(
 ): Promise<INodeExecutionData> {
 	const wecom = resolveWecomExecutionContext(ctx, itemIndex);
 	const webhook = resolveWecomWebhook(ctx, itemIndex, wecom.itemJson);
-	const content = preferStr(
+	const content = preferFormThenJson(
 		wecom.itemJson,
-		'content',
 		(ctx.getNodeParameter('content', itemIndex, '') as string).trim(),
-		['text', 'markdown'],
-	).trim();
+		['content', 'text', 'markdown'],
+	);
 	if (!content) {
 		throw new Error('Content (hoặc text / markdown) không được rỗng.');
 	}

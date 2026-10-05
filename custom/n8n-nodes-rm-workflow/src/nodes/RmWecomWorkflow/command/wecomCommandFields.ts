@@ -18,7 +18,7 @@ export function getWecomPropertiesForWorkflow(): INodeProperties[] {
 				theme: 'info',
 			},
 			description:
-				'Không cần đăng nhập / Bearer / api-key. Portal WeCom cố định (không dùng baseUrl của RM Init/SAP/Web). Field từ JSON: webhook (hoặc key/id), content, mentionedList, … Tùy chọn override portal: wecomBaseUrl.',
+				'Không cần session / api-key / RM Init. Ô trên form thắng (webhook, content). JSON chỉ đọc wecomWebhook / webhook / botid — không lấy key/id/sessionId từ RM Global Var hay Web/SAP.',
 		},
 		{
 			displayName: 'Request Timeout (Seconds)',
