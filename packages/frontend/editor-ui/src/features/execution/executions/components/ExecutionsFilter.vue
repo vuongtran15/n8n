@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import AnnotationTagsDropdown from '@/features/shared/tags/components/AnnotationTagsDropdown.ee.vue';
+import WorkflowTagsDropdown from '@/features/shared/tags/components/WorkflowTagsDropdown.vue';
 import { useDebounce } from '@n8n/composables/useDebounce';
 import { usePageRedirectionHelper } from '@/app/composables/usePageRedirectionHelper';
 import { useTelemetry } from '@n8n/composables/useTelemetry';
@@ -68,6 +69,7 @@ const getDefaultFilter = (): ExecutionFilterType => ({
 	status: 'all',
 	workflowId: 'all',
 	annotationTags: [],
+	workflowTags: [],
 	startDate: '',
 	endDate: '',
 	metadata: [{ key: '', value: '', exactMatch: false }],
@@ -154,6 +156,7 @@ const countSelectedFilterProps = computed(() => {
 		filter.status !== 'all',
 		filter.workflowId !== 'all' && props.workflows.length,
 		!isEmpty(filter.annotationTags),
+		!isEmpty(filter.workflowTags),
 		filter.vote !== 'all',
 		filter.workflowVersionId !== 'all',
 		!isEmpty(filter.metadata),
@@ -191,6 +194,10 @@ const onFilterMetaChange = <K extends keyof ExecutionFilterMetadata>(
 // Can't use v-model on TagsDropdown component and thus vModel.annotationTags is useless
 // We just emit the updated filter
 const onAnnotationTagsChange = () => {
+	emit('filterChanged', filter);
+};
+
+const onWorkflowTagsChange = () => {
 	emit('filterChanged', filter);
 };
 
@@ -266,6 +273,19 @@ onBeforeMount(() => {
 							/>
 						</div>
 					</N8nSelect>
+				</div>
+				<div v-if="settingsStore.areTagsEnabled" :class="$style.group">
+					<label for="execution-filter-workflow-tags">{{
+						locale.baseText('executionsFilter.workflowTags')
+					}}</label>
+					<WorkflowTagsDropdown
+						id="execution-filter-workflow-tags"
+						v-model="filter.workflowTags"
+						:placeholder="locale.baseText('workflowOpen.filterWorkflows')"
+						:create-enabled="false"
+						data-test-id="executions-filter-workflow-tags-select"
+						@update:model-value="onWorkflowTagsChange"
+					/>
 				</div>
 				<div :class="$style.group">
 					<label for="execution-filter-status">{{

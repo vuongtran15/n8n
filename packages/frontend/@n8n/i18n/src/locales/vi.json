@@ -1691,6 +1691,7 @@
 	"executionAnnotationView.addTag": "Add tag",
 	"executionAnnotationView.chooseOrCreateATag": "Choose or create a tag",
 	"executionsFilter.annotation.tags": "Execution tags",
+	"executionsFilter.workflowTags": "Tag workflow",
 	"executionsFilter.annotation.rating": "Rating",
 	"executionsFilter.annotation.rating.all": "Any rating",
 	"executionsFilter.annotation.rating.good": "Good",

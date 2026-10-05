@@ -1691,6 +1691,7 @@
 	"executionAnnotationView.addTag": "添加标签",
 	"executionAnnotationView.chooseOrCreateATag": "选择或创建标签",
 	"executionsFilter.annotation.tags": "执行标签",
+	"executionsFilter.workflowTags": "工作流标签",
 	"executionsFilter.annotation.rating": "评分",
 	"executionsFilter.annotation.rating.all": "任何评分",
 	"executionsFilter.annotation.rating.good": "好",

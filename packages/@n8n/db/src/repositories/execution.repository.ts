@@ -47,6 +47,7 @@ import {
 	ExecutionMetadata,
 	SharedWorkflow,
 	WorkflowEntity,
+	WorkflowTagMapping,
 } from '../entities';
 import { BaseRepository } from './base-repository';
 import { SharedWorkflowRepository } from './shared-workflow.repository';
@@ -85,6 +86,7 @@ export interface IGetExecutionsQueryFilter {
 	metadata?: Array<{ key: string; value: string; exactMatch?: boolean }>;
 	startedAfter?: string;
 	startedBefore?: string;
+	workflowTags?: string[];
 }
 
 export type ExecutionDeletionCriteria = {
@@ -124,6 +126,20 @@ function parseFiltersToQueryBuilder(
 		qb.andWhere({
 			workflowId: filters.workflowId,
 		});
+	}
+	applyWorkflowTagsFilter(qb, filters?.workflowTags);
+}
+
+function applyWorkflowTagsFilter(qb: SelectQueryBuilder<ExecutionEntity>, workflowTags?: string[]) {
+	if (!workflowTags?.length) return;
+
+	for (let index = 0; index < workflowTags.length; index++) {
+		qb.innerJoin(
+			WorkflowTagMapping,
+			`wtm_${index}`,
+			`wtm_${index}.workflowId = execution.workflowId AND wtm_${index}.tagId = :workflowTagId_${index}`,
+		);
+		qb.setParameter(`workflowTagId_${index}`, workflowTags[index]);
 	}
 }
 
@@ -943,6 +959,7 @@ export class ExecutionRepository extends BaseRepository<ExecutionEntity> {
 			startedAfter,
 			metadata,
 			annotationTags,
+			workflowTags,
 			vote,
 			projectId,
 			workflowVersionId,
@@ -995,6 +1012,7 @@ export class ExecutionRepository extends BaseRepository<ExecutionEntity> {
 		if (status) qb.andWhere('execution.status IN (:...status)', { status });
 		if (finished) qb.andWhere({ finished });
 		if (workflowId) qb.andWhere({ workflowId });
+		applyWorkflowTagsFilter(qb, workflowTags);
 		const startedAt = startedAtCondition({ startedAfter, startedBefore });
 		if (startedAt) qb.andWhere({ startedAt });
 

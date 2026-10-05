@@ -23,6 +23,7 @@ export type ExecutionFilterType = {
 	startDate: string | Date;
 	endDate: string | Date;
 	annotationTags: string[];
+	workflowTags: string[];
 	vote: ExecutionFilterVote;
 	metadata: ExecutionFilterMetadata[];
 	workflowVersionId: 'all' | string;
@@ -38,6 +39,7 @@ export type ExecutionsQueryFilter = {
 	startedAfter?: string;
 	startedBefore?: string;
 	annotationTags?: string[];
+	workflowTags?: string[];
 	vote?: ExecutionFilterVote;
 	workflowVersionId?: string;
 };

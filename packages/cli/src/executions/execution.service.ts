@@ -90,6 +90,7 @@ export const schemaGetExecutionsQueryFilter = {
 		startedAfter: { type: 'date-time' },
 		startedBefore: { type: 'date-time' },
 		annotationTags: { type: 'array', items: { type: 'string' } },
+		workflowTags: { type: 'array', items: { type: 'string' } },
 		vote: { type: 'string' },
 		projectId: { type: 'string' },
 		workflowVersionId: { type: 'string' },

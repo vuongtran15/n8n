@@ -357,6 +357,12 @@ describe('executionFilterToQueryFilter()', () => {
 			expect.arrayContaining(['new']),
 		);
 	});
+
+	it('passes workflow tag ids through', () => {
+		expect(executionFilterToQueryFilter({ workflowTags: ['tag-1', 'tag-2'] }).workflowTags).toEqual(
+			['tag-1', 'tag-2'],
+		);
+	});
 });
 
 describe('waitingNodeTooltip', () => {

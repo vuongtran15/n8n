@@ -221,6 +221,7 @@ export namespace ExecutionSummaries {
 		startedAfter: string;
 		startedBefore: string;
 		annotationTags: string[]; // tag IDs
+		workflowTags: string[]; // workflow tag IDs
 		vote: AnnotationVote;
 		projectId: string;
 		workflowVersionId: string;
@@ -415,6 +416,7 @@ export interface IGetExecutionsQueryFilter {
 	metadata?: Array<{ key: string; value: string; exactMatch?: boolean }>;
 	startedAfter?: string;
 	startedBefore?: string;
+	workflowTags?: string[];
 }
 
 export type ResourceType = 'folder' | 'workflow';

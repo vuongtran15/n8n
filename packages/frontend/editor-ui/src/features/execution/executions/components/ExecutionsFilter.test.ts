@@ -38,10 +38,18 @@ vi.mock('@/features/shared/tags/components/AnnotationTagsDropdown.ee.vue', () =>
 	},
 }));
 
+vi.mock('@/features/shared/tags/components/WorkflowTagsDropdown.vue', () => ({
+	default: {
+		name: 'WorkflowTagsDropdown',
+		template: '<div data-test-id="executions-filter-workflow-tags-select"></div>',
+	},
+}));
+
 const defaultFilterState: ExecutionFilterType = {
 	status: 'all',
 	workflowId: 'all',
 	annotationTags: [],
+	workflowTags: [],
 	startDate: '',
 	endDate: '',
 	metadata: [{ key: '', value: '', exactMatch: false }],
@@ -194,6 +202,26 @@ describe('ExecutionsFilter', () => {
 
 		expect(queryByTestId('executions-filter-annotation-tags-select')).not.toBeInTheDocument();
 		expect(queryByTestId('executions-filter-annotation-vote-select')).not.toBeInTheDocument();
+	});
+
+	test('shows workflow tags filter when tags are enabled', async () => {
+		settingsStore.areTagsEnabled = true;
+
+		const { getByTestId, queryByTestId } = renderComponent();
+
+		await userEvent.click(getByTestId('executions-filter-button'));
+
+		expect(queryByTestId('executions-filter-workflow-tags-select')).toBeInTheDocument();
+	});
+
+	test('hides workflow tags filter when tags are disabled', async () => {
+		settingsStore.areTagsEnabled = false;
+
+		const { getByTestId, queryByTestId } = renderComponent();
+
+		await userEvent.click(getByTestId('executions-filter-button'));
+
+		expect(queryByTestId('executions-filter-workflow-tags-select')).not.toBeInTheDocument();
 	});
 
 	test('tracks telemetry for custom data filter usage', async () => {

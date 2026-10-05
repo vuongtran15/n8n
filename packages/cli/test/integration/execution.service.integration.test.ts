@@ -13,6 +13,7 @@ import { mock } from 'vitest-mock-extended';
 import { ExecutionService } from '@/executions/execution.service';
 
 import { annotateExecution, createAnnotationTags, createExecution } from './shared/db/executions';
+import { createTag } from './shared/db/tags';
 import { createMember, createOwner } from './shared/db/users';
 
 describe('ExecutionService', () => {
@@ -1151,6 +1152,31 @@ describe('ExecutionService', () => {
 					},
 				},
 			]);
+		});
+	});
+
+	describe('workflow tags', () => {
+		test('should filter executions by workflow tag', async () => {
+			const taggedWorkflow = await createWorkflow({}, owner);
+			const untaggedWorkflow = await createWorkflow({}, owner);
+			const tag = await createTag({ name: 'AutoTask' }, taggedWorkflow);
+
+			await createExecution({ status: 'success' }, taggedWorkflow);
+			await createExecution({ status: 'success' }, untaggedWorkflow);
+
+			const query: ExecutionSummaries.RangeQuery = {
+				kind: 'range',
+				status: ['success'],
+				range: { limit: 20 },
+				user: owner,
+				workflowTags: [tag.id],
+			};
+
+			const output = await executionService.findRangeWithCount(query);
+
+			expect(output.count).toBe(1);
+			expect(output.results).toHaveLength(1);
+			expect(output.results[0].workflowId).toBe(taggedWorkflow.id);
 		});
 	});
 });

@@ -125,6 +125,22 @@ describe('`parseRangeQuery` middleware', () => {
 			expect(nextFn).toBeCalledTimes(1);
 		});
 
+		test('should parse `workflowTags` field', () => {
+			const req = mock<ExecutionRequest.GetMany>({
+				query: {
+					filter: '{ "workflowTags": ["tag-1", "tag-2"] }',
+					limit: undefined,
+					firstId: undefined,
+					lastId: undefined,
+				},
+			});
+
+			parseRangeQuery(req, res, nextFn);
+
+			expect(req.rangeQuery.workflowTags).toEqual(['tag-1', 'tag-2']);
+			expect(nextFn).toBeCalledTimes(1);
+		});
+
 		test('should delete invalid fields', () => {
 			const req = mock<ExecutionRequest.GetMany>({
 				query: {
