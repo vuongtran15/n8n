@@ -462,6 +462,10 @@
 		"pageIndex": {
 			"displayName": "页索引",
 			"description": "Chỉ số tab 0-based (Close Page, Switch Page)."
+		},
+		"throwOnSuccessFalse": {
+			"displayName": "Success 为 false 时抛错",
+			"description": "启用后：若 response.Success !== true 则抛出异常并停止节点/工作流。错误信息取自 API 的 Message。仍遵循 n8n 的 Continue On Fail。"
 		}
 	}
 }

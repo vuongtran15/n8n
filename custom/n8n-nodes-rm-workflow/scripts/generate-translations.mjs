@@ -66,6 +66,7 @@ const LABEL_ZH = {
 	Operation: '操作',
 	'Branch on Success': '成功时分支',
 	'Success Branching': '成功分支说明',
+	'Throw on Success False': 'Success 为 false 时抛错',
 	'Connection Fields Source': '连接字段来源',
 	Server: '服务器',
 	Client: '客户端',
@@ -516,6 +517,26 @@ function buildNodeView(properties, locale) {
 	return nodeView;
 }
 
+/** Props only in local package (not yet in KT-Node source JSON). */
+const EXTRA_NODE_VIEW = {
+	rmWebAutoWorkflow: {
+		vi: {
+			throwOnSuccessFalse: {
+				displayName: 'Ném lỗi khi Success = false',
+				description:
+					'Khi bật: nếu response.Success !== true thì ném exception (dừng node / workflow). Message lấy từ field Message của API. Vẫn tôn trọng Continue On Fail của n8n.',
+			},
+		},
+		zh: {
+			throwOnSuccessFalse: {
+				displayName: 'Success 为 false 时抛错',
+				description:
+					'启用后：若 response.Success !== true 则抛出异常并停止节点/工作流。错误信息取自 API 的 Message。仍遵循 n8n 的 Continue On Fail。',
+			},
+		},
+	},
+};
+
 for (const node of NODES) {
 	const sourcePath = join(ktNodeRoot, node.ktFolder, `${node.ktFolder}.node.json`);
 	if (!existsSync(sourcePath)) {
@@ -525,9 +546,13 @@ for (const node of NODES) {
 	const source = JSON.parse(readFileSync(sourcePath, 'utf8'));
 
 	for (const locale of ['zh', 'vi']) {
+		const nodeView = {
+			...buildNodeView(source.properties ?? [], locale),
+			...(EXTRA_NODE_VIEW[node.nodeKey]?.[locale] ?? {}),
+		};
 		const translation = escapeTranslationObject({
 			header: node.header[locale],
-			nodeView: buildNodeView(source.properties ?? [], locale),
+			nodeView,
 		});
 
 		const outDir = join(root, 'src', 'nodes', node.ktFolder, 'translations', locale);

@@ -4,6 +4,7 @@ export const LABEL_VI = {
 	Operation: 'Thao tác',
 	'Branch on Success': 'Phân nhánh khi thành công',
 	'Success Branching': 'Phân nhánh thành công',
+	'Throw on Success False': 'Ném lỗi khi Success = false',
 	'Connection Fields Source': 'Nguồn trường kết nối',
 	Server: 'Máy chủ',
 	Client: 'Client',

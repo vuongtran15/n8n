@@ -462,6 +462,10 @@
 		"pageIndex": {
 			"displayName": "Page Index",
 			"description": "Chỉ số tab 0-based (Close Page, Switch Page)."
+		},
+		"throwOnSuccessFalse": {
+			"displayName": "Ném lỗi khi Success = false",
+			"description": "Khi bật: nếu response.Success !== true thì ném exception (dừng node / workflow). Message lấy từ field Message của API. Vẫn tôn trọng Continue On Fail của n8n."
 		}
 	}
 }

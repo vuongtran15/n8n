@@ -18,6 +18,7 @@ import { WEB_COMMAND_DEFINITIONS } from './command/webCommandRegistry';
 import { getWebSessionPropertiesForWorkflow } from './connect/webConnectFields';
 import { executeConnectItem } from './connect/webConnectLogic';
 import {
+	assertWebSuccessOrThrow,
 	buildWebExecuteOutput,
 	getWebSuccessBranchProperties,
 	WEB_SUCCESS_BRANCH_OUTPUTS,
@@ -97,24 +98,31 @@ export class RmWebAutoWorkflow implements INodeType {
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
 		const branchOnSuccess = this.getNodeParameter('branchOnSuccess', 0) as boolean;
+		const throwOnSuccessFalse = this.getNodeParameter('throwOnSuccessFalse', 0) as boolean;
 		const returnData: INodeExecutionData[] = [];
 
 		for (let i = 0; i < items.length; i++) {
 			const operation = this.getNodeParameter('operation', i) as string;
+			let item: INodeExecutionData;
 
 			if (operation === 'connect') {
-				returnData.push(await executeConnectItem(this, i));
+				item = await executeConnectItem(this, i);
 			} else if (operation === 'disconnect') {
-				returnData.push(await executeDisconnectItem(this, i));
+				item = await executeDisconnectItem(this, i);
 			} else if (operation === 'sessionCheck') {
-				returnData.push(await executeSessionCheckItem(this, i));
+				item = await executeSessionCheckItem(this, i);
 			} else if (operation === 'killAllSessions') {
-				returnData.push(await executeKillAllSessionsItem(this, i));
+				item = await executeKillAllSessionsItem(this, i);
 			} else if (WEB_COMMAND_OPERATION_KEYS.has(operation)) {
-				returnData.push(await executeCommandShortcutItem(this, i, operation));
+				item = await executeCommandShortcutItem(this, i, operation);
 			} else {
 				throw new Error(`Unsupported operation: ${operation}`);
 			}
+
+			if (throwOnSuccessFalse) {
+				assertWebSuccessOrThrow(item, operation);
+			}
+			returnData.push(item);
 		}
 
 		return buildWebExecuteOutput(returnData, branchOnSuccess);

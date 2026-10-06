@@ -28,11 +28,30 @@ export function getWebSuccessBranchProperties(): INodeProperties[] {
 			description:
 				'Output Success: item có Success = true. Output Failed: Success = false, thiếu field Success, hoặc lỗi được trả về khi bật Continue On Fail.',
 		},
+		{
+			displayName: 'Throw on Success False',
+			name: 'throwOnSuccessFalse',
+			type: 'boolean',
+			default: false,
+			description:
+				'Khi bật: nếu response.Success !== true thì ném exception (dừng node / workflow). Message lấy từ field Message của API. Vẫn tôn trọng Continue On Fail của n8n.',
+		},
 	];
 }
 
 export function isWebResponseSuccess(item: INodeExecutionData): boolean {
 	return item.json?.Success === true;
+}
+
+export function assertWebSuccessOrThrow(item: INodeExecutionData, operation: string): void {
+	if (isWebResponseSuccess(item)) return;
+
+	const rawMessage = item.json?.Message;
+	const message =
+		typeof rawMessage === 'string' && rawMessage.trim()
+			? rawMessage.trim()
+			: 'Success = false';
+	throw new Error(`Web ${operation} failed: ${message}`);
 }
 
 export function buildWebExecuteOutput(
