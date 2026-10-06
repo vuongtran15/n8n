@@ -236,11 +236,11 @@
 		},
 		"branchOnSuccess": {
 			"displayName": "成功时分支",
-			"description": "启用时: 节点有 2 个输出 — Success（response.Success === true） và Failed（其余情况）. Khi tắt: 一个输出, mọi item đi nhánh chính dù Success true hay false."
+			"description": "启用时：2 个输出 — Success / Failed。Success = envelope.Success === true 且（若有）Result.Success !== false。关闭时：所有 item 走单一输出。"
 		},
 		"branchOnSuccessInfo": {
 			"displayName": "成功分支说明",
-			"description": "Output Success: item có Success = true. Output Failed: Success = false, thiếu field Success, hoặc lỗi được trả về khi bật Continue On Fail."
+			"description": "Success：HTTP Success=true，且（若 Result 含 Success）Result.Success=true。Failed：Success=false、Result.Success=false（如 selector 超时），或 Continue On Fail。"
 		},
 		"connectionFieldsSourceInfo": {
 			"displayName": "连接字段来源",
@@ -465,7 +465,7 @@
 		},
 		"throwOnSuccessFalse": {
 			"displayName": "Success 为 false 时抛错",
-			"description": "启用后：若 response.Success !== true 则抛出异常并停止节点/工作流。错误信息取自 API 的 Message。仍遵循 n8n 的 Continue On Fail。"
+			"description": "启用后：若 envelope Success !== true 或 Result.Success === false 则抛异常。错误信息优先 Result.Message，其次 Message。仍遵循 n8n 的 Continue On Fail。"
 		}
 	}
 }

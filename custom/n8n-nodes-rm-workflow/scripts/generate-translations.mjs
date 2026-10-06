@@ -517,21 +517,41 @@ function buildNodeView(properties, locale) {
 	return nodeView;
 }
 
-/** Props only in local package (not yet in KT-Node source JSON). */
+/** Props / overrides only in local package (not yet in KT-Node source JSON). */
 const EXTRA_NODE_VIEW = {
 	rmWebAutoWorkflow: {
 		vi: {
+			branchOnSuccess: {
+				displayName: 'Phân nhánh khi thành công',
+				description:
+					'Khi bật: 2 output — Success / Failed. Success = envelope.Success === true và (nếu có) Result.Success !== false. Khi tắt: một output cho mọi item.',
+			},
+			branchOnSuccessInfo: {
+				displayName: 'Phân nhánh thành công',
+				description:
+					'Success: HTTP Success=true và (nếu Result có Success) Result.Success=true. Failed: Success=false, Result.Success=false (vd. timeout selector), hoặc Continue On Fail.',
+			},
 			throwOnSuccessFalse: {
 				displayName: 'Ném lỗi khi Success = false',
 				description:
-					'Khi bật: nếu response.Success !== true thì ném exception (dừng node / workflow). Message lấy từ field Message của API. Vẫn tôn trọng Continue On Fail của n8n.',
+					'Khi bật: nếu envelope Success !== true hoặc Result.Success === false thì ném exception. Message ưu tiên Result.Message rồi Message. Vẫn tôn trọng Continue On Fail của n8n.',
 			},
 		},
 		zh: {
+			branchOnSuccess: {
+				displayName: '成功时分支',
+				description:
+					'启用时：2 个输出 — Success / Failed。Success = envelope.Success === true 且（若有）Result.Success !== false。关闭时：所有 item 走单一输出。',
+			},
+			branchOnSuccessInfo: {
+				displayName: '成功分支说明',
+				description:
+					'Success：HTTP Success=true，且（若 Result 含 Success）Result.Success=true。Failed：Success=false、Result.Success=false（如 selector 超时），或 Continue On Fail。',
+			},
 			throwOnSuccessFalse: {
 				displayName: 'Success 为 false 时抛错',
 				description:
-					'启用后：若 response.Success !== true 则抛出异常并停止节点/工作流。错误信息取自 API 的 Message。仍遵循 n8n 的 Continue On Fail。',
+					'启用后：若 envelope Success !== true 或 Result.Success === false 则抛异常。错误信息优先 Result.Message，其次 Message。仍遵循 n8n 的 Continue On Fail。',
 			},
 		},
 	},

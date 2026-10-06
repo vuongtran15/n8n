@@ -10,7 +10,7 @@ export function getWebSuccessBranchProperties(): INodeProperties[] {
 			type: 'boolean',
 			default: false,
 			description:
-				'Khi bật: node có 2 output — Success (response.Success === true) và Failed (còn lại). Khi tắt: một output, mọi item đi nhánh chính dù Success true hay false.',
+				'Khi bật: 2 output — Success / Failed. Success = envelope.Success === true và (nếu có) Result.Success !== false. Khi tắt: một output cho mọi item.',
 		},
 		{
 			displayName: 'Success Branching',
@@ -26,7 +26,7 @@ export function getWebSuccessBranchProperties(): INodeProperties[] {
 				theme: 'info',
 			},
 			description:
-				'Output Success: item có Success = true. Output Failed: Success = false, thiếu field Success, hoặc lỗi được trả về khi bật Continue On Fail.',
+				'Success: HTTP Success=true và (nếu Result có Success) Result.Success=true. Failed: Success=false, Result.Success=false (vd. timeout selector), hoặc Continue On Fail.',
 		},
 		{
 			displayName: 'Throw on Success False',
@@ -34,24 +34,39 @@ export function getWebSuccessBranchProperties(): INodeProperties[] {
 			type: 'boolean',
 			default: false,
 			description:
-				'Khi bật: nếu response.Success !== true thì ném exception (dừng node / workflow). Message lấy từ field Message của API. Vẫn tôn trọng Continue On Fail của n8n.',
+				'Khi bật: nếu envelope Success !== true hoặc Result.Success === false thì ném exception. Message ưu tiên Result.Message rồi Message. Vẫn tôn trọng Continue On Fail của n8n.',
 		},
 	];
 }
 
 export function isWebResponseSuccess(item: INodeExecutionData): boolean {
-	return item.json?.Success === true;
+	if (item.json?.Success !== true) return false;
+	const result = item.json?.Result;
+	if (result !== null && typeof result === 'object' && !Array.isArray(result)) {
+		const inner = (result as { Success?: unknown }).Success;
+		if (inner === false) return false;
+	}
+	return true;
+}
+
+function pickWebFailureMessage(item: INodeExecutionData): string {
+	const result = item.json?.Result;
+	if (result !== null && typeof result === 'object' && !Array.isArray(result)) {
+		const innerMessage = (result as { Message?: unknown }).Message;
+		if (typeof innerMessage === 'string' && innerMessage.trim()) {
+			return innerMessage.trim();
+		}
+	}
+	const outerMessage = item.json?.Message;
+	if (typeof outerMessage === 'string' && outerMessage.trim()) {
+		return outerMessage.trim();
+	}
+	return 'Success = false';
 }
 
 export function assertWebSuccessOrThrow(item: INodeExecutionData, operation: string): void {
 	if (isWebResponseSuccess(item)) return;
-
-	const rawMessage = item.json?.Message;
-	const message =
-		typeof rawMessage === 'string' && rawMessage.trim()
-			? rawMessage.trim()
-			: 'Success = false';
-	throw new Error(`Web ${operation} failed: ${message}`);
+	throw new Error(`Web ${operation} failed: ${pickWebFailureMessage(item)}`);
 }
 
 export function buildWebExecuteOutput(
