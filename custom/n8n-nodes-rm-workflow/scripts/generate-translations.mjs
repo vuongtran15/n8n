@@ -151,6 +151,8 @@ const LABEL_ZH = {
 	'Headers JSON': 'Headers JSON',
 	'Request Body': '请求体',
 	'Fail On HTTP Error': 'HTTP 错误时失败',
+	'File Name': '文件名',
+	'Require PDF Signature': '校验 PDF 签名',
 	Value: '值',
 	Text: '文本',
 	Key: '键',

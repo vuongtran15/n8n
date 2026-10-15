@@ -228,7 +228,7 @@ export const WEB_COMMAND_DEFINITIONS: WebCommandDefinition[] = [
 		function: 'DownloadActivePageToFile',
 		displayName: 'Download Active Page To File',
 		description:
-			'GET URL tab active qua cookie/session browser, ghi bytes ra file trên worker (PDF inline, …).',
+			'GET URL tab active qua cookie/session browser, ghi bytes ra file trên worker (PDF inline, …). filePath = file hoặc thư mục (+ fileName).',
 		action: 'Download active page to file',
 		params: 'downloadActivePage',
 	},

@@ -128,12 +128,31 @@ export function getWebCommandShortcutProperties(): INodeProperties[] {
 			displayOptions: op(...FETCH_API_OPS),
 		},
 		{
+			displayName: 'File Name',
+			name: 'downloadFileName',
+			type: 'string',
+			default: '',
+			placeholder: 'PO-4500715007.pdf',
+			description:
+				'Tên file khi File Path là thư mục. Để trống = lấy từ Content-Disposition / download.pdf (Download Active Page To File).',
+			displayOptions: op(...DOWNLOAD_ACTIVE_OPS),
+		},
+		{
 			displayName: 'Fail On HTTP Error',
 			name: 'downloadFailOnHttpError',
 			type: 'boolean',
 			default: true,
 			description:
 				'true = lỗi khi HTTP status không phải 2xx/3xx (Download Active Page To File). Mặc định true.',
+			displayOptions: op(...DOWNLOAD_ACTIVE_OPS),
+		},
+		{
+			displayName: 'Require PDF Signature',
+			name: 'requirePdfSignature',
+			type: 'boolean',
+			default: true,
+			description:
+				'true = kiểm tra header %PDF trước khi lưu (tránh lưu nhầm HTML). false = lưu mọi bytes (Download Active Page To File).',
 			displayOptions: op(...DOWNLOAD_ACTIVE_OPS),
 		},
 		{
@@ -224,8 +243,9 @@ export function getWebCommandShortcutProperties(): INodeProperties[] {
 			name: 'filePath',
 			type: 'string',
 			default: '',
-			placeholder: 'C:\\temp\\page.html',
-			description: 'Đường dẫn file trên máy worker (RMIV.WF.CLIENT), không phải máy gọi API.',
+			placeholder: 'D:\\temp\\po.pdf hoặc E:\\History\\NEXUS\\DATA\\',
+			description:
+				'Đường dẫn trên máy worker (không phải máy gọi API). Download Active Page: file đích hoặc thư mục (kèm File Name).',
 			displayOptions: op(...FILE_PATH_OPS, ...operationsWithParamKind('setInputFiles')),
 		},
 		{

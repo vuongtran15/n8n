@@ -160,6 +160,22 @@ function buildParamObject(
 			if (pattern) base.searchPattern = pattern;
 			return base;
 		}
+		case 'findFiles': {
+			const base: Record<string, string> = { relativeOrAbsolutePath: requirePath() };
+			const nameEquals = s('nameEquals').trim();
+			if (nameEquals) base.nameEquals = nameEquals;
+			const nameContains = s('nameContains').trim();
+			if (nameContains) base.nameContains = nameContains;
+			const pattern = s('searchPattern').trim();
+			if (pattern) base.searchPattern = pattern;
+			const extension = s('extension').trim();
+			if (extension) base.extension = extension;
+			const maxDepth = n('maxDepth', -1);
+			if (maxDepth >= 0) base.maxDepth = String(maxDepth);
+			const maxResults = n('maxResults', 0);
+			if (maxResults > 0) base.maxResults = String(maxResults);
+			return base;
+		}
 		case 'downloadFromUrl': {
 			const url = preferStr(
 				useInputJsonFields,

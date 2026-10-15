@@ -174,6 +174,13 @@ function buildParamObject(
 			const filePath = s('filePath');
 			if (!filePath.trim()) throw new Error('Thiếu File Path');
 			const base: Record<string, string> = { filePath };
+			const fileName = preferStr(
+				useInputJsonFields,
+				itemJson,
+				'fileName',
+				ctx.getNodeParameter('downloadFileName', itemIndex, '') as string,
+			).trim();
+			if (fileName) base.fileName = fileName;
 			const failOnHttpError = preferBool(
 				useInputJsonFields,
 				itemJson,
@@ -181,6 +188,13 @@ function buildParamObject(
 				ctx.getNodeParameter('downloadFailOnHttpError', itemIndex, true) as boolean,
 			);
 			if (!failOnHttpError) base.failOnHttpError = 'false';
+			const requirePdfSignature = preferBool(
+				useInputJsonFields,
+				itemJson,
+				'requirePdfSignature',
+				ctx.getNodeParameter('requirePdfSignature', itemIndex, true) as boolean,
+			);
+			if (!requirePdfSignature) base.requirePdfSignature = 'false';
 			return withTimeout(base);
 		}
 		case 'setInputFiles': {

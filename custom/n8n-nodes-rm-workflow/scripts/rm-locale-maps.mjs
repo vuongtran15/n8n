@@ -25,6 +25,9 @@ export const LABEL_VI = {
 	URL: 'URL',
 	'HTTP Method': 'Phương thức HTTP',
 	'Keep Page Index': 'Giữ Page Index',
+	'File Name': 'Tên file',
+	'Require PDF Signature': 'Require PDF Signature',
+	'Fail On HTTP Error': 'Fail On HTTP Error',
 };
 
 export const OP_NAME_VI = {

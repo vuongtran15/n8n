@@ -8,6 +8,7 @@ export type FileCommandParamKind =
 	| 'deleteDirectory'
 	| 'copyMove'
 	| 'listDirectory'
+	| 'findFiles'
 	| 'downloadFromUrl'
 	| 'openFile'
 	| 'writeExcel'
@@ -63,6 +64,16 @@ export const FILE_COMMAND_DEFINITIONS: FileCommandDefinition[] = [
 		description: 'Liệt kê 1 cấp: Result.Files / Result.Directories (full path). searchPattern chỉ lọc file.',
 		action: 'List directory',
 		params: 'listDirectory',
+		group: 'list',
+	},
+	{
+		operation: 'findFiles',
+		function: 'FindFiles',
+		displayName: 'Find Files',
+		description:
+			'Tìm/lọc file (đệ quy): nameEquals / nameContains / searchPattern / extension + maxDepth, maxResults. Result.Files[] metadata.',
+		action: 'Find files',
+		params: 'findFiles',
 		group: 'list',
 	},
 	{

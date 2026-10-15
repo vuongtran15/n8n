@@ -792,7 +792,7 @@ Chờ tab mới xuất hiện **không** kèm click (đã click tay hoặc `Clic
 2. `ClickAndWaitForNewPage` — selector nút/link mở PO PDF.
 3. (Tuỳ chọn) `WaitForLoadState` với `networkidle` hoặc `WaitForTimeout` vài giây.
 4. `GetUrl` — xác nhận URL PDF (vd. `dyncon?...`).
-5. `DownloadActivePageToFile` — `filePath`: `D:\temp\PO-4500715007.pdf`.
+5. `DownloadActivePageToFile` — lưu PDF (file đầy đủ **hoặc** thư mục + `fileName`).
 
 ```json
 {
@@ -801,6 +801,21 @@ Chờ tab mới xuất hiện **không** kèm click (đã click tay hoặc `Clic
   "paramObject": {
     "filePath": "D:\\temp\\PO-4500715007.pdf",
     "timeoutMs": "120000"
+  }
+}
+```
+
+Hoặc thư mục đích + tên file:
+
+```json
+{
+  "sessionId": "...",
+  "function": "DownloadActivePageToFile",
+  "paramObject": {
+    "filePath": "E:\\History\\NEXUS\\DATA\\",
+    "fileName": "PO-4500715007.pdf",
+    "timeoutMs": "120000",
+    "requirePdfSignature": "true"
   }
 }
 ```
@@ -1131,9 +1146,11 @@ Tên field trong **`paramObject`** trùng tên tham số C#. Cột **Bắt buộ
 | **GetTitle** / **GetUrl** / **GetContent** | — | — | — | — | Không input |
 | **DownloadFullHtml** | `filePath` | string | Có | — | Lưu HTML ra file worker |
 | | `encodingName` | string | Không | utf-8 | |
-| **DownloadActivePageToFile** | `filePath` | string | Có | — | GET URL tab active (cookie) → file bytes (PDF, …) |
-| | `timeoutMs` | int | Không | null | |
-| | `failOnHttpError` | bool | Không | true | |
+| **DownloadActivePageToFile** | `filePath` | string | Có | — | File đích **hoặc thư mục** trên worker |
+| | `fileName` | string | Không | null | Bắt buộc nếu `filePath` là folder; không gửi → Content-Disposition / `download.pdf` |
+| | `timeoutMs` | int | Không | null | Timeout HTTP GET (ms) |
+| | `failOnHttpError` | bool | Không | true | `false` = vẫn lưu body khi HTTP 4xx/5xx |
+| | `requirePdfSignature` | bool | Không | true | `false` = không kiểm tra header `%PDF` |
 | **ClickAndWaitForNewPage** | `selector` | string | Có | — | Click + chờ `window.open` / tab mới → `Value` JSON |
 | | `timeoutMs` | int | Không | null | |
 | | `force` | bool | Không | false | |

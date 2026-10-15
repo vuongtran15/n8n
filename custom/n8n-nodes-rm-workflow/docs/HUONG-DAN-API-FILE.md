@@ -28,6 +28,7 @@ Tài liệu tham chiếu HTTP **`/file-auto/*`** trên worker **RMIV.WF.CLIENT**
 7. [Đọc / ghi text & bytes](#7-đọc--ghi-text--bytes)
 8. [Xóa / copy / move / mở file](#8-xóa--copy--move)
 9. [ListDirectory](#9-listdirectory)
+9b. [FindFiles](#9b-findfiles)
 10. [ExportPathForApi](#10-exportpathforapi)
 11. [DownloadFromUrl](#11-downloadfromurl)
 12. [TryResolvePath](#12-tryresolvepath)
@@ -103,7 +104,8 @@ Content-Type: application/json
 | `rootDirectory` | Có | Thư mục gốc **trên máy worker** (phải tồn tại) |
 | `idleTimeoutMinutes` | Không | Số phút idle thì tự disconnect session; **không gửi** = không auto-idle |
 
-Cùng `sessionId` không đổi được `rootDirectory` cho đến khi `disconnect`.  
+**Reconnect cùng `sessionId`:** luôn **hủy session cũ** rồi gắn `rootDirectory` mới (tránh giữ folder sandbox cũ khi workflow chạy lại). Không cần gọi `disconnect` trước.
+
 `MaxFileSessions` mặc định **10**.
 
 ### Disconnect / session check
@@ -157,6 +159,7 @@ Cùng `sessionId` không đổi được `rootDirectory` cho đến khi `disconn
 | `DirectoryExists` | Check | Thư mục có tồn tại? → `bool` |
 | `EnsureDirectory` | Thư mục | Tạo thư mục (cả cây) |
 | `ListDirectory` | Thư mục | Liệt kê 1 cấp |
+| **`FindFiles`** | Thư mục | Tìm file theo tên / contains / đuôi, sâu `maxDepth` cấp |
 | `ReadAllText` | Đọc | Đọc text (UTF-8 mặc định) |
 | `ReadAllBytes` | Đọc | Đọc bytes |
 | `WriteAllText` | Ghi | Ghi/đè text |
@@ -201,6 +204,7 @@ Envelope:
 | `FileBytesResponse` | + `Data` (byte[] / Base64 trong JSON) |
 | `FileDownloadResponse` | + `SavedFullPath` |
 | `DirectoryListResponse` | + `Files`, `Directories` (full path) |
+| `FileSearchResponse` | + `Count`, `Files[]` (`FullPath`, `RelativePath`, `FileName`, `Extension`, `Length`, `LastWriteTimeUtc`) |
 | `PathExportForApiResponse` | + `Kind`, `EntryName`, `RelativePath`, `ContentBase64`, `ContentByteLength` |
 
 Với thao tác file/Excel trả `FileAccessResponse`: **kiểm tra `Result.Success`**.
@@ -442,10 +446,12 @@ JSON — chỉ cần path (tự notepad):
 
 ## 9) ListDirectory
 
+Liệt kê **1 cấp** (không đệ quy): file + thư mục con trực tiếp.
+
 | Param | Mặc định | Mô tả |
 |-------|----------|--------|
 | `relativeOrAbsolutePath` | — | Thư mục |
-| `searchPattern` | `*` | Chỉ áp dụng cho **file** (1 cấp) |
+| `searchPattern` | `*` | Chỉ áp dụng cho **file** (1 cấp). Thư mục luôn liệt kê đủ |
 
 ```json
 {
@@ -457,7 +463,134 @@ JSON — chỉ cần path (tự notepad):
 }
 ```
 
-`Result.Files` / `Result.Directories`: danh sách **full path**.
+`Result`: `DirectoryListResponse` — `Files` / `Directories`: danh sách **full path**.
+
+> Cần tìm theo tên/đuôi **xuống nhiều cấp**, hoặc lấy metadata từng file → dùng [`FindFiles`](#9b-findfiles).
+
+---
+
+## 9b) FindFiles
+
+**Lọc / tìm file** trong folder (có thể xuống nhiều cấp). Khác `ListDirectory`: chỉ trả **file** (không list thư mục), hỗ trợ nhiều điều kiện lọc + `maxDepth` / `maxResults`, mỗi file kèm metadata.
+
+### Khi nào dùng gì
+
+| Nhu cầu | Hàm |
+|---------|-----|
+| Xem 1 cấp: file + folder con | `ListDirectory` |
+| Tìm file theo tên / đuôi / wildcard, đệ quy | **`FindFiles`** |
+| Biết path + cần size / ngày sửa | **`FindFiles`** (`Length`, `LastWriteTimeUtc`) |
+
+### Tham số
+
+| Param | Mặc định | Mô tả |
+|-------|----------|--------|
+| `relativeOrAbsolutePath` | — | **Có** — thư mục bắt đầu (trong root) |
+| `nameEquals` | null | Khớp **đúng** tên file (không phân biệt hoa thường), vd `report.xlsx` |
+| `nameContains` | null | Tên file **chứa** chuỗi, vd `ZMMR` |
+| `searchPattern` | `*` | Wildcard DOS: `*.xlsx`, `PO_*.pdf`, `???_report.csv` |
+| `extension` | null | Đuôi: `xlsx`, `.pdf`, hoặc nhiều `xlsx;csv;.pdf` (`;` / `|`) |
+| `maxDepth` | null | `0` = chỉ folder hiện tại; `1` = thêm 1 cấp con; **không gửi / &lt;0** = không giới hạn |
+| `maxResults` | null | Giới hạn số file trả về; không gửi = lấy hết |
+
+Các điều kiện **AND** với nhau (chỉ áp điều kiện đã gửi). Không gửi bộ lọc nào → mọi file trong phạm vi `maxDepth`.
+
+### Ví dụ — chứa tên + đuôi, sâu 3 cấp
+
+```json
+{
+  "function": "FindFiles",
+  "paramObject": {
+    "relativeOrAbsolutePath": "exports",
+    "nameContains": "ZMMR",
+    "extension": "xlsx;csv",
+    "maxDepth": "3",
+    "maxResults": "50"
+  }
+}
+```
+
+### Ví dụ — đúng tên file
+
+```json
+{
+  "function": "FindFiles",
+  "paramObject": {
+    "relativeOrAbsolutePath": "exports",
+    "nameEquals": "bao-cao.xlsx",
+    "maxDepth": "5"
+  }
+}
+```
+
+### Ví dụ — wildcard DOS
+
+```json
+{
+  "function": "FindFiles",
+  "paramObject": {
+    "relativeOrAbsolutePath": "PO\\inbound",
+    "searchPattern": "PO_*.pdf",
+    "maxDepth": "2",
+    "maxResults": "100"
+  }
+}
+```
+
+### Ví dụ — chỉ đuôi, toàn cây
+
+```json
+{
+  "function": "FindFiles",
+  "paramObject": {
+    "relativeOrAbsolutePath": "D:\\Data",
+    "extension": ".pdf",
+    "maxDepth": "-1"
+  }
+}
+```
+
+### Result — `FileSearchResponse`
+
+```json
+{
+  "Success": true,
+  "Message": "OK",
+  "Result": {
+    "Count": 2,
+    "Files": [
+      {
+        "FullPath": "D:\\Data\\Sandbox\\exports\\2026\\ZMMR_01.xlsx",
+        "RelativePath": "exports\\2026\\ZMMR_01.xlsx",
+        "FileName": "ZMMR_01.xlsx",
+        "Extension": ".xlsx",
+        "Length": 18432,
+        "LastWriteTimeUtc": "2026-10-14T08:30:00Z"
+      },
+      {
+        "FullPath": "D:\\Data\\Sandbox\\exports\\ZMMR_summary.csv",
+        "RelativePath": "exports\\ZMMR_summary.csv",
+        "FileName": "ZMMR_summary.csv",
+        "Extension": ".csv",
+        "Length": 920,
+        "LastWriteTimeUtc": "2026-10-15T01:12:00Z"
+      }
+    ]
+  }
+}
+```
+
+| Field | Mô tả |
+|-------|--------|
+| `Count` | Số phần tử trong `Files` (đã cắt theo `maxResults` nếu có) |
+| `Files[].FullPath` | Đường dẫn tuyệt đối trên worker |
+| `Files[].RelativePath` | Path tương đối so với `rootDirectory` |
+| `Files[].FileName` | Tên file (kèm đuôi) |
+| `Files[].Extension` | Đuôi (có dấu `.`) |
+| `Files[].Length` | Kích thước bytes |
+| `Files[].LastWriteTimeUtc` | Thời gian sửa cuối (UTC) |
+
+**n8n:** lấy path xử lý tiếp từ `Result.Files[0].RelativePath` hoặc `FullPath` (vẫn phải nằm trong root).
 
 ---
 
@@ -487,30 +620,34 @@ Payload lớn → Base64 ~+33%; cần đủ RAM. Serializer `MaxJsonLength = int
 
 ## 11) DownloadFromUrl
 
-Tải URL **http/https** vào thư mục trong root.
+Tải **http/https** → lưu file trên **máy worker**. `Result.SavedFullPath` = đường dẫn đầy đủ.
 
-| Param | Mặc định | Mô tả |
-|-------|----------|--------|
-| `url` | — | http/https |
-| `destinationFolderRelativeOrAbsolute` | — | Thư mục đích trong root |
-| `fileName` | null | Tên file; null → Content-Disposition / URL / `download` |
-| `timeout` | 300 giây | Số giây hoặc chuỗi TimeSpan |
-| `overwrite` | `false` | Đích tồn tại → lỗi nếu false |
+**Thư mục đích** (`destinationFolderRelativeOrAbsolute`):
+
+| Cách ghi | Ví dụ |
+|----------|--------|
+| Ổ đĩa / UNC (tuyệt đối) | `D:\\PO\\pdf`, `\\\\fileserver\\share\\inbound` |
+| Tương đối sandbox | `downloads` (dưới `rootDirectory` khi `connect`) |
 
 ```json
 {
   "function": "DownloadFromUrl",
   "paramObject": {
     "url": "https://example.com/a.pdf",
-    "destinationFolderRelativeOrAbsolute": "downloads",
+    "destinationFolderRelativeOrAbsolute": "D:\\PO\\pdf",
     "fileName": "a.pdf",
-    "timeout": "300",
     "overwrite": "true"
   }
 }
 ```
 
-`Result.SavedFullPath` = full path file đã lưu.
+| Param | Mặc định |
+|-------|----------|
+| `fileName` | null → header URL / `download` |
+| `timeout` | 300s |
+| `overwrite` | false |
+
+URL cần **cookie đăng nhập web** → dùng `web-auto` `DownloadActivePageToFile`, không dùng hàm này.
 
 ---
 
@@ -1112,7 +1249,7 @@ return [{
 |---------|-----|
 | Đọc/ghi `.txt`, log, JSON text | `ReadAllText` / `WriteAllText` / `AppendAllText` |
 | Binary / Base64 | `ReadAllBytes` / `WriteAllBytes` / `ExportPathForApi` |
-| Copy, move, xóa, list | `CopyFile`, `MoveFile`, `Delete*`, `ListDirectory` |
+| Copy, move, xóa, list | `CopyFile`, `MoveFile`, `Delete*`, `ListDirectory`, `FindFiles` |
 | Tải từ internet | `DownloadFromUrl` |
 | Báo cáo / bảng Excel thật | `WriteExcel` |
 | Đọc lại Excel | `ReadExcel` |
