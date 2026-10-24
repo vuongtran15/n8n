@@ -37,6 +37,34 @@
 		"operationsJson": {
 			"displayName": "Operations JSON",
 			"description": "Batch nhiều sheet/ops"
+		},
+		"uploadUrl": {
+			"displayName": "URL upload",
+			"description": "URL nhận POST multipart"
+		},
+		"uploadPath": {
+			"displayName": "Đường dẫn",
+			"description": "File hoặc thư mục trên worker"
+		},
+		"uploadPathsJson": {
+			"displayName": "Paths JSON",
+			"description": "Mảng JSON thêm đường dẫn"
+		},
+		"uploadFormFieldsJson": {
+			"displayName": "Form Fields JSON",
+			"description": "Tham số form kèm theo"
+		},
+		"uploadFileFieldName": {
+			"displayName": "Tên field file",
+			"description": "Tên field multipart (mặc định file)"
+		},
+		"uploadZipFolder": {
+			"displayName": "Nén thư mục (zip)",
+			"description": "Nén thư mục thành một .zip rồi upload"
+		},
+		"uploadTimeoutSeconds": {
+			"displayName": "Timeout (giây)",
+			"description": "Timeout upload, mặc định 600"
 		}
 	}
 }

@@ -10,6 +10,7 @@ export type FileCommandParamKind =
 	| 'listDirectory'
 	| 'findFiles'
 	| 'downloadFromUrl'
+	| 'uploadToUrl'
 	| 'openFile'
 	| 'writeExcel'
 	| 'readExcel'
@@ -185,6 +186,16 @@ export const FILE_COMMAND_DEFINITIONS: FileCommandDefinition[] = [
 			'Tải http/https vào thư mục trong root. Result.SavedFullPath. timeout mặc định 300 giây.',
 		action: 'Download from URL',
 		params: 'downloadFromUrl',
+		group: 'network',
+	},
+	{
+		operation: 'uploadToUrl',
+		function: 'UploadToUrl',
+		displayName: 'Upload To URL',
+		description:
+			'POST multipart file/folder lên URL. path và/hoặc pathsJson. zipFolder=true nén thư mục. Result: HttpStatusCode, ResponseBody, UploadedFileCount.',
+		action: 'Upload to URL',
+		params: 'uploadToUrl',
 		group: 'network',
 	},
 	{

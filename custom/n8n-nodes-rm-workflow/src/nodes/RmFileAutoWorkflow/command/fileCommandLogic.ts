@@ -202,6 +202,62 @@ function buildParamObject(
 			if (timeoutSec > 0) out.timeout = String(timeoutSec);
 			return out;
 		}
+		case 'uploadToUrl': {
+			const uploadUrl = preferStr(
+				useInputJsonFields,
+				itemJson,
+				'uploadUrl',
+				ctx.getNodeParameter('uploadUrl', itemIndex, '') as string,
+			).trim();
+			if (!uploadUrl) throw new Error('Thiếu Upload URL');
+			const path = preferStr(
+				useInputJsonFields,
+				itemJson,
+				'path',
+				ctx.getNodeParameter('uploadPath', itemIndex, '') as string,
+			).trim();
+			const pathsJson = preferStr(
+				useInputJsonFields,
+				itemJson,
+				'pathsJson',
+				ctx.getNodeParameter('uploadPathsJson', itemIndex, '') as string,
+			).trim();
+			if (!path && !pathsJson) {
+				throw new Error('Cần Path và/hoặc Paths JSON (ít nhất một)');
+			}
+			const out: Record<string, string> = { uploadUrl };
+			if (path) out.path = path;
+			if (pathsJson) out.pathsJson = pathsJson;
+			const formFieldsJson = preferStr(
+				useInputJsonFields,
+				itemJson,
+				'formFieldsJson',
+				ctx.getNodeParameter('uploadFormFieldsJson', itemIndex, '') as string,
+			).trim();
+			if (formFieldsJson) out.formFieldsJson = formFieldsJson;
+			const fileFieldName = preferStr(
+				useInputJsonFields,
+				itemJson,
+				'fileFieldName',
+				ctx.getNodeParameter('uploadFileFieldName', itemIndex, '') as string,
+			).trim();
+			if (fileFieldName) out.fileFieldName = fileFieldName;
+			const zipFolder = preferBool(
+				useInputJsonFields,
+				itemJson,
+				'zipFolder',
+				ctx.getNodeParameter('uploadZipFolder', itemIndex, false) as boolean,
+			);
+			out.zipFolder = zipFolder ? 'true' : 'false';
+			const timeoutSec = preferNum(
+				useInputJsonFields,
+				itemJson,
+				'timeout',
+				ctx.getNodeParameter('uploadTimeoutSeconds', itemIndex, 600) as number,
+			);
+			if (timeoutSec > 0) out.timeout = String(timeoutSec);
+			return out;
+		}
 		case 'openFile': {
 			const out: Record<string, string> = { relativeOrAbsolutePath: requirePath() };
 			const app = preferStr(

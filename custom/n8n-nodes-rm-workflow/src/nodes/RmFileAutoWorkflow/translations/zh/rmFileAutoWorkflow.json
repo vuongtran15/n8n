@@ -37,6 +37,34 @@
 		"operationsJson": {
 			"displayName": "批量操作 JSON",
 			"description": "多 sheet / 多操作"
+		},
+		"uploadUrl": {
+			"displayName": "上传 URL",
+			"description": "接收 multipart POST 的 URL"
+		},
+		"uploadPath": {
+			"displayName": "路径",
+			"description": "Worker 上的文件或文件夹"
+		},
+		"uploadPathsJson": {
+			"displayName": "Paths JSON",
+			"description": "额外路径的 JSON 数组"
+		},
+		"uploadFormFieldsJson": {
+			"displayName": "表单字段 JSON",
+			"description": "随 multipart 提交的表单参数"
+		},
+		"uploadFileFieldName": {
+			"displayName": "文件字段名",
+			"description": "multipart 文件字段名（默认 file）"
+		},
+		"uploadZipFolder": {
+			"displayName": "压缩文件夹",
+			"description": "将文件夹打成一个 .zip 再上传"
+		},
+		"uploadTimeoutSeconds": {
+			"displayName": "超时（秒）",
+			"description": "上传超时，默认 600"
 		}
 	}
 }

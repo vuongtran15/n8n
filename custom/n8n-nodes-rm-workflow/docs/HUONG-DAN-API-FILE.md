@@ -31,11 +31,12 @@ Tài liệu tham chiếu HTTP **`/file-auto/*`** trên worker **RMIV.WF.CLIENT**
 9b. [FindFiles](#9b-findfiles)
 10. [ExportPathForApi](#10-exportpathforapi)
 11. [DownloadFromUrl](#11-downloadfromurl)
-12. [TryResolvePath](#12-tryresolvepath)
+12. [UploadToUrl](#12-uploadtourl)
+13. [TryResolvePath](#13-tryresolvepath)
 
 ### C. Excel
-13. [WriteExcel — tổng quan](#13-writeexcel--tổng-quan)
-14. [Tham số WriteExcel](#14-tham-số-writeexcel)
+14. [WriteExcel — tổng quan](#14-writeexcel--tổng-quan)
+14b. [Tham số WriteExcel](#14-tham-số-writeexcel)
 15. [operationsJson](#15-operationsjson)
 16. [type = table](#16-type--table)
 17. [type = cells](#17-type--cells)
@@ -73,6 +74,7 @@ Content-Type: application/json
 **Quy tắc path**
 
 - Mọi path phải nằm trong `rootDirectory` (sandbox, chặn traversal).
+- Path tương đối: `exports\\a.xlsx` hoặc `New folder` (không cần `\` đầu). `\New folder` cũng được coi là trong root (không phải `C:\New folder`).
 - Path tương đối nối với root; path tuyệt đối vẫn phải thuộc root.
 - Excel: đuôi bắt buộc `.xlsx`.
 
@@ -172,6 +174,7 @@ Content-Type: application/json
 | **`OpenFile`** | Mở xem | Mở file bằng app mặc định Windows (txt/excel/json/word/ppt/…) |
 | `ExportPathForApi` | Export | File → Base64; thư mục → zip Base64 |
 | `DownloadFromUrl` | Network | Tải HTTP(S) vào trong root |
+| `UploadToUrl` | Network | POST multipart file/folder lên URL nhận |
 | `TryResolvePath` | Utility | Resolve path an toàn (thường dùng nội bộ) |
 | **`WriteExcel`** | Excel | Ghi `.xlsx` (table/cells/range/style) |
 | **`ReadExcel`** | Excel | Đọc sheet → JSON |
@@ -179,7 +182,7 @@ Content-Type: application/json
 | **`ClearExcelRange`** | Excel | Xóa nội dung vùng / used range (không xóa sheet) |
 | **`DeleteExcelEmptyRows`** | Excel | Xóa các hàng trống trong used range |
 
-> `DownloadFromUrlAsync` **không** expose qua HTTP — dùng `DownloadFromUrl`.  
+> `DownloadFromUrlAsync` / `UploadToUrlAsync` **không** expose qua HTTP — dùng `DownloadFromUrl` / `UploadToUrl`.  
 > Property `RootDirectory` không gọi qua command.
 
 ---
@@ -203,8 +206,8 @@ Envelope:
 | `FileReadResponse` | + `Content` (string) |
 | `FileBytesResponse` | + `Data` (byte[] / Base64 trong JSON) |
 | `FileDownloadResponse` | + `SavedFullPath` |
+| `FileUploadResponse` | + `HttpStatusCode`, `ResponseBody`, `UploadedFileCount`, `UploadedFileNames` |
 | `DirectoryListResponse` | + `Files`, `Directories` (full path) |
-| `FileSearchResponse` | + `Count`, `Files[]` (`FullPath`, `RelativePath`, `FileName`, `Extension`, `Length`, `LastWriteTimeUtc`) |
 | `PathExportForApiResponse` | + `Kind`, `EntryName`, `RelativePath`, `ContentBase64`, `ContentByteLength` |
 
 Với thao tác file/Excel trả `FileAccessResponse`: **kiểm tra `Result.Success`**.
@@ -446,12 +449,10 @@ JSON — chỉ cần path (tự notepad):
 
 ## 9) ListDirectory
 
-Liệt kê **1 cấp** (không đệ quy): file + thư mục con trực tiếp.
-
 | Param | Mặc định | Mô tả |
 |-------|----------|--------|
 | `relativeOrAbsolutePath` | — | Thư mục |
-| `searchPattern` | `*` | Chỉ áp dụng cho **file** (1 cấp). Thư mục luôn liệt kê đủ |
+| `searchPattern` | `*` | Chỉ áp dụng cho **file** (1 cấp) |
 
 ```json
 {
@@ -463,39 +464,25 @@ Liệt kê **1 cấp** (không đệ quy): file + thư mục con trực tiếp.
 }
 ```
 
-`Result`: `DirectoryListResponse` — `Files` / `Directories`: danh sách **full path**.
-
-> Cần tìm theo tên/đuôi **xuống nhiều cấp**, hoặc lấy metadata từng file → dùng [`FindFiles`](#9b-findfiles).
+`Result.Files` / `Result.Directories`: danh sách **full path**.
 
 ---
 
 ## 9b) FindFiles
 
-**Lọc / tìm file** trong folder (có thể xuống nhiều cấp). Khác `ListDirectory`: chỉ trả **file** (không list thư mục), hỗ trợ nhiều điều kiện lọc + `maxDepth` / `maxResults`, mỗi file kèm metadata.
-
-### Khi nào dùng gì
-
-| Nhu cầu | Hàm |
-|---------|-----|
-| Xem 1 cấp: file + folder con | `ListDirectory` |
-| Tìm file theo tên / đuôi / wildcard, đệ quy | **`FindFiles`** |
-| Biết path + cần size / ngày sửa | **`FindFiles`** (`Length`, `LastWriteTimeUtc`) |
-
-### Tham số
+Tìm file trong folder (có thể xuống nhiều cấp), lọc theo tên exact / contains / wildcard, và/hoặc đuôi file.
 
 | Param | Mặc định | Mô tả |
 |-------|----------|--------|
-| `relativeOrAbsolutePath` | — | **Có** — thư mục bắt đầu (trong root) |
+| `relativeOrAbsolutePath` | — | Thư mục bắt đầu |
 | `nameEquals` | null | Khớp **đúng** tên file (không phân biệt hoa thường), vd `report.xlsx` |
 | `nameContains` | null | Tên file **chứa** chuỗi, vd `ZMMR` |
-| `searchPattern` | `*` | Wildcard DOS: `*.xlsx`, `PO_*.pdf`, `???_report.csv` |
-| `extension` | null | Đuôi: `xlsx`, `.pdf`, hoặc nhiều `xlsx;csv;.pdf` (`;` / `|`) |
+| `searchPattern` | `*` | Wildcard DOS: `*.xlsx`, `PO_*.pdf` |
+| `extension` | null | Đuôi: `xlsx`, `.pdf`, hoặc nhiều `xlsx;csv;.pdf` |
 | `maxDepth` | null | `0` = chỉ folder hiện tại; `1` = thêm 1 cấp con; **không gửi / &lt;0** = không giới hạn |
-| `maxResults` | null | Giới hạn số file trả về; không gửi = lấy hết |
+| `maxResults` | null | Giới hạn số file; không gửi = lấy hết |
 
-Các điều kiện **AND** với nhau (chỉ áp điều kiện đã gửi). Không gửi bộ lọc nào → mọi file trong phạm vi `maxDepth`.
-
-### Ví dụ — chứa tên + đuôi, sâu 3 cấp
+Các điều kiện **AND** với nhau (nếu có).
 
 ```json
 {
@@ -510,34 +497,7 @@ Các điều kiện **AND** với nhau (chỉ áp điều kiện đã gửi). Kh
 }
 ```
 
-### Ví dụ — đúng tên file
-
-```json
-{
-  "function": "FindFiles",
-  "paramObject": {
-    "relativeOrAbsolutePath": "exports",
-    "nameEquals": "bao-cao.xlsx",
-    "maxDepth": "5"
-  }
-}
-```
-
-### Ví dụ — wildcard DOS
-
-```json
-{
-  "function": "FindFiles",
-  "paramObject": {
-    "relativeOrAbsolutePath": "PO\\inbound",
-    "searchPattern": "PO_*.pdf",
-    "maxDepth": "2",
-    "maxResults": "100"
-  }
-}
-```
-
-### Ví dụ — chỉ đuôi, toàn cây
+Chỉ theo đuôi, toàn cây:
 
 ```json
 {
@@ -550,47 +510,7 @@ Các điều kiện **AND** với nhau (chỉ áp điều kiện đã gửi). Kh
 }
 ```
 
-### Result — `FileSearchResponse`
-
-```json
-{
-  "Success": true,
-  "Message": "OK",
-  "Result": {
-    "Count": 2,
-    "Files": [
-      {
-        "FullPath": "D:\\Data\\Sandbox\\exports\\2026\\ZMMR_01.xlsx",
-        "RelativePath": "exports\\2026\\ZMMR_01.xlsx",
-        "FileName": "ZMMR_01.xlsx",
-        "Extension": ".xlsx",
-        "Length": 18432,
-        "LastWriteTimeUtc": "2026-10-14T08:30:00Z"
-      },
-      {
-        "FullPath": "D:\\Data\\Sandbox\\exports\\ZMMR_summary.csv",
-        "RelativePath": "exports\\ZMMR_summary.csv",
-        "FileName": "ZMMR_summary.csv",
-        "Extension": ".csv",
-        "Length": 920,
-        "LastWriteTimeUtc": "2026-10-15T01:12:00Z"
-      }
-    ]
-  }
-}
-```
-
-| Field | Mô tả |
-|-------|--------|
-| `Count` | Số phần tử trong `Files` (đã cắt theo `maxResults` nếu có) |
-| `Files[].FullPath` | Đường dẫn tuyệt đối trên worker |
-| `Files[].RelativePath` | Path tương đối so với `rootDirectory` |
-| `Files[].FileName` | Tên file (kèm đuôi) |
-| `Files[].Extension` | Đuôi (có dấu `.`) |
-| `Files[].Length` | Kích thước bytes |
-| `Files[].LastWriteTimeUtc` | Thời gian sửa cuối (UTC) |
-
-**n8n:** lấy path xử lý tiếp từ `Result.Files[0].RelativePath` hoặc `FullPath` (vẫn phải nằm trong root).
+`Result`: `FileSearchResponse` — `Count`, `Files[]` mỗi phần tử có `FullPath`, `RelativePath`, `FileName`, `Extension`, `Length`, `LastWriteTimeUtc`.
 
 ---
 
@@ -651,7 +571,112 @@ URL cần **cookie đăng nhập web** → dùng `web-auto` `DownloadActivePageT
 
 ---
 
-## 12) TryResolvePath
+## 12) UploadToUrl
+
+POST **multipart/form-data** lên URL nhận. File đọc từ **máy worker** (giống `DownloadFromUrl` — path trên máy chạy worker, không phải máy n8n).
+
+| Param | Bắt buộc | Mô tả |
+|-------|----------|--------|
+| `uploadUrl` | Có | URL đích (http/https) |
+| `path` | Không* | Một file hoặc một thư mục |
+| `pathsJson` | Không* | Mảng JSON thêm đường dẫn |
+| `formFieldsJson` | Không | Object JSON tham số form (ngày, mã, …) |
+| `fileFieldName` | Không | Tên field file (mặc định `file`) |
+| `zipFolder` | Không | `true` = thư mục trong `path` nén thành một `.zip` |
+| `timeout` | Không | Giây (mặc định 600) |
+
+\* Cần ít nhất một trong `path` hoặc `pathsJson`. Có thể dùng cả hai (gộp danh sách upload).
+
+**Đường dẫn nguồn**
+
+| Cách ghi | Ví dụ |
+|----------|--------|
+| Ổ đĩa / UNC (tuyệt đối) | `D:\\exports\\report.pdf`, `\\\\fileserver\\share\\out` |
+| Tương đối sandbox | `exports\\a.pdf` (dưới `rootDirectory` khi `connect`) |
+
+**Một file + tham số form:**
+
+```json
+{
+  "function": "UploadToUrl",
+  "paramObject": {
+    "uploadUrl": "https://example.com/api/upload",
+    "path": "D:\\exports\\report.pdf",
+    "formFieldsJson": "{\"ngay\":\"2024-10-24\",\"plant\":\"1000\",\"loai\":\"PO\"}"
+  }
+}
+```
+
+**Nhiều file (`pathsJson`):**
+
+```json
+{
+  "function": "UploadToUrl",
+  "paramObject": {
+    "uploadUrl": "https://example.com/api/upload",
+    "pathsJson": "[\"exports\\\\a.pdf\",\"exports\\\\b.xlsx\"]",
+    "formFieldsJson": "{\"batchId\":\"B001\"}"
+  }
+}
+```
+
+**Một file + thêm pathsJson:**
+
+```json
+{
+  "function": "UploadToUrl",
+  "paramObject": {
+    "uploadUrl": "https://example.com/api/upload",
+    "path": "exports\\cover.pdf",
+    "pathsJson": "[\"exports\\\\a.pdf\",\"exports\\\\b.xlsx\"]"
+  }
+}
+```
+
+**Cả thư mục (từng file, giữ tên tương đối trong multipart):**
+
+```json
+{
+  "function": "UploadToUrl",
+  "paramObject": {
+    "uploadUrl": "https://example.com/api/upload",
+    "path": "D:\\data\\outbox"
+  }
+}
+```
+
+**Thư mục → một file zip:**
+
+```json
+{
+  "function": "UploadToUrl",
+  "paramObject": {
+    "uploadUrl": "https://example.com/api/upload",
+    "path": "outbox",
+    "zipFolder": "true"
+  }
+}
+```
+
+`Result` (`FileUploadResponse`): `HttpStatusCode`, `ResponseBody` (cắt ~32KB), `UploadedFileCount`, `UploadedFileNames`, `Success`, `Message`.
+
+Kiểm tra `Result.Success` và `HttpStatusCode` (2xx). Body phản hồi server nằm trong `ResponseBody`.
+
+**Node n8n:** Operation **Upload To URL** (`uploadToUrl`) — map UI → `paramObject` như bảng dưới.
+
+| UI (RM FILE AUTO) | API |
+|-------------------|-----|
+| Upload URL | `uploadUrl` |
+| Path | `path` |
+| Paths JSON | `pathsJson` |
+| Form Fields JSON | `formFieldsJson` |
+| File Field Name | `fileFieldName` |
+| Zip Folder | `zipFolder` |
+| Timeout (Seconds) | `timeout` |
+
+---
+
+## 13) TryResolvePath
 
 ```json
 {
@@ -666,7 +691,7 @@ Reflection có thể khó map `out` params — ưu tiên dùng các hàm ở tr�
 
 ---
 
-## 13) WriteExcel — tổng quan
+## 14) WriteExcel — tổng quan
 
 ```json
 {
@@ -1251,6 +1276,7 @@ return [{
 | Binary / Base64 | `ReadAllBytes` / `WriteAllBytes` / `ExportPathForApi` |
 | Copy, move, xóa, list | `CopyFile`, `MoveFile`, `Delete*`, `ListDirectory`, `FindFiles` |
 | Tải từ internet | `DownloadFromUrl` |
+| Gửi file lên API | `UploadToUrl` |
 | Báo cáo / bảng Excel thật | `WriteExcel` |
 | Đọc lại Excel | `ReadExcel` |
 
