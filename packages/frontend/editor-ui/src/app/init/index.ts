@@ -37,6 +37,7 @@ import { useDataTableStore } from '@/features/core/dataTable/dataTable.store';
 import { useFavoritesStore } from '@/app/stores/favorites.store';
 import { useWorkflowsListStore } from '@/app/stores/workflowsList.store';
 import { useFoldersStore } from '@/features/core/folders/folders.store';
+import { clearRecentResourcesStorage } from '@/features/shared/commandBar/composables/useRecentResources';
 import { hasPermission } from '@/app/utils/rbac/permissions';
 
 export const state = {
@@ -316,6 +317,7 @@ function registerAuthenticationHooks() {
 		useWorkflowsListStore().reset();
 		useFoldersStore().reset();
 		useProjectsStore().reset();
+		clearRecentResourcesStorage();
 		// So a soft-redirect re-login (no page reload) re-fetches per-user data.
 		authenticatedFeaturesInitialized = false;
 	});

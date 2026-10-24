@@ -219,6 +219,12 @@ const resourcesListLayoutRef = useTemplateRef('resourcesListLayout');
 
 const workflowsAndFolders = ref<WorkflowListResource[]>([]);
 
+/**
+ * Workflow ids hidden after archive/delete until a fetch confirms they are gone.
+ * Prevents a stale GET (still returning the pre-mutation row) from putting them back.
+ */
+const pendingHiddenWorkflowIds = ref(new Set<string>());
+
 const currentPage = ref(1);
 const pageSize = ref(DEFAULT_WORKFLOW_PAGE_SIZE);
 const currentSort = ref('updatedAt:desc');
@@ -646,6 +652,20 @@ watch([() => route.params?.projectId, () => route.name], async () => {
 	}
 });
 
+// Soft logout/login keeps this view mounted — drop the previous user's rows
+// immediately so ResourcesListLayout cannot flash them while the next fetch runs.
+watch(
+	() => usersStore.currentUser?.id,
+	(newUserId, oldUserId) => {
+		if (newUserId === oldUserId) {
+			return;
+		}
+		workflowsAndFolders.value = [];
+		pendingHiddenWorkflowIds.value = new Set();
+		loading.value = true;
+	},
+);
+
 watch(
 	() => route.params?.folderId,
 	async (newVal) => {
@@ -668,8 +688,11 @@ sourceControlStore.$onAction(({ name, after }) => {
 });
 
 const refreshWorkflows = async () => {
+	// Mutation-driven refresh must hide the prior list immediately — otherwise a
+	// racey GET can briefly re-show archived/deleted rows (or another user's list).
+	loading.value = true;
 	await Promise.all([
-		fetchWorkflows(),
+		fetchWorkflows({ immediateLoading: true }),
 		foldersStore.fetchTotalWorkflowsAndFoldersCount(
 			route.params.projectId as string | undefined,
 			currentFolderId.value ?? undefined,
@@ -697,6 +720,11 @@ const removeWorkflowFromList = (id: string, { updateCount = true } = {}) => {
 	}
 };
 
+const hideWorkflowPendingConfirm = (id: string) => {
+	pendingHiddenWorkflowIds.value = new Set([...pendingHiddenWorkflowIds.value, id]);
+	removeWorkflowFromList(id);
+};
+
 const markWorkflowArchivedInList = (id: string, isArchived: boolean) => {
 	workflowsAndFolders.value = workflowsAndFolders.value.map((resource) => {
 		if (resource.id !== id || !isWorkflowListItem(resource)) {
@@ -711,7 +739,7 @@ const markWorkflowArchivedInList = (id: string, isArchived: boolean) => {
 };
 
 const onWorkflowDeleted = async (id: string) => {
-	removeWorkflowFromList(id);
+	hideWorkflowPendingConfirm(id);
 	await refreshWorkflows();
 	// Refetch can return a stale row if it raced the delete — keep the item gone.
 	removeWorkflowFromList(id, { updateCount: false });
@@ -757,7 +785,7 @@ const onWorkflowArchived = async (id: string) => {
 	if (filters.value.showArchived) {
 		markWorkflowArchivedInList(id, true);
 	} else {
-		removeWorkflowFromList(id);
+		hideWorkflowPendingConfirm(id);
 	}
 	await refreshWorkflows();
 	if (filters.value.showArchived) {
@@ -775,7 +803,7 @@ const onWorkflowUnarchived = async (id: string) => {
 
 /** Drag/drop or modal move that leaves the current list — drop locally before/after refetch. */
 const onResourceMoved = async (payload: WorkflowListEventMap['resource-moved']) => {
-	removeWorkflowFromList(payload.resourceId);
+	hideWorkflowPendingConfirm(payload.resourceId);
 	await refreshWorkflows();
 	removeWorkflowFromList(payload.resourceId, { updateCount: false });
 };
@@ -899,6 +927,9 @@ const initialize = async () => {
 	isInitializing.value = true;
 	try {
 		loading.value = true;
+		// Clear before fetch so a soft re-login cannot render the previous user's rows.
+		workflowsAndFolders.value = [];
+		pendingHiddenWorkflowIds.value = new Set();
 		await setFiltersFromQueryString();
 
 		currentFolderId.value = route.params.folderId as string | null;
@@ -946,14 +977,19 @@ const initialize = async () => {
  * - Total count of workflows and folders in the current project
  * - Path to the current folder (if not cached)
  */
-const fetchWorkflows = async () => {
+const fetchWorkflows = async (options?: { immediateLoading?: boolean }) => {
 	const isCurrent = nextFetch();
 
-	// We debounce here so that fast enough fetches don't trigger
-	// the placeholder graphics for a few milliseconds, which would cause a flicker
+	// Debounce so fast filter/search fetches don't flash the placeholder.
+	// Mutation refreshes pass immediateLoading so stale rows are hidden right away.
 	const delayedLoading = debounce(() => {
 		loading.value = true;
 	}, 300);
+	if (options?.immediateLoading) {
+		loading.value = true;
+	} else {
+		delayedLoading();
+	}
 
 	const routeProjectId = route.params?.projectId as string | undefined;
 	const homeProjectFilter = filters.value.homeProject || undefined;
@@ -1009,7 +1045,7 @@ const fetchWorkflows = async () => {
 		}
 
 		// Prefer fresher cached names when list refetch races a just-saved rename.
-		workflowsAndFolders.value = fetchedResources.map((resource) => {
+		const mappedResources = fetchedResources.map((resource) => {
 			if (resource.resource === 'folder') {
 				return resource;
 			}
@@ -1033,6 +1069,29 @@ const fetchWorkflows = async () => {
 			}
 			return resource;
 		});
+
+		// Drop archived rows when the filter is off, and skip ids we just
+		// archived/deleted whose refetch may still race with a stale list.
+		const showArchived = filters.value.showArchived;
+		const hiddenIds = pendingHiddenWorkflowIds.value;
+		workflowsAndFolders.value = mappedResources.filter((resource) => {
+			if (hiddenIds.has(resource.id) && !showArchived) {
+				return false;
+			}
+			if (!showArchived && isWorkflowListItem(resource) && resource.isArchived) {
+				return false;
+			}
+			return true;
+		});
+
+		if (hiddenIds.size > 0) {
+			// Keep suppressing only while a stale response still includes the row.
+			pendingHiddenWorkflowIds.value = showArchived
+				? new Set()
+				: new Set(
+						[...hiddenIds].filter((id) => mappedResources.some((resource) => resource.id === id)),
+					);
+		}
 
 		// Async-fetch dependency counts for visible workflows (fire-and-forget)
 		// in the overview page we don't have a resource type

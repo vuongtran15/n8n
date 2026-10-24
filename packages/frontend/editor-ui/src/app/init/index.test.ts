@@ -345,11 +345,16 @@ describe('Init', () => {
 			const foldersResetSpy = vi.spyOn(useFoldersStore(), 'reset');
 			const projectsResetSpy = vi.spyOn(useProjectsStore(), 'reset');
 
+			localStorage.setItem('n8n-recent-workflows', JSON.stringify([{ id: 'w1', openedAt: 1 }]));
+			localStorage.setItem('n8n-recent-nodes', JSON.stringify({ w1: [] }));
+
 			await registeredLogoutHook();
 
 			expect(workflowsResetSpy).toHaveBeenCalledTimes(1);
 			expect(foldersResetSpy).toHaveBeenCalledTimes(1);
 			expect(projectsResetSpy).toHaveBeenCalledTimes(1);
+			expect(localStorage.getItem('n8n-recent-workflows')).toBeNull();
+			expect(localStorage.getItem('n8n-recent-nodes')).toBeNull();
 		});
 
 		it('re-runs module registration on the next login, without a duplicate-registration warning', async () => {

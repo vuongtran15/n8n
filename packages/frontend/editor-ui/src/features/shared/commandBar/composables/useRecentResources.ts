@@ -17,6 +17,16 @@ const MAX_RECENT_WORKFLOWS_TO_DISPLAY = 3;
 const RECENT_WORKFLOWS_STORAGE_KEY = 'n8n-recent-workflows';
 const RECENT_NODES_STORAGE_KEY = 'n8n-recent-nodes';
 
+/** Clear user-scoped recent resources — call on logout so the next user never sees prior entries. */
+export function clearRecentResourcesStorage() {
+	try {
+		localStorage.removeItem(RECENT_WORKFLOWS_STORAGE_KEY);
+		localStorage.removeItem(RECENT_NODES_STORAGE_KEY);
+	} catch {
+		// Ignore quota / private-mode failures
+	}
+}
+
 interface RecentWorkflow {
 	id: string;
 	openedAt: number;
