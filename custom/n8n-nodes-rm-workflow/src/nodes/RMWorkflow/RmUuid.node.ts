@@ -6,6 +6,7 @@ import {
 	type INodeExecutionData,
 	type INodeType,
 	type INodeTypeDescription,
+	type NodePropertyAction,
 } from 'n8n-workflow';
 
 function formatUuid(raw: string, format: string): string {
@@ -146,10 +147,11 @@ export class RmUuid implements INodeType {
 					buttonConfig: {
 						label: 'Tạo mã mẫu',
 						hasInputField: false,
+						// Master only types askAiCodeGeneration; FE handler lives on kito fork.
 						action: {
 							type: 'generateUuid',
 							target: 'previewUuid',
-						},
+						} as unknown as NodePropertyAction,
 					},
 				},
 			},

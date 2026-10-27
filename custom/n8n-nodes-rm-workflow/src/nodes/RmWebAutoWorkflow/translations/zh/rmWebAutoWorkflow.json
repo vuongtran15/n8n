@@ -137,11 +137,6 @@
 					"description": "Lưu HTML trang ra file trên máy worker. filePath bắt buộc; encodingName 默认 utf-8.",
 					"action": "下载完整 HTML"
 				},
-				"downloadActivePageToFile": {
-					"displayName": "下载活动页到文件",
-					"description": "通过浏览器 cookie/session GET 当前标签页 URL，将字节写入 worker 文件（内嵌 PDF 等）。filePath = 文件或目录（+ fileName）。",
-					"action": "下载活动页到文件"
-				},
 				"findElements": {
 					"displayName": "查找元素",
 					"description": "/class/xpath/css/tag",
@@ -357,19 +352,6 @@
 			"displayName": "HTTP 错误时失败",
 			"description": "/3xx"
 		},
-		"downloadFileName": {
-			"displayName": "文件名",
-			"description": "当 File Path 为目录时的文件名。留空则从 Content-Disposition / download.pdf 获取（Download Active Page To File）。",
-			"placeholder": "PO-4500715007.pdf"
-		},
-		"downloadFailOnHttpError": {
-			"displayName": "HTTP 错误时失败",
-			"description": "true = HTTP status 非 2xx/3xx 时失败（Download Active Page To File）。默认 true。"
-		},
-		"requirePdfSignature": {
-			"displayName": "校验 PDF 签名",
-			"description": "true = 保存前检查 %PDF 头（避免误存 HTML）。false = 保存任意字节（Download Active Page To File）。"
-		},
 		"textValue": {
 			"displayName": "值",
 			"description": "/textarea"
@@ -429,8 +411,8 @@
 		},
 		"filePath": {
 			"displayName": "文件路径",
-			"description": "Worker 本机路径（非 API 调用端）。Download Active Page：目标文件或目录（配合 File Name）。",
-			"placeholder": "D:\\temp\\po.pdf 或 E:\\History\\NEXUS\\DATA\\"
+			"description": "Đường dẫn file trên máy worker (RMIV.WF.CLIENT), không phải máy gọi API.",
+			"placeholder": "C:\\temp\\page.html"
 		},
 		"encodingName": {
 			"displayName": "编码名称",

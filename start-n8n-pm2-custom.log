@@ -1,0 +1,7 @@
+$ tsc -p tsconfig.json && node scripts/generate-translations.mjs && node scripts/copy-codex.mjs
+Wrote D:\CODE\N8N\n8n\custom\n8n-nodes-rm-workflow\src\nodes\RmSapWorkflow\translations\zh\rmSapWorkflow.json
+Wrote D:\CODE\N8N\n8n\custom\n8n-nodes-rm-workflow\src\nodes\RmSapWorkflow\translations\vi\rmSapWorkflow.json
+Wrote D:\CODE\N8N\n8n\custom\n8n-nodes-rm-workflow\src\nodes\RmWebAutoWorkflow\translations\zh\rmWebAutoWorkflow.json
+Wrote D:\CODE\N8N\n8n\custom\n8n-nodes-rm-workflow\src\nodes\RmWebAutoWorkflow\translations\vi\rmWebAutoWorkflow.json
+Translation generation complete.
+Copied static node assets to dist/

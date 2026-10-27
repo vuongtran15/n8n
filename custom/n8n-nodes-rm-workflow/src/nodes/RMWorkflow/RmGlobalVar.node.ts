@@ -6,6 +6,7 @@ import {
 	type INodeExecutionData,
 	type INodeType,
 	type INodeTypeDescription,
+	type NodePropertyAction,
 } from 'n8n-workflow';
 
 type ValueType = 'number' | 'text' | 'object' | 'autoIncrement';
@@ -270,11 +271,12 @@ export class RmGlobalVar implements INodeType {
 					buttonConfig: {
 						label: 'Reset Value',
 						hasInputField: false,
+						// Master only types askAiCodeGeneration; FE handler lives on kito fork.
 						action: {
 							type: 'setParameterValue',
 							target: 'value',
 							source: 'resetValue',
-						},
+						} as unknown as NodePropertyAction,
 					},
 				},
 			},

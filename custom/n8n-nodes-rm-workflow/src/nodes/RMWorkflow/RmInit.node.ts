@@ -6,6 +6,7 @@ import {
 	type INodeExecutionData,
 	type INodeType,
 	type INodeTypeDescription,
+	type NodePropertyAction,
 } from 'n8n-workflow';
 
 function trimOrEmpty(value: unknown): string {
@@ -93,10 +94,11 @@ export class RmInit implements INodeType {
 					buttonConfig: {
 						label: 'Random Session ID',
 						hasInputField: false,
+						// Master only types askAiCodeGeneration; FE handler lives on kito fork.
 						action: {
 							type: 'generateUuid',
 							target: 'sessionId',
-						},
+						} as unknown as NodePropertyAction,
 					},
 				},
 			},

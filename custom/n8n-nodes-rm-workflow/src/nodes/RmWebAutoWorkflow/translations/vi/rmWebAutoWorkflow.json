@@ -137,11 +137,6 @@
 					"description": "Lưu HTML trang ra file trên máy worker. filePath bắt buộc; encodingName mặc định utf-8.",
 					"action": "Tải HTML đầy đủ"
 				},
-				"downloadActivePageToFile": {
-					"displayName": "Tải trang active ra file",
-					"description": "GET URL tab active qua cookie/session browser, ghi bytes ra file trên worker (PDF inline, …). filePath = file hoặc thư mục (+ fileName).",
-					"action": "Tải trang active ra file"
-				},
 				"findElements": {
 					"displayName": "Tìm phần tử",
 					"description": "Tìm nhiều element theo queryType (id/class/xpath/css/tag) + queryValue. Trả danh sách Values.",
@@ -357,19 +352,6 @@
 			"displayName": "Fail On HTTP Error",
 			"description": "true = lỗi khi HTTP status không phải 2xx/3xx (Fetch API)."
 		},
-		"downloadFileName": {
-			"displayName": "Tên file",
-			"description": "Tên file khi File Path là thư mục. Để trống = lấy từ Content-Disposition / download.pdf (Download Active Page To File).",
-			"placeholder": "PO-4500715007.pdf"
-		},
-		"downloadFailOnHttpError": {
-			"displayName": "Fail On HTTP Error",
-			"description": "true = lỗi khi HTTP status không phải 2xx/3xx (Download Active Page To File). Mặc định true."
-		},
-		"requirePdfSignature": {
-			"displayName": "Require PDF Signature",
-			"description": "true = kiểm tra header %PDF trước khi lưu (tránh lưu nhầm HTML). false = lưu mọi bytes (Download Active Page To File)."
-		},
 		"textValue": {
 			"displayName": "Value",
 			"description": "Giá trị điền vào input/textarea (Fill) hoặc option value/label (Select Option)."
@@ -429,8 +411,8 @@
 		},
 		"filePath": {
 			"displayName": "File Path",
-			"description": "Đường dẫn trên máy worker (không phải máy gọi API). Download Active Page: file đích hoặc thư mục (kèm File Name).",
-			"placeholder": "D:\\temp\\po.pdf hoặc E:\\History\\NEXUS\\DATA\\"
+			"description": "Đường dẫn file trên máy worker (RMIV.WF.CLIENT), không phải máy gọi API.",
+			"placeholder": "C:\\temp\\page.html"
 		},
 		"encodingName": {
 			"displayName": "Encoding Name",
