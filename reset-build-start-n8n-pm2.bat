@@ -6,7 +6,7 @@ set "ROOT=%CD%"
 set "CACHE_PUBLIC=%USERPROFILE%\.cache\n8n\public"
 set "RESET_LOG=%ROOT%\reset-build-start-n8n-pm2.log"
 set "RESET_MODE=light"
-set "MEM=3072"
+set "MEM=16384"
 
 REM Usage:
 REM   reset-build-start-n8n-pm2.bat           -> pnpm reset (giu node_modules)
