@@ -152,7 +152,7 @@ const customProjectTabs = computed((): Array<TabOptions<string>> => {
 	const activeModules = Object.keys(moduleTabs).filter(
 		(module) =>
 			settingsStore.isModuleActive(module) &&
-			(module !== 'agents' || settingsStore.isAgentsEnabled),
+			(module !== 'agents' || (settingsStore.isAgentsEnabled && usersStore.isAdminOrOwner)),
 	);
 	return activeModules.flatMap((module) => moduleTabs[module]);
 });
@@ -216,7 +216,13 @@ const createAgentButton = computed(() => ({
 }));
 
 const selectedMainButtonType = computed(() => {
-	if (props.mainButton === ACTION_TYPES.AGENT && !settingsStore.isAgentsEnabled) {
+	if (
+		props.mainButton === ACTION_TYPES.AGENT &&
+		(!settingsStore.isAgentsEnabled || !usersStore.isAdminOrOwner)
+	) {
+		return ACTION_TYPES.WORKFLOW;
+	}
+	if (props.mainButton === ACTION_TYPES.VARIABLE && !usersStore.isAdminOrOwner) {
 		return ACTION_TYPES.WORKFLOW;
 	}
 	return props.mainButton ?? ACTION_TYPES.WORKFLOW;
@@ -264,6 +270,7 @@ const menu = computed(() => {
 	}
 
 	if (
+		usersStore.isAdminOrOwner &&
 		selectedMainButtonType.value !== ACTION_TYPES.VARIABLE &&
 		settingsStore.isEnterpriseFeatureEnabled[EnterpriseEditionFeature.Variables]
 	) {
@@ -300,7 +307,11 @@ const menu = computed(() => {
 		});
 	}
 
-	if (settingsStore.isAgentsEnabled && selectedMainButtonType.value !== ACTION_TYPES.AGENT) {
+	if (
+		usersStore.isAdminOrOwner &&
+		settingsStore.isAgentsEnabled &&
+		selectedMainButtonType.value !== ACTION_TYPES.AGENT
+	) {
 		items.push({
 			value: ACTION_TYPES.AGENT,
 			label: i18n.baseText('projects.header.create.agent'),

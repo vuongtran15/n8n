@@ -5,6 +5,7 @@ import { getResourcePermissions } from '@n8n/permissions';
 import { CHAT_VIEW } from '@/features/ai/chatHub/constants';
 import { hasRole } from '@/app/utils/rbac/checks';
 import { useSettingsStore } from '@n8n/stores/settings.store';
+import { useUsersStore } from '@n8n/stores/users.store';
 
 const WorkflowsView = async () => await import('@/app/views/WorkflowsView.vue');
 const CredentialsView = async () =>
@@ -81,7 +82,8 @@ const commonChildRoutes: RouteRecordRaw[] = [
 		meta: {
 			middleware: ['authenticated', 'custom'],
 			middlewareOptions: {
-				custom: (options) => checkProjectAvailability(options?.to),
+				custom: (options) =>
+					checkProjectAvailability(options?.to) && useUsersStore().isAdminOrOwner,
 			},
 		},
 	},

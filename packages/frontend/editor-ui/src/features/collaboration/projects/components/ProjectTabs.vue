@@ -13,6 +13,7 @@ import { N8nTabs } from '@n8n/design-system';
 import { useProjectsStore } from '../projects.store';
 import { ProjectTypes } from '../projects.types';
 import { useTelemetry } from '@n8n/composables/useTelemetry';
+import { useUsersStore } from '@n8n/stores/users.store';
 type Props = {
 	showSettings?: boolean;
 	showExecutions?: boolean;
@@ -31,6 +32,10 @@ const locale = useI18n();
 const route = useRoute();
 const projectStore = useProjectsStore();
 const telemetry = useTelemetry();
+const usersStore = useUsersStore();
+
+/** Instance Admin/Owner only — Members do not see Variables / Agents tabs. */
+const canSeeAdminOnlyTabs = computed(() => usersStore.isAdminOrOwner);
 
 const selectedTab = ref<RouteRecordName | null | undefined>('');
 
@@ -113,12 +118,24 @@ const options = computed<Array<TabOptions<string>>>(() => {
 
 	// Optimistic while currentProject loads — hiding the tab until the fetch
 	// resolves would shift the tab strip on every overview → project navigation
-	if (props.pageType === 'overview' || (props.pageType === 'project' && !isPublicProject.value)) {
+	if (
+		canSeeAdminOnlyTabs.value &&
+		(props.pageType === 'overview' || (props.pageType === 'project' && !isPublicProject.value))
+	) {
 		tabs.push(createTab('mainSidebar.variables', 'variables', routes));
 	}
 
 	if (props.additionalTabs?.length) {
-		const processedAdditionalTabs = processDynamicTabs(props.additionalTabs, projectId.value);
+		const processedAdditionalTabs = processDynamicTabs(
+			props.additionalTabs,
+			projectId.value,
+		).filter((tab) => {
+			// Agents tab (preview) — Admin/Owner only
+			if (!canSeeAdminOnlyTabs.value && /agents/i.test(String(tab.value))) {
+				return false;
+			}
+			return true;
+		});
 		for (const processed of processedAdditionalTabs) {
 			const { insertAfter, ...tab } = processed;
 			const anchorIndex = insertAfter ? tabs.findIndex((t) => t.value === insertAfter) : -1;

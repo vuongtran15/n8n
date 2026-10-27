@@ -4,6 +4,7 @@ import { i18n } from '@n8n/i18n';
 import { hasPermission } from '@/app/utils/rbac/permissions';
 import { INSTANCE_AI_VIEW } from '@/features/ai/instanceAi/constants';
 import { useInstanceAiAvailable } from '@/features/ai/instanceAi/composables/useInstanceAiAvailability';
+import { useUsersStore } from '@n8n/stores/users.store';
 import {
 	AGENTS_LIST_VIEW,
 	AGENTS_SETTINGS_VIEW,
@@ -65,6 +66,9 @@ export const AgentsModule = defineFrontendModule({
 			component: AgentsListView,
 			meta: {
 				middleware: ['authenticated', 'custom'],
+				middlewareOptions: {
+					custom: () => useUsersStore().isAdminOrOwner,
+				},
 			},
 		},
 		{
@@ -74,6 +78,9 @@ export const AgentsModule = defineFrontendModule({
 			meta: {
 				projectRoute: true,
 				middleware: ['authenticated', 'custom'],
+				middlewareOptions: {
+					custom: () => useUsersStore().isAdminOrOwner,
+				},
 			},
 		},
 		{

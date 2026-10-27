@@ -6,6 +6,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import { within } from '@testing-library/vue';
 import { useProjectsStore } from '../projects.store';
 import type { Project } from '../projects.types';
+import { useUsersStore } from '@n8n/stores/users.store';
 
 vi.mock('vue-router', async () => {
 	const actual = await vi.importActual('vue-router');
@@ -29,9 +30,15 @@ const renderComponent = createComponentRenderer(ProjectTabs, {
 
 describe('ProjectTabs', () => {
 	let projectsStore: MockedStore<typeof useProjectsStore>;
+	let usersStore: MockedStore<typeof useUsersStore>;
 	beforeEach(() => {
 		setActivePinia(createPinia());
 		projectsStore = mockedStore(useProjectsStore);
+		usersStore = mockedStore(useUsersStore);
+		Object.defineProperty(usersStore, 'isAdminOrOwner', {
+			configurable: true,
+			get: () => true,
+		});
 		vi.spyOn(projectsStore, 'currentProject', 'get').mockReturnValue(null);
 	});
 
@@ -103,6 +110,22 @@ describe('ProjectTabs', () => {
 		expect(getByText('Agents')).toBeInTheDocument();
 		expect(within(getByTestId('tab-agents')).getByText('Preview')).toBeInTheDocument();
 		expect(within(getByTestId('tab-WorkflowsView')).queryByText('Preview')).not.toBeInTheDocument();
+	});
+
+	it('should hide Variables and Agents tabs for instance Members', () => {
+		Object.defineProperty(usersStore, 'isAdminOrOwner', {
+			configurable: true,
+			get: () => false,
+		});
+		const { queryByText } = renderComponent({
+			props: {
+				pageType: 'overview',
+				additionalTabs: [{ label: 'Agents', value: 'AgentsListView', preview: true }],
+			},
+		});
+
+		expect(queryByText('Variables')).not.toBeInTheDocument();
+		expect(queryByText('Agents')).not.toBeInTheDocument();
 	});
 
 	const getTabValuesInOrder = (container: ParentNode) =>

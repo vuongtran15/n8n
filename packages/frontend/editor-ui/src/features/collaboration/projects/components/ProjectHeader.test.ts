@@ -102,6 +102,10 @@ describe('ProjectHeader', () => {
 		projectsStore.teamProjectsLimit = -1;
 		settingsStore.settings.folders = { enabled: false };
 		settingsStore.isDataTableFeatureEnabled = true;
+		Object.defineProperty(usersStore, 'isAdminOrOwner', {
+			configurable: true,
+			get: () => true,
+		});
 
 		// Setup default moduleTabs structure
 		uiStore.moduleTabs = {
