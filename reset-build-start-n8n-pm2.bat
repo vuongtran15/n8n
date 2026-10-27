@@ -9,6 +9,11 @@ set "RESET_MODE=light"
 set "MEM=16384"
 REM Corepack hoi Y/n khi tai pnpm — bat + redirect log khong tuong tac nen treo
 set "COREPACK_ENABLE_DOWNLOAD_PROMPT=0"
+REM zx tim "bash" trong PATH; system32\bash.exe = WSL (hay Stopped) → /bin/bash fail.
+REM Uu tien Git Bash neu co.
+if exist "C:\Program Files\Git\bin\bash.exe" (
+  set "PATH=C:\Program Files\Git\bin;C:\Program Files\Git\usr\bin;%PATH%"
+)
 
 REM Usage:
 REM   reset-build-start-n8n-pm2.bat           -> pnpm reset (giu node_modules)
