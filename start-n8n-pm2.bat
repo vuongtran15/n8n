@@ -7,7 +7,7 @@ set "BIN=%ROOT%\packages\cli\bin"
 set "CUSTOM_NODES=%ROOT%\custom\n8n-nodes-rm-workflow"
 set "FE_DIST=%ROOT%\packages\frontend\editor-ui\dist"
 set "CACHE_PUBLIC=%USERPROFILE%\.cache\n8n\public"
-set "PORT=5678"
+set "PORT=201"
 set "CUSTOM_LOG=%ROOT%\start-n8n-pm2-custom.log"
 
 echo === n8n via PM2 (main + 2 workers) ===
