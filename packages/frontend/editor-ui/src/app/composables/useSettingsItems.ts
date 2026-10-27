@@ -9,6 +9,7 @@ import { VIEWS } from '../constants';
 import { isContextEnabled } from '@/features/settings/context/context.utils';
 import { useUIStore } from '../stores/ui.store';
 import { useSettingsStore } from '@n8n/stores/settings.store';
+import { useUsersStore } from '@n8n/stores/users.store';
 import { hasPermission } from '../utils/rbac/permissions';
 import { MIGRATION_REPORT_TARGET_VERSION } from '@n8n/api-types';
 import { PROMOTIONS_SETTINGS_VIEW } from '@/features/integrations/promotions.ee/promotions.constants';
@@ -53,6 +54,7 @@ export function useSettingsItems() {
 	const i18n = useI18n();
 	const uiStore = useUIStore();
 	const settingsStore = useSettingsStore();
+	const usersStore = useUsersStore();
 	const { canUserAccessRouteByName } = useUserHelpers(router);
 	const { isEnabled: isPromotionsEnabled } = usePromotionsEnabled();
 	const { balance } = useAiGateway();
@@ -296,7 +298,14 @@ export function useSettingsItems() {
 		);
 	});
 
-	const visibleSettingsItems = computed(() => settingsItems.value.filter((item) => item.available));
+	const visibleSettingsItems = computed(() => {
+		const available = settingsItems.value.filter((item) => item.available);
+		// Members only keep Profile & preferences; Admin/Owner see the rest.
+		if (!usersStore.isAdminOrOwner) {
+			return available.filter((item) => sectionOf(item) === 'personal');
+		}
+		return available;
+	});
 
 	/** Visible items grouped under their headings. Empty groups are left out. */
 	const settingsSections = computed<SettingsSectionGroup[]>(() => {

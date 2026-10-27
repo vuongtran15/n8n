@@ -36,6 +36,7 @@ import { LOCAL_STORAGE_SIDEBAR_WIDTH } from '@/app/constants';
 import { useSidebarExpandedExperiment } from '@/experiments/sidebarExpanded';
 import { trackTemplatesClick, TemplateClickSource } from '@/experiments/utils';
 import { injectWorkflowDocumentStore } from '../stores/workflowDocument.store';
+import { useUsersStore } from '@n8n/stores/users.store';
 
 const cloudPlanStore = useCloudPlanStore();
 const rootStore = useRootStore();
@@ -45,6 +46,7 @@ const uiStore = useUIStore();
 const versionsStore = useVersionsStore();
 const workflowDocumentStore = injectWorkflowDocumentStore();
 const resourceCenterStore = useResourceCenterStore();
+const usersStore = useUsersStore();
 
 const i18n = useI18n();
 const router = useRouter();
@@ -154,6 +156,8 @@ const mainMenuItems = computed<IMenuItem[]>(() => [
 		label: i18n.baseText('mainSidebar.help'),
 		notification: showWhatsNewNotification.value,
 		position: 'bottom',
+		// Help menu is Admin/Owner only — Members do not see it.
+		available: usersStore.isAdminOrOwner,
 		children: [
 			{
 				id: 'quickstart',
