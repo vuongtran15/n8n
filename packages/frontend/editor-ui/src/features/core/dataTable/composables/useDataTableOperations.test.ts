@@ -837,11 +837,26 @@ describe('useDataTableOperations', () => {
 				fetchDataTableContent: fetchDataTableContentMock,
 			});
 
+			const rowData = ref([
+				{ id: 1, name: 'a' },
+				{ id: 2, name: 'b' },
+				{ id: 3, name: 'c' },
+				{ id: 4, name: 'd' },
+			]);
 			const selectedRowIds = ref(new Set([1, 2, 3]));
-			const { handleDeleteSelected } = useDataTableOperations({ ...params, selectedRowIds });
+			const { handleDeleteSelected } = useDataTableOperations({
+				...params,
+				rowData,
+				selectedRowIds,
+				totalItems: ref(4),
+			});
 
 			await handleDeleteSelected();
 
+			expect(params.setGridData).toHaveBeenCalledWith({
+				rowData: [{ id: 4, name: 'd' }],
+			});
+			expect(params.setTotalItems).toHaveBeenCalledWith(1);
 			expect(params.toggleSave).toHaveBeenCalledWith(true);
 			expect(deleteRowsMock).toHaveBeenCalledWith('test', 'test', [1, 2, 3]);
 			expect(fetchDataTableContentMock).toHaveBeenCalled();
@@ -861,11 +876,23 @@ describe('useDataTableOperations', () => {
 				deleteRows: vi.fn().mockRejectedValue(deleteError),
 			});
 
+			const originalRows = [
+				{ id: 1, name: 'a' },
+				{ id: 2, name: 'b' },
+			];
+			const rowData = ref([...originalRows]);
 			const selectedRowIds = ref(new Set([1, 2]));
-			const { handleDeleteSelected } = useDataTableOperations({ ...params, selectedRowIds });
+			const { handleDeleteSelected } = useDataTableOperations({
+				...params,
+				rowData,
+				selectedRowIds,
+				totalItems: ref(2),
+			});
 
 			await handleDeleteSelected();
 
+			expect(rowData.value).toEqual(originalRows);
+			expect(params.setTotalItems).toHaveBeenCalledWith(2);
 			expect(showErrorMock).toHaveBeenCalledWith(deleteError, 'dataTable.deleteRows.error');
 			expect(params.toggleSave).toHaveBeenCalledWith(false);
 		});

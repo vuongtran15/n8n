@@ -328,9 +328,11 @@ export const useDataTableOperations = ({
 		}
 	};
 
-	async function fetchDataTableRows() {
+	async function fetchDataTableRows(options?: { silent?: boolean }) {
 		try {
-			contentLoading.value = true;
+			if (!options?.silent) {
+				contentLoading.value = true;
+			}
 
 			const fetchedRows = await dataTableStore.fetchDataTableContent(
 				dataTableId,
@@ -348,7 +350,9 @@ export const useDataTableOperations = ({
 		} catch (error) {
 			toast.showError(error, i18n.baseText('dataTable.fetchContent.error'));
 		} finally {
-			contentLoading.value = false;
+			if (!options?.silent) {
+				contentLoading.value = false;
+			}
 		}
 	}
 
@@ -371,17 +375,42 @@ export const useDataTableOperations = ({
 			return;
 		}
 
+		const idsToDelete = Array.from(selectedRowIds.value);
+		const idSet = new Set(idsToDelete);
+		const previousRows = rowData.value;
+		const previousTotal = totalItems.value;
+		const rowsToRemove = previousRows.filter(
+			(row) => typeof row.id === 'number' && idSet.has(row.id),
+		);
+
+		// Optimistic UI — remove rows immediately; remote Postgres delete+refetch can lag.
+		rowData.value = previousRows.filter((row) => typeof row.id !== 'number' || !idSet.has(row.id));
+		setTotalItems(Math.max(0, previousTotal - rowsToRemove.length));
+		if (gridApi.value && typeof gridApi.value.applyTransaction === 'function') {
+			gridApi.value.applyTransaction({ remove: rowsToRemove });
+		} else {
+			setGridData({ rowData: rowData.value });
+		}
+		handleClearSelection();
+
 		try {
 			toggleSave(true);
-			const idsToDelete = Array.from(selectedRowIds.value);
 			await dataTableStore.deleteRows(dataTableId, projectId, idsToDelete);
-			await fetchDataTableRows();
+
+			const maxPage = Math.max(1, Math.ceil(totalItems.value / pageSize.value) || 1);
+			if (currentPage.value > maxPage) {
+				currentPage.value = maxPage;
+			}
+			await fetchDataTableRows({ silent: true });
 
 			telemetry.track('User deleted rows in data table', {
 				data_table_id: dataTableId,
 				deleted_row_count: idsToDelete.length,
 			});
 		} catch (error) {
+			rowData.value = previousRows;
+			setTotalItems(previousTotal);
+			setGridData({ rowData: rowData.value });
 			toast.showError(error, i18n.baseText('dataTable.deleteRows.error'));
 		} finally {
 			toggleSave(false);

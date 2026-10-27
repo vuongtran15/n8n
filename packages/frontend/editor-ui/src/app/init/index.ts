@@ -202,6 +202,25 @@ export async function initializeAuthenticatedFeatures(
 			});
 	}
 
+	// Don't check for new versions in preview mode or demo view (ex: executions iframe)
+	if (!settingsStore.isPreviewMode && routeName !== VIEWS.DEMO) {
+		versionsStore.initialize(settingsStore.settings.versionNotifications);
+		void versionsStore.checkForNewVersions();
+	}
+
+	// Critical path first — data-table size check hits pg_total_relation_size for every
+	// user table and can saturate a small Postgres pool if started in parallel.
+	await Promise.all([
+		projectsStore.getMyProjects(),
+		projectsStore.getPersonalProject(),
+		projectsStore.getProjectsCount(),
+		rolesStore.fetchRoles(),
+	]);
+
+	await projectsStore.refreshCurrentProject();
+
+	void favoritesStore.fetchFavorites();
+
 	if (
 		settingsStore.isDataTableFeatureEnabled &&
 		hasPermission(['rbac'], { rbac: { scope: 'dataTable:list' } })
@@ -219,23 +238,6 @@ export async function initializeAuthenticatedFeatures(
 				console.error('Failed to fetch data table limits:', error);
 			});
 	}
-
-	// Don't check for new versions in preview mode or demo view (ex: executions iframe)
-	if (!settingsStore.isPreviewMode && routeName !== VIEWS.DEMO) {
-		versionsStore.initialize(settingsStore.settings.versionNotifications);
-		void versionsStore.checkForNewVersions();
-	}
-
-	await Promise.all([
-		projectsStore.getMyProjects(),
-		projectsStore.getPersonalProject(),
-		projectsStore.getProjectsCount(),
-		rolesStore.fetchRoles(),
-	]);
-
-	await projectsStore.refreshCurrentProject();
-
-	void favoritesStore.fetchFavorites();
 
 	// Initialize modules
 	registerModuleResources();
