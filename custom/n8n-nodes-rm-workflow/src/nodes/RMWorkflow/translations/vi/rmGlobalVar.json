@@ -1,0 +1,94 @@
+{
+	"header": {
+		"displayName": "RM Global Var",
+		"description": "Biến global của workflow — get / set / tự tăng / reset (số, text, object). Không cần viết Code."
+	},
+	"nodeView": {
+		"tips": {
+			"displayName": "Gợi ý",
+			"description": "Lưu biến trong Global Static Data của workflow. Chọn Kiểu = Tự tăng (hoặc Operation = Tự tăng) để đếm +Step mỗi lần chạy — không cần Code. Reset ghi lại Default Value."
+		},
+		"operation": {
+			"displayName": "Thao tác",
+			"options": {
+				"get": {
+					"displayName": "Get",
+					"description": "Đọc giá trị hiện tại"
+				},
+				"set": {
+					"displayName": "Set",
+					"description": "Ghi giá trị mới (với kiểu Tự tăng: Set cũng sẽ +Step)"
+				},
+				"increment": {
+					"displayName": "Tự tăng",
+					"description": "Tự tăng số (counter). Nếu chưa có thì lấy Default Value rồi cộng Step"
+				},
+				"reset": {
+					"displayName": "Reset",
+					"description": "Ghi lại Default Value vào biến"
+				}
+			}
+		},
+		"key": {
+			"displayName": "Tên biến",
+			"description": "Tên khóa lưu trong global static data (vd: counter, runId, flags)",
+			"placeholder": "counter"
+		},
+		"valueType": {
+			"displayName": "Kiểu giá trị",
+			"options": {
+				"autoIncrement": {
+					"displayName": "Tự tăng",
+					"description": "Số tự tăng mỗi lần Execute (+Step). Không cần đổi Operation."
+				},
+				"number": {
+					"displayName": "Number",
+					"description": "Số thường — Set/Get/Reset; Increment để cộng"
+				},
+				"text": {
+					"displayName": "Text",
+					"description": "Chuỗi"
+				},
+				"object": {
+					"displayName": "Object (JSON)",
+					"description": "Object JSON"
+				}
+			}
+		},
+		"autoIncrementTips": {
+			"displayName": "Tips — Tự tăng",
+			"description": "Mỗi lần Execute step sẽ +Step vào biến (kể cả khi Operation đang là Set). Dùng Get để chỉ đọc, Reset để về Default / Reset Value."
+		},
+		"value": {
+			"displayName": "Value",
+			"description": "Giá trị ghi vào khi Operation = Set (Number / Text)",
+			"placeholder": "0"
+		},
+		"valueJson": {
+			"displayName": "Value (JSON)",
+			"description": "Object JSON khi kiểu = Object và Operation = Set"
+		},
+		"step": {
+			"displayName": "Step",
+			"description": "Bước tăng mỗi lần tự tăng (có thể âm để giảm)"
+		},
+		"resetValue": {
+			"displayName": "Default / Reset Value",
+			"description": "Dùng khi Reset, hoặc khi tự tăng mà biến chưa tồn tại. Object: JSON string.",
+			"placeholder": "0"
+		},
+		"resetValueButton": {
+			"displayName": "Reset Value (form)",
+			"description": "Điền Default / Reset Value vào ô Value (tiện khi Set lại)"
+		},
+		"outputField": {
+			"displayName": "Tên field ghi ra",
+			"description": "Tên field trên item output chứa giá trị biến",
+			"placeholder": "value"
+		},
+		"includeMeta": {
+			"displayName": "Ghi thêm metadata",
+			"description": "Thêm key, operation, valueType, previousValue vào output"
+		}
+	}
+}

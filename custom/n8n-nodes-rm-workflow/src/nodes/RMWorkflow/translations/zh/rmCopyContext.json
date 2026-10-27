@@ -1,0 +1,72 @@
+{
+	"header": {
+		"displayName": "RM Copy Context",
+		"description": "从工作流中另一个节点复制数据到当前 item"
+	},
+	"nodeView": {
+		"tips": {
+			"displayName": "提示",
+			"description": "在 Code/Set/IF 之后插入，用于恢复丢失的 baseUrl/apiKey/sessionId。输入源节点的准确名称（如 RM Init）。Copy Mode = Connection Fields 仅复制 RM 连接字段。"
+		},
+		"sourceNode": {
+			"displayName": "源节点",
+			"description": "工作流中已执行节点的名称（与画布上一致）。例如：RM Init — 从其输出读取 baseUrl/apiKey/sessionId。",
+			"placeholder": "RM Init"
+		},
+		"copyMode": {
+			"displayName": "复制模式",
+			"description": "选择要从源节点复制的字段范围",
+			"options": {
+				"connectionFields": {
+					"displayName": "连接字段 (RM)",
+					"description": "仅 baseUrl、apiKey、sessionId、requestTimeoutSeconds、logUrl、rootDirectory（及 SAP 相关字段）"
+				},
+				"all": {
+					"displayName": "全部 JSON 字段",
+					"description": "复制源节点的全部 json"
+				},
+				"custom": {
+					"displayName": "自定义字段名",
+					"description": "仅复制列出的字段（逗号分隔）"
+				}
+			}
+		},
+		"customFields": {
+			"displayName": "字段名",
+			"description": "要复制的字段名列表，逗号分隔",
+			"placeholder": "baseUrl, apiKey, sessionId, rootDirectory"
+		},
+		"mergeMode": {
+			"displayName": "合并模式",
+			"description": "如何将源数据合并到当前 item",
+			"options": {
+				"sourceWins": {
+					"displayName": "源覆盖",
+					"description": "保留当前数据；来自源的字段覆盖同名字段"
+				},
+				"fillMissing": {
+					"displayName": "仅补缺",
+					"description": "仅在当前 item 缺少/为空时从源添加字段"
+				},
+				"replace": {
+					"displayName": "仅源（替换 JSON）",
+					"description": "用所选源数据替换全部 json（丢弃输入数据）"
+				}
+			}
+		},
+		"sourceItemMode": {
+			"displayName": "源 Item",
+			"description": "Code 之后通常选 First Item。当 item 数量匹配且有 pairedItem 时用 Paired Item。",
+			"options": {
+				"paired": {
+					"displayName": "配对 Item（同索引）",
+					"description": "使用 $('Node').item — 若有则取同配对 item"
+				},
+				"first": {
+					"displayName": "首个 Item",
+					"description": "始终取 $('Node').first() — Code/聚合后更稳定"
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,13 @@
+{
+	"node": "CUSTOM.rmWebAutoWorkflow",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["RM Workflow"],
+	"subcategories": {
+		"RM Workflow": ["RM Workflow"]
+	},
+	"alias": ["RMW", "WEB", "RMWEB", "RM WEB AUTO", "Playwright"],
+	"resources": {
+		"primaryDocumentation": []
+	}
+}

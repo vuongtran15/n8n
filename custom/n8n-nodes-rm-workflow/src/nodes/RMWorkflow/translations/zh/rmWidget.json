@@ -1,0 +1,38 @@
+{
+	"header": {
+		"displayName": "RM Widget",
+		"description": "调用 RM Widget"
+	},
+	"nodeView": {
+		"workflowId": {
+			"displayName": "工作流",
+			"description": "从 widget 商店浏览已授权的工作流，或输入工作流 ID。无法从此节点打开或创建子工作流。"
+		},
+		"workflowInputs": {
+			"displayName": "工作流输入"
+		},
+		"mode": {
+			"displayName": "模式",
+			"options": {
+				"once": {
+					"displayName": "对所有项目运行一次",
+					"description": "将所有项目传入子工作流的一次执行"
+				},
+				"each": {
+					"displayName": "对每个项目运行一次",
+					"description": "为每个项目单独调用子工作流"
+				}
+			}
+		},
+		"options": {
+			"displayName": "选项",
+			"placeholder": "添加选项",
+			"options": {
+				"waitForSubWorkflow": {
+					"displayName": "等待子工作流完成",
+					"description": "主工作流是否应等待子工作流完成后再继续"
+				}
+			}
+		}
+	}
+}

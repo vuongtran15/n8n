@@ -1,0 +1,72 @@
+{
+	"header": {
+		"displayName": "RM Copy Context",
+		"description": "Copy dữ liệu từ một node khác trong workflow vào item hiện tại"
+	},
+	"nodeView": {
+		"tips": {
+			"displayName": "Gợi ý",
+			"description": "Chèn sau Code/Set/IF khi mất baseUrl/apiKey/sessionId. Gõ đúng tên node nguồn (vd. RM Init hoặc RM FILE AUTO). Copy Mode = Connection Fields chỉ lấy field kết nối RM."
+		},
+		"sourceNode": {
+			"displayName": "Node nguồn",
+			"description": "Tên node đã chạy trong workflow (đúng như trên canvas). Ví dụ: RM Init — lấy baseUrl/apiKey/sessionId từ output node đó.",
+			"placeholder": "RM Init"
+		},
+		"copyMode": {
+			"displayName": "Chế độ copy",
+			"description": "Chọn phạm vi field cần copy từ node nguồn",
+			"options": {
+				"connectionFields": {
+					"displayName": "Field kết nối (RM)",
+					"description": "Chỉ baseUrl, apiKey, sessionId, requestTimeoutSeconds, logUrl, rootDirectory (+ SAP nếu có)"
+				},
+				"all": {
+					"displayName": "Toàn bộ JSON",
+					"description": "Copy toàn bộ json của source node"
+				},
+				"custom": {
+					"displayName": "Tên field tùy chọn",
+					"description": "Chỉ các field liệt kê (phân cách bằng dấu phẩy)"
+				}
+			}
+		},
+		"customFields": {
+			"displayName": "Tên field",
+			"description": "Danh sách tên field cần copy, phân cách bằng dấu phẩy",
+			"placeholder": "baseUrl, apiKey, sessionId, rootDirectory"
+		},
+		"mergeMode": {
+			"displayName": "Chế độ merge",
+			"description": "Cách gộp dữ liệu nguồn vào item hiện tại",
+			"options": {
+				"sourceWins": {
+					"displayName": "Nguồn ghi đè",
+					"description": "Giữ data hiện tại; field copy từ source ghi đè"
+				},
+				"fillMissing": {
+					"displayName": "Chỉ điền thiếu",
+					"description": "Chỉ thêm field từ source khi item hiện tại thiếu / rỗng"
+				},
+				"replace": {
+					"displayName": "Chỉ nguồn (thay JSON)",
+					"description": "Thay toàn bộ json bằng dữ liệu đã chọn từ source (bỏ data input)"
+				}
+			}
+		},
+		"sourceItemMode": {
+			"displayName": "Item nguồn",
+			"description": "Sau Code thường chọn First Item. Paired Item khi số item khớp và có pairedItem.",
+			"options": {
+				"paired": {
+					"displayName": "Paired item (cùng index)",
+					"description": "Dùng $('Node').item — cùng paired item nếu có"
+				},
+				"first": {
+					"displayName": "Item đầu tiên",
+					"description": "Luôn lấy $('Node').first() — ổn định sau Code/aggregate"
+				}
+			}
+		}
+	}
+}

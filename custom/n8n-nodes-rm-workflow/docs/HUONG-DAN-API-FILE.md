@@ -1,0 +1,1285 @@
+# API File-auto — xử lý file & Excel
+
+Tài liệu tham chiếu HTTP **`/file-auto/*`** trên worker **RMIV.WF.CLIENT** (Gateway proxy). Gồm:
+
+- **Toàn bộ hàm xử lý file / thư mục** (`FileAccessManager`)
+- **Excel `.xlsx`** (`WriteExcel` / `ReadExcel`, EPPlus 4.5.3.3)
+
+| | |
+|--|--|
+| **HTTP (public)** | `GET /docs/HUONG-DAN-API-FILE.md` |
+| **Function list** | `GET /file-auto/function/list` |
+| **Command** | `POST /file-auto/command` · `function` = tên hàm |
+| **Gateway** | thường `:8081` · Worker loopback `:18080` |
+
+---
+
+## Mục lục
+
+### A. Chung
+1. [Luồng & xác thực](#1-luồng--xác-thực)
+2. [Route](#2-route)
+3. [Cách gọi command](#3-cách-gọi-command)
+4. [Bảng tổng hợp hàm](#4-bảng-tổng-hợp-hàm)
+5. [Kiểu Result](#5-kiểu-result)
+
+### B. Hàm xử lý file
+6. [Tồn tại / thư mục](#6-tồn-tại--thư-mục)
+7. [Đọc / ghi text & bytes](#7-đọc--ghi-text--bytes)
+8. [Xóa / copy / move / mở file](#8-xóa--copy--move)
+9. [ListDirectory](#9-listdirectory)
+9b. [FindFiles](#9b-findfiles)
+10. [ExportPathForApi](#10-exportpathforapi)
+11. [DownloadFromUrl](#11-downloadfromurl)
+12. [UploadToUrl](#12-uploadtourl)
+13. [TryResolvePath](#13-tryresolvepath)
+
+### C. Excel
+14. [WriteExcel — tổng quan](#14-writeexcel--tổng-quan)
+14b. [Tham số WriteExcel](#14-tham-số-writeexcel)
+15. [operationsJson](#15-operationsjson)
+16. [type = table](#16-type--table)
+17. [type = cells](#17-type--cells)
+18. [type = range](#18-type--range)
+19. [type = style / sheetStyle](#19-type--style--sheetstyle)
+20. [Object style](#20-object-style)
+21. [overwrite — nhiều node ghi cùng 1 file](#21-overwrite--nhiều-node-ghi-cùng-1-file)
+22. [ReadExcel](#22-readexcel)
+22b. [DeleteExcelSheet / ClearExcelRange / DeleteExcelEmptyRows](#22b-deleteexcelsheet--clearexcelrange--deleteexcelemptyrows)
+
+### D. Vận hành
+23. [Response & lỗi](#23-response--lỗi)
+24. [Gắn node n8n](#24-gắn-node-n8n)
+
+---
+
+## 1) Luồng & xác thực
+
+```
+n8n / client
+  │  POST /file-auto/connect     { sessionId, rootDirectory }
+  │  POST /file-auto/command     { sessionId, function, paramObject }
+  │  POST /file-auto/disconnect  { sessionId }
+  ▼
+Gateway  ──proxy──►  Worker  ──►  FileAccessManager
+```
+
+```http
+api-key: <key Gateway / server-config>
+Content-Type: application/json
+```
+
+(Docs + `/file-auto/function/list` **không** bắt buộc `api-key`.)
+
+**Quy tắc path**
+
+- Mọi path phải nằm trong `rootDirectory` (sandbox, chặn traversal).
+- Path tương đối: `exports\\a.xlsx` hoặc `New folder` (không cần `\` đầu). `\New folder` cũng được coi là trong root (không phải `C:\New folder`).
+- Path tương đối nối với root; path tuyệt đối vẫn phải thuộc root.
+- Excel: đuôi bắt buộc `.xlsx`.
+
+---
+
+## 2) Route
+
+| Method | Path | Auth | Mô tả |
+|--------|------|------|--------|
+| `GET` | `/docs/HUONG-DAN-API-FILE.md` | Public | Tài liệu này |
+| `GET`/`POST` | `/file-auto/function/list` (alias `/file-auto/list`) | Public | Liệt kê hàm runtime |
+| `POST` | `/file-auto/connect` | `api-key` | Mở session |
+| `POST` | `/file-auto/command` | `api-key` | Gọi hàm |
+| `POST` | `/file-auto/disconnect` | `api-key` | Đóng session |
+| `POST` | `/file-auto/session/check` | `api-key` | Kiểm tra session |
+
+### Connect
+
+```json
+{
+  "sessionId": "6b4c0d13-cf0d-4d30-b2fc-a1a31f252d44",
+  "rootDirectory": "D:\\Data\\Sandbox"
+}
+```
+
+| Field | Bắt buộc | Mô tả |
+|-------|----------|--------|
+| `sessionId` | Có | GUID (n8n tự tạo) |
+| `rootDirectory` | Có | Thư mục gốc **trên máy worker** (phải tồn tại) |
+| `idleTimeoutMinutes` | Không | Số phút idle thì tự disconnect session; **không gửi** = không auto-idle |
+
+**Reconnect cùng `sessionId`:** luôn **hủy session cũ** rồi gắn `rootDirectory` mới (tránh giữ folder sandbox cũ khi workflow chạy lại). Không cần gọi `disconnect` trước.
+
+`MaxFileSessions` mặc định **10**.
+
+### Disconnect / session check
+
+```json
+{ "sessionId": "6b4c0d13-cf0d-4d30-b2fc-a1a31f252d44" }
+```
+
+---
+
+## 3) Cách gọi command
+
+```json
+{
+  "sessionId": "6b4c0d13-cf0d-4d30-b2fc-a1a31f252d44",
+  "function": "WriteAllText",
+  "paramObject": {
+    "relativeOrAbsolutePath": "out\\note.txt",
+    "content": "hello",
+    "encoding": "utf-8",
+    "createParentDirectories": "true"
+  }
+}
+```
+
+| Cách truyền tham số | Ghi chú |
+|---------------------|---------|
+| **`paramObject`** | Khuyến nghị — named, không phụ thuộc thứ tự |
+| `params` | Mảng theo thứ tự overload |
+| `param` | Một tham số đơn |
+
+**Ép kiểu qua HTTP**
+
+| Kiểu C# | Cách gửi |
+|---------|----------|
+| `string` | Chuỗi |
+| `bool` | `true` / `"true"` |
+| `int` | Số hoặc `"10"` |
+| `byte[]` | **Base64** string |
+| `Encoding` | Tên: `"utf-8"` (rỗng → mặc định API) |
+| `TimeSpan?` | Số **giây** hoặc chuỗi parse được |
+| JSON phức tạp (Excel) | **Stringify** (`dataJson`, `operationsJson`, …) **hoặc** gửi thẳng mảng/object trong `paramObject` (worker tự Serialize) |
+
+---
+
+## 4) Bảng tổng hợp hàm
+
+| `function` | Nhóm | Tóm tắt |
+|------------|------|---------|
+| `FileExists` | Check | File có tồn tại? → `bool` |
+| `DirectoryExists` | Check | Thư mục có tồn tại? → `bool` |
+| `EnsureDirectory` | Thư mục | Tạo thư mục (cả cây) |
+| `ListDirectory` | Thư mục | Liệt kê 1 cấp |
+| **`FindFiles`** | Thư mục | Tìm file theo tên / contains / đuôi, sâu `maxDepth` cấp |
+| `ReadAllText` | Đọc | Đọc text (UTF-8 mặc định) |
+| `ReadAllBytes` | Đọc | Đọc bytes |
+| `WriteAllText` | Ghi | Ghi/đè text |
+| `WriteAllBytes` | Ghi | Ghi/đè bytes (Base64) |
+| `AppendAllText` | Ghi | Nối text |
+| `DeleteFile` | Xóa | Xóa file |
+| `DeleteDirectory` | Xóa | Xóa thư mục (`recursive`) |
+| `CopyFile` | Copy/Move | Copy file |
+| `MoveFile` | Copy/Move | Di chuyển / đổi tên |
+| **`OpenFile`** | Mở xem | Mở file bằng app mặc định Windows (txt/excel/json/word/ppt/…) |
+| `ExportPathForApi` | Export | File → Base64; thư mục → zip Base64 |
+| `DownloadFromUrl` | Network | Tải HTTP(S) vào trong root |
+| `UploadToUrl` | Network | POST multipart file/folder lên URL nhận |
+| `TryResolvePath` | Utility | Resolve path an toàn (thường dùng nội bộ) |
+| **`WriteExcel`** | Excel | Ghi `.xlsx` (table/cells/range/style) |
+| **`ReadExcel`** | Excel | Đọc sheet → JSON |
+| **`DeleteExcelSheet`** | Excel | Xóa một sheet (workbook phải còn ≥ 1 sheet) |
+| **`ClearExcelRange`** | Excel | Xóa nội dung vùng / used range (không xóa sheet) |
+| **`DeleteExcelEmptyRows`** | Excel | Xóa các hàng trống trong used range |
+
+> `DownloadFromUrlAsync` / `UploadToUrlAsync` **không** expose qua HTTP — dùng `DownloadFromUrl` / `UploadToUrl`.  
+> Property `RootDirectory` không gọi qua command.
+
+---
+
+## 5) Kiểu Result
+
+Envelope:
+
+```json
+{
+  "Success": true,
+  "Message": "OK",
+  "Result": { }
+}
+```
+
+| Kiểu Result | Field chính |
+|-------------|-------------|
+| `bool` | Giá trị trực tiếp (Exists) |
+| `FileAccessResponse` | `Success`, `Message` |
+| `FileReadResponse` | + `Content` (string) |
+| `FileBytesResponse` | + `Data` (byte[] / Base64 trong JSON) |
+| `FileDownloadResponse` | + `SavedFullPath` |
+| `FileUploadResponse` | + `HttpStatusCode`, `ResponseBody`, `UploadedFileCount`, `UploadedFileNames` |
+| `DirectoryListResponse` | + `Files`, `Directories` (full path) |
+| `PathExportForApiResponse` | + `Kind`, `EntryName`, `RelativePath`, `ContentBase64`, `ContentByteLength` |
+
+Với thao tác file/Excel trả `FileAccessResponse`: **kiểm tra `Result.Success`**.
+
+---
+
+## 6) Tồn tại / thư mục
+
+### `FileExists` / `DirectoryExists`
+
+```json
+{
+  "function": "FileExists",
+  "paramObject": { "relativeOrAbsolutePath": "exports\\a.xlsx" }
+}
+```
+
+`Result`: `true` / `false` (path ngoài root → `false`).
+
+### `EnsureDirectory`
+
+```json
+{
+  "function": "EnsureDirectory",
+  "paramObject": { "relativeOrAbsolutePath": "exports\\2026\\09" }
+}
+```
+
+Tạo cả cây nếu thiếu. `Result`: `FileAccessResponse`.
+
+---
+
+## 7) Đọc / ghi text & bytes
+
+### `ReadAllText`
+
+| Param | Mặc định | Mô tả |
+|-------|----------|--------|
+| `relativeOrAbsolutePath` | — | Path file |
+| `encoding` | UTF-8 | vd `"utf-8"`, `"utf-16"` |
+
+```json
+{
+  "function": "ReadAllText",
+  "paramObject": {
+    "relativeOrAbsolutePath": "out\\note.txt",
+    "encoding": "utf-8"
+  }
+}
+```
+
+`Result.Content` = nội dung text.
+
+### `ReadAllBytes`
+
+```json
+{
+  "function": "ReadAllBytes",
+  "paramObject": { "relativeOrAbsolutePath": "bin\\data.bin" }
+}
+```
+
+`Result.Data` = bytes (JSON thường Base64).
+
+### `WriteAllText`
+
+| Param | Mặc định |
+|-------|----------|
+| `relativeOrAbsolutePath` | — |
+| `content` | — |
+| `encoding` | UTF-8 |
+| `createParentDirectories` | `true` |
+
+```json
+{
+  "function": "WriteAllText",
+  "paramObject": {
+    "relativeOrAbsolutePath": "out\\note.txt",
+    "content": "hello",
+    "encoding": "utf-8",
+    "createParentDirectories": "true"
+  }
+}
+```
+
+### `WriteAllBytes`
+
+| Param | Mặc định |
+|-------|----------|
+| `relativeOrAbsolutePath` | — |
+| `bytes` | Base64 string |
+| `createParentDirectories` | `true` |
+
+```json
+{
+  "function": "WriteAllBytes",
+  "paramObject": {
+    "relativeOrAbsolutePath": "bin\\data.bin",
+    "bytes": "AQIDBA==",
+    "createParentDirectories": "true"
+  }
+}
+```
+
+### `AppendAllText`
+
+Giống `WriteAllText` nhưng **nối** cuối file (tạo file nếu chưa có).
+
+```json
+{
+  "function": "AppendAllText",
+  "paramObject": {
+    "relativeOrAbsolutePath": "logs\\app.txt",
+    "content": "line\n",
+    "encoding": "utf-8"
+  }
+}
+```
+---
+
+## 8) Xóa / copy / move
+
+### `DeleteFile`
+
+```json
+{
+  "function": "DeleteFile",
+  "paramObject": { "relativeOrAbsolutePath": "tmp\\old.txt" }
+}
+```
+
+### `DeleteDirectory`
+
+| Param | Mô tả |
+|-------|--------|
+| `relativeOrAbsolutePath` | Thư mục |
+| `recursive` | `true` = xóa cả cây; `false` = chỉ thư mục rỗng |
+
+```json
+{
+  "function": "DeleteDirectory",
+  "paramObject": {
+    "relativeOrAbsolutePath": "tmp\\batch1",
+    "recursive": "true"
+  }
+}
+```
+
+### `CopyFile`
+
+| Param | Mặc định |
+|-------|----------|
+| `sourceRelativeOrAbsolute` | — |
+| `destinationRelativeOrAbsolute` | — |
+| `overwrite` | `false` |
+
+Tự tạo thư mục đích. Đích đã tồn tại + `overwrite=false` → lỗi.
+
+```json
+{
+  "function": "CopyFile",
+  "paramObject": {
+    "sourceRelativeOrAbsolute": "in\\a.txt",
+    "destinationRelativeOrAbsolute": "out\\a.txt",
+    "overwrite": "true"
+  }
+}
+```
+
+### `MoveFile`
+
+Cùng tham số như `CopyFile`. `overwrite=false` + đích tồn tại → lỗi.
+
+```json
+{
+  "function": "MoveFile",
+  "paramObject": {
+    "sourceRelativeOrAbsolute": "in\\a.txt",
+    "destinationRelativeOrAbsolute": "out\\a.txt",
+    "overwrite": "true"
+  }
+}
+```
+
+### `OpenFile` — mở file cho người xem (ShellExecute)
+
+Mở file **trên máy chạy worker** bằng ứng dụng mặc định Windows (hoặc exe chỉ định). Không đọc nội dung về API — chỉ “mở cửa sổ” để user xem.
+
+| Param | Mặc định | Mô tả |
+|-------|----------|--------|
+| `relativeOrAbsolutePath` | — | **Có** — path trong root |
+| `applicationPath` | tự chọn | Thường **bỏ trống**. `.json`/`.txt`/`.csv`/… → **notepad.exe**; Excel/Word/PPT → association Windows. Chỉ set khi muốn ép app khác. |
+
+**Đuôi phổ biến**
+
+| Đuôi | Mặc định mở bằng |
+|------|------------------|
+| `.json` `.txt` `.log` `.csv` `.xml` `.md` `.yml` `.yaml` | **notepad.exe** (chỉ cần path) |
+| `.xlsx` `.xls` `.xlsm` | Microsoft Excel (association) |
+| `.docx` `.doc` | Microsoft Word |
+| `.pptx` `.ppt` | Microsoft PowerPoint |
+| `.pdf` | Adobe / Edge / trình PDF mặc định |
+
+```json
+{
+  "function": "OpenFile",
+  "paramObject": {
+    "relativeOrAbsolutePath": "exports\\bao-cao.xlsx"
+  }
+}
+```
+
+JSON — chỉ cần path (tự notepad):
+
+```json
+{
+  "function": "OpenFile",
+  "paramObject": {
+    "relativeOrAbsolutePath": "data\\config.json"
+  }
+}
+```
+
+Ép app khác (tuỳ chọn):
+
+```json
+{
+  "function": "OpenFile",
+  "paramObject": {
+    "relativeOrAbsolutePath": "data\\config.json",
+    "applicationPath": "C:\\Program Files\\Notepad++\\notepad++.exe"
+  }
+}
+```
+
+> File phải nằm trong `rootDirectory` của session. Cửa sổ mở trên **máy worker** (RDP/console của máy đó), không phải máy gọi API từ xa. API trả về ngay — không chờ đóng app.
+
+---
+
+## 9) ListDirectory
+
+| Param | Mặc định | Mô tả |
+|-------|----------|--------|
+| `relativeOrAbsolutePath` | — | Thư mục |
+| `searchPattern` | `*` | Chỉ áp dụng cho **file** (1 cấp) |
+
+```json
+{
+  "function": "ListDirectory",
+  "paramObject": {
+    "relativeOrAbsolutePath": "exports",
+    "searchPattern": "*.xlsx"
+  }
+}
+```
+
+`Result.Files` / `Result.Directories`: danh sách **full path**.
+
+---
+
+## 9b) FindFiles
+
+Tìm file trong folder (có thể xuống nhiều cấp), lọc theo tên exact / contains / wildcard, và/hoặc đuôi file.
+
+| Param | Mặc định | Mô tả |
+|-------|----------|--------|
+| `relativeOrAbsolutePath` | — | Thư mục bắt đầu |
+| `nameEquals` | null | Khớp **đúng** tên file (không phân biệt hoa thường), vd `report.xlsx` |
+| `nameContains` | null | Tên file **chứa** chuỗi, vd `ZMMR` |
+| `searchPattern` | `*` | Wildcard DOS: `*.xlsx`, `PO_*.pdf` |
+| `extension` | null | Đuôi: `xlsx`, `.pdf`, hoặc nhiều `xlsx;csv;.pdf` |
+| `maxDepth` | null | `0` = chỉ folder hiện tại; `1` = thêm 1 cấp con; **không gửi / &lt;0** = không giới hạn |
+| `maxResults` | null | Giới hạn số file; không gửi = lấy hết |
+
+Các điều kiện **AND** với nhau (nếu có).
+
+```json
+{
+  "function": "FindFiles",
+  "paramObject": {
+    "relativeOrAbsolutePath": "exports",
+    "nameContains": "ZMMR",
+    "extension": "xlsx;csv",
+    "maxDepth": "3",
+    "maxResults": "50"
+  }
+}
+```
+
+Chỉ theo đuôi, toàn cây:
+
+```json
+{
+  "function": "FindFiles",
+  "paramObject": {
+    "relativeOrAbsolutePath": "D:\\Data",
+    "extension": ".pdf",
+    "maxDepth": "-1"
+  }
+}
+```
+
+`Result`: `FileSearchResponse` — `Count`, `Files[]` mỗi phần tử có `FullPath`, `RelativePath`, `FileName`, `Extension`, `Length`, `LastWriteTimeUtc`.
+
+---
+
+## 10) ExportPathForApi
+
+Đưa nội dung ra JSON để client tải về.
+
+| Path là | `Kind` | `ContentBase64` |
+|---------|--------|-----------------|
+| File | `file` | Nội dung file |
+| Thư mục | `directory` | Zip toàn bộ cây con trong root |
+
+```json
+{
+  "function": "ExportPathForApi",
+  "paramObject": {
+    "relativeOrAbsolutePath": "exports\\report.xlsx"
+  }
+}
+```
+
+`Result`: `Kind`, `EntryName`, `RelativePath`, `ContentBase64`, `ContentByteLength`, `Success`, `Message`.
+
+Payload lớn → Base64 ~+33%; cần đủ RAM. Serializer `MaxJsonLength = int.MaxValue`.
+
+---
+
+## 11) DownloadFromUrl
+
+Tải **http/https** → lưu file trên **máy worker**. `Result.SavedFullPath` = đường dẫn đầy đủ.
+
+**Thư mục đích** (`destinationFolderRelativeOrAbsolute`):
+
+| Cách ghi | Ví dụ |
+|----------|--------|
+| Ổ đĩa / UNC (tuyệt đối) | `D:\\PO\\pdf`, `\\\\fileserver\\share\\inbound` |
+| Tương đối sandbox | `downloads` (dưới `rootDirectory` khi `connect`) |
+
+```json
+{
+  "function": "DownloadFromUrl",
+  "paramObject": {
+    "url": "https://example.com/a.pdf",
+    "destinationFolderRelativeOrAbsolute": "D:\\PO\\pdf",
+    "fileName": "a.pdf",
+    "overwrite": "true"
+  }
+}
+```
+
+| Param | Mặc định |
+|-------|----------|
+| `fileName` | null → header URL / `download` |
+| `timeout` | 300s |
+| `overwrite` | false |
+
+URL cần **cookie đăng nhập web** → dùng `web-auto` `DownloadActivePageToFile`, không dùng hàm này.
+
+---
+
+## 12) UploadToUrl
+
+POST **multipart/form-data** lên URL nhận. File đọc từ **máy worker** (giống `DownloadFromUrl` — path trên máy chạy worker, không phải máy n8n).
+
+| Param | Bắt buộc | Mô tả |
+|-------|----------|--------|
+| `uploadUrl` | Có | URL đích (http/https) |
+| `path` | Không* | Một file hoặc một thư mục |
+| `pathsJson` | Không* | Mảng JSON thêm đường dẫn |
+| `formFieldsJson` | Không | Object JSON tham số form (ngày, mã, …) |
+| `fileFieldName` | Không | Tên field file (mặc định `file`) |
+| `zipFolder` | Không | `true` = thư mục trong `path` nén thành một `.zip` |
+| `timeout` | Không | Giây (mặc định 600) |
+
+\* Cần ít nhất một trong `path` hoặc `pathsJson`. Có thể dùng cả hai (gộp danh sách upload).
+
+**Đường dẫn nguồn**
+
+| Cách ghi | Ví dụ |
+|----------|--------|
+| Ổ đĩa / UNC (tuyệt đối) | `D:\\exports\\report.pdf`, `\\\\fileserver\\share\\out` |
+| Tương đối sandbox | `exports\\a.pdf` (dưới `rootDirectory` khi `connect`) |
+
+**Một file + tham số form:**
+
+```json
+{
+  "function": "UploadToUrl",
+  "paramObject": {
+    "uploadUrl": "https://example.com/api/upload",
+    "path": "D:\\exports\\report.pdf",
+    "formFieldsJson": "{\"ngay\":\"2024-10-24\",\"plant\":\"1000\",\"loai\":\"PO\"}"
+  }
+}
+```
+
+**Nhiều file (`pathsJson`):**
+
+```json
+{
+  "function": "UploadToUrl",
+  "paramObject": {
+    "uploadUrl": "https://example.com/api/upload",
+    "pathsJson": "[\"exports\\\\a.pdf\",\"exports\\\\b.xlsx\"]",
+    "formFieldsJson": "{\"batchId\":\"B001\"}"
+  }
+}
+```
+
+**Một file + thêm pathsJson:**
+
+```json
+{
+  "function": "UploadToUrl",
+  "paramObject": {
+    "uploadUrl": "https://example.com/api/upload",
+    "path": "exports\\cover.pdf",
+    "pathsJson": "[\"exports\\\\a.pdf\",\"exports\\\\b.xlsx\"]"
+  }
+}
+```
+
+**Cả thư mục (từng file, giữ tên tương đối trong multipart):**
+
+```json
+{
+  "function": "UploadToUrl",
+  "paramObject": {
+    "uploadUrl": "https://example.com/api/upload",
+    "path": "D:\\data\\outbox"
+  }
+}
+```
+
+**Thư mục → một file zip:**
+
+```json
+{
+  "function": "UploadToUrl",
+  "paramObject": {
+    "uploadUrl": "https://example.com/api/upload",
+    "path": "outbox",
+    "zipFolder": "true"
+  }
+}
+```
+
+`Result` (`FileUploadResponse`): `HttpStatusCode`, `ResponseBody` (cắt ~32KB), `UploadedFileCount`, `UploadedFileNames`, `Success`, `Message`.
+
+Kiểm tra `Result.Success` và `HttpStatusCode` (2xx). Body phản hồi server nằm trong `ResponseBody`.
+
+**Node n8n:** Operation **Upload To URL** (`uploadToUrl`) — map UI → `paramObject` như bảng dưới.
+
+| UI (RM FILE AUTO) | API |
+|-------------------|-----|
+| Upload URL | `uploadUrl` |
+| Path | `path` |
+| Paths JSON | `pathsJson` |
+| Form Fields JSON | `formFieldsJson` |
+| File Field Name | `fileFieldName` |
+| Zip Folder | `zipFolder` |
+| Timeout (Seconds) | `timeout` |
+
+---
+
+## 13) TryResolvePath
+
+```json
+{
+  "function": "TryResolvePath",
+  "paramObject": {
+    "relativeOrAbsolutePath": "exports\\a.xlsx"
+  }
+}
+```
+
+Reflection có thể khó map `out` params — ưu tiên dùng các hàm ở trên. Chủ yếu cho tích hợp nội bộ.
+
+---
+
+## 14) WriteExcel — tổng quan
+
+```json
+{
+  "function": "WriteExcel",
+  "paramObject": { }
+}
+```
+
+| Chế độ | Cách dùng |
+|--------|-----------|
+| Một operation | `type` + field tương ứng |
+| Nhiều sheet / nhiều type | `operationsJson` = mảng (stringify) |
+
+| `type` | Việc | Field chính |
+|--------|------|-------------|
+| `table` | Bảng header + rows | `dataJson`, `headersJson`, `startCell` |
+| `cells` | Từng ô `A1`, `B1`… | `cellsJson` |
+| `range` | Khối 2D | `range` + `dataJson` |
+| `style` | Chỉ style | `style` + `range`/`cells` |
+| `sheetStyle` | Style mặc định sheet | `style` |
+
+Alias: `cell`→`cells`, `sheet-style`→`sheetStyle`. Engine: EPPlus 4.5.3.3 · chỉ `.xlsx`.
+
+---
+
+## 14) Tham số WriteExcel
+
+| Param | Mặc định | Bắt buộc | Mô tả |
+|-------|----------|----------|--------|
+| `relativeOrAbsolutePath` | — | **Có** | Path `.xlsx` trong root |
+| `type` | `table` | Không | Một operation |
+| `operationsJson` | null | Không | Batch nhiều op |
+| `sheetName` | `Sheet1` | Không | ≤ 31 ký tự |
+| `startCell` | `A1` | Không | Góc table |
+| `dataJson` | null | Theo type | Data table/range |
+| `headersJson` | null | Không | Header tùy chỉnh |
+| `cellsJson` | null | Theo type | Map ô |
+| `range` | null | Theo type | `A1` / `A1:C3` |
+| `style` / `styleJson` | null | Theo type | Style object hoặc stringify — **bắt buộc** với `sheetStyle` / `style` |
+| `headerStyle` / `headerStyleJson` | null | Không | Style hàng header (type=table) |
+| `overwrite` | `true` | Không | [§21](#21-overwrite--nhiều-node-ghi-cùng-1-file) — `true` = workbook mới; `false` = mở file có sẵn (nhiều node) |
+| `createParentDirectories` | `true` | Không | Tạo thư mục cha |
+
+Trong `operationsJson`, mỗi phần tử dùng `data`/`headers`/`cells`/`style` (object) **hoặc** `*Json` (string).
+
+---
+
+## 15) operationsJson
+
+Chạy tuần tự; cùng `sheetName` = cùng sheet; nhiều `sheetName` = nhiều sheet một file.
+
+Thứ tự khuyến nghị: `sheetStyle` → ghi data (`table`/`range`/`cells`) → `style`.
+
+### Schema operation
+
+```ts
+{
+  sheetName?: string;      // alias: sheet
+  type: "table" | "cells" | "range" | "style" | "sheetStyle";
+  startCell?: string;
+  headers?: string[] | Record<string, string>;
+  data?: any[] | any[][];
+  cells?: Record<string, any>;
+  range?: string;          // "A1" hoặc "A1:C10" — chỉ lấy ô bắt đầu làm góc
+  style?: StyleObject;
+  headerStyle?: StyleObject;
+}
+```
+
+### Ví dụ
+
+```json
+[
+  {
+    "sheetName": "DoanhSo",
+    "type": "sheetStyle",
+    "style": { "fontName": "Arial", "fontSize": 11 }
+  },
+  {
+    "sheetName": "DoanhSo",
+    "type": "table",
+    "startCell": "A1",
+    "headers": ["Mã KH", "Tên", "Doanh thu"],
+    "data": [["KH001", "Nguyễn A", 1500000], ["KH002", "Trần B", 900000]],
+    "style": { "border": "thin" },
+    "headerStyle": {
+      "bold": true,
+      "fillColor": "#4472C4",
+      "color": "#FFFFFF",
+      "horizontalAlignment": "center"
+    }
+  },
+  {
+    "sheetName": "DoanhSo",
+    "type": "cells",
+    "cells": { "E1": { "value": "OK", "style": { "bold": true } } }
+  },
+  {
+    "sheetName": "TongHop",
+    "type": "range",
+    "range": "A1",
+    "data": [["Chỉ tiêu", "Giá trị"], ["Tổng", 2400000]]
+  }
+]
+```
+
+```json
+{
+  "function": "WriteExcel",
+  "paramObject": {
+    "relativeOrAbsolutePath": "exports\\tong-hop.xlsx",
+    "overwrite": "true",
+    "operationsJson": "<JSON.stringify(mảng)>"
+  }
+}
+```
+
+---
+
+## 16) type = table
+
+Header tại `startCell` (mặc định `A1`); data ngay hàng dưới.
+
+### 16.1 Header tùy chỉnh + mảng dòng *(khuyến nghị)*
+
+```json
+{
+  "type": "table",
+  "startCell": "A1",
+  "headersJson": "[\"Mã KH\",\"Tên khách hàng\",\"Doanh thu (VND)\"]",
+  "dataJson": "[[\"KH001\",\"Nguyễn Văn A\",1500000],[\"KH002\",\"Trần Thị B\",900000]]"
+}
+```
+
+### 16.2 Object + map field → chữ header
+
+```json
+{
+  "type": "table",
+  "headersJson": "{\"code\":\"Mã KH\",\"name\":\"Tên\",\"amount\":\"Doanh thu\"}",
+  "dataJson": "[{\"code\":\"KH001\",\"name\":\"An\",\"amount\":100}]"
+}
+```
+
+### 16.3 Không headersJson (key = header)
+
+```json
+{
+  "type": "table",
+  "dataJson": "[{\"Name\":\"A\",\"Amount\":100}]"
+}
+```
+
+Không headers + mảng mảng: hàng đầu = header.
+
+### Request mẫu
+
+```json
+{
+  "function": "WriteExcel",
+  "paramObject": {
+    "relativeOrAbsolutePath": "exports\\doanh-so.xlsx",
+    "type": "table",
+    "sheetName": "DoanhSo",
+    "startCell": "A1",
+    "headersJson": "[\"Mã\",\"Tên\",\"Tiền\"]",
+    "dataJson": "[[\"KH001\",\"An\",100]]",
+    "overwrite": "true",
+    "headerStyleJson": "{\"bold\":true,\"fillColor\":\"#4472C4\",\"color\":\"#FFFFFF\"}",
+    "styleJson": "{\"border\":\"thin\"}"
+  }
+}
+```
+
+---
+
+## 17) type = cells
+
+```json
+{
+  "function": "WriteExcel",
+  "paramObject": {
+    "relativeOrAbsolutePath": "exports\\report.xlsx",
+    "type": "cells",
+    "cellsJson": "{\"A1\":\"Tiêu đề\",\"B1\":123,\"C1\":{\"value\":\"OK\",\"style\":{\"bold\":true}}}"
+  }
+}
+```
+
+File đã có → mở cập nhật (không xóa sheet khác). `style` ở operation áp mọi ô vừa ghi.
+
+**Giá trị từng ô**
+
+| Dạng | Ý nghĩa |
+|------|---------|
+| Scalar (`"text"`, `123`) | Ghi trực tiếp |
+| `{ "value": ... }` | Ghi value (alias key: `v`, `text`) |
+| `{ "value": ..., "style": { } }` | Ghi + style riêng ô |
+---
+
+## 18) type = range
+
+```json
+{
+  "function": "WriteExcel",
+  "paramObject": {
+    "relativeOrAbsolutePath": "exports\\report.xlsx",
+    "type": "range",
+    "range": "A1",
+    "dataJson": "[[\"Mã\",\"Tên\"],[\"SP01\",\"Áo\"]]",
+    "styleJson": "{\"border\":\"thin\"}"
+  }
+}
+```
+
+`range`: `A1` hoặc `A1:C10` — chỉ lấy ô **bắt đầu**. Kích thước theo `data`.
+
+---
+
+## 19) type = style / sheetStyle
+
+### `style` — tô vùng / ô (không ghi data)
+
+```json
+{
+  "type": "style",
+  "sheetName": "DoanhSo",
+  "range": "A2:C10",
+  "style": { "fillColor": "#FFF2CC", "border": "thin" }
+}
+```
+
+hoặc `"cells": ["E1","E2"]`.
+
+### `sheetStyle` — mặc định cả sheet
+
+```json
+{
+  "function": "WriteExcel",
+  "paramObject": {
+    "relativeOrAbsolutePath": "exports\\bc.xlsx",
+    "type": "sheetStyle",
+    "sheetName": "Sheet1",
+    "styleJson": "{\"fontName\":\"Times New Roman\",\"fontSize\":12}",
+    "overwrite": "false"
+  }
+}
+```
+
+Hoặc object trong `operationsJson`: `"style": { "fontName": "Times New Roman", "fontSize": 12 }`.
+
+> Tên font phải **đúng tên Windows** (vd `Times New Roman`, không phải `Time News Roman`). Font không tồn tại → Excel dùng font mặc định.
+
+Gọi trước khi ghi data.
+
+---
+
+## 20) Object style
+
+Áp cho `style` / `headerStyle` trên operation, hoặc style lồng trong từng ô (`cells`).
+
+### Font & chữ
+
+| Key (alias) | Ví dụ | Mô tả |
+|-------------|--------|--------|
+| `fontName` (`font`, `fontFamily`) | `"Arial"` | Font |
+| `fontSize` (`size`) | `12` | Cỡ chữ |
+| `bold` | `true` | Đậm |
+| `italic` | `true` | Nghiêng |
+| `underline` | `true` | Gạch chân |
+| `color` (`fontColor`, `textColor`) | `"#FFFFFF"` | Màu chữ |
+
+### Nền
+
+| Key (alias) | Ví dụ | Mô tả |
+|-------------|--------|--------|
+| `fillColor` (`backgroundColor`, `bgColor`, `fill`) | `"#4472C4"` | Màu nền (solid fill) |
+
+### Border (4 cạnh cùng lúc)
+
+| Key (alias) | Ví dụ | Mô tả |
+|-------------|--------|--------|
+| `border` (`borderStyle`) | xem bảng dưới | Kiểu viền |
+| `borderColor` | `"#000000"` | Màu viền |
+
+**Giá trị `border`**
+
+| Giá trị | Kiểu viền |
+|---------|-----------|
+| `true` / `"1"` / `"thin"` | Thin (mặc định khi bật) |
+| `"medium"` | Medium |
+| `"thick"` | Thick |
+| `"hair"` | Hair |
+| `"dotted"` | Dotted |
+| `"dashed"` | Dashed |
+| `"double"` | Double |
+| `false` / `"0"` / `"none"` | Không viền |
+
+> Hiện **không** hỗ trợ viền từng cạnh riêng (`borderTop` / `borderLeft`…). Một lần set = cả 4 cạnh của ô/vùng.
+
+### Căn lề & wrap
+
+| Key (alias) | Ví dụ | Mô tả |
+|-------------|--------|--------|
+| `horizontalAlignment` (`align`, `hAlign`) | `"left"` \| `"center"` \| `"centre"` \| `"right"` \| `"justify"` | Căn ngang |
+| `verticalAlignment` (`vAlign`, `valign`) | `"top"` \| `"center"` \| `"middle"` \| `"bottom"` | Căn dọc |
+| `wrapText` (`wrap`) | `true` | Xuống dòng trong ô |
+
+### Kích thước dòng / cột
+
+| Key (alias) | Ví dụ | Mô tả |
+|-------------|--------|--------|
+| `rowHeight` (`height`) | `22` | Chiều cao dòng (điểm) — áp các hàng trong vùng |
+| `columnWidth` (`width`, `colWidth`) | `15` | Độ rộng cột — áp các cột trong vùng |
+
+**Mặc định:** mọi sheet Excel dùng chiều cao dòng **`22`** (`DefaultRowHeight` + các dòng vừa ghi table/range/cells). Ghi đè bằng `rowHeight` trong `style` nếu cần.
+
+### Màu
+
+- `#RRGGBB` hoặc `RRGGBB`
+- `AARRGGBB` (8 hex)
+- Tên màu hệ thống (`Red`, `Black`, …)
+
+### Thứ tự áp style (table)
+
+1. Ghi header + data  
+2. `style` → cả khối (gồm header)  
+3. `headerStyle` → **ghi đè** lại hàng header  
+
+### Ví dụ border + màu
+
+```json
+{
+  "style": {
+    "border": "thin",
+    "borderColor": "#000000",
+    "fontSize": 11
+  },
+  "headerStyle": {
+    "bold": true,
+    "fillColor": "#4472C4",
+    "color": "#FFFFFF",
+    "border": "medium",
+    "borderColor": "#1F4E79",
+    "horizontalAlignment": "center"
+  }
+}
+```
+---
+
+## 21) overwrite — nhiều node ghi cùng 1 file
+
+`overwrite` (mặc định **`true`**) quyết định **tạo workbook mới hay mở file đã có**. Đây là tham số then chốt khi **nhiều node / nhiều lần `WriteExcel` vào cùng một path**.
+
+### Bảng hành vi
+
+| Tình huống | `overwrite=true` | `overwrite=false` |
+|------------|------------------|-------------------|
+| `type=table` (một op) | **Xóa file cũ** (nếu có) → workbook mới → ghi table | File **chưa có** → tạo mới. File **đã có** → **mở cập nhật** (giữ sheet khác; ghi/đè vùng table trên `sheetName`) |
+| `operationsJson` | Xóa file cũ → workbook mới → chạy hết ops | Giống cột phải của table: mở file nếu có, rồi áp ops |
+| `type=cells` / `range` / `style` / `sheetStyle` | File có → **mở cập nhật** (không xóa cả file). File chưa có → tạo mới | **Giống** `overwrite=true` — không xóa cả workbook |
+
+> **Lưu ý:** với `cells` / `range` / `style`, cờ `overwrite` **không** xóa toàn bộ file. Chỉ `table` và `operationsJson` mới dùng `overwrite=true` để **làm mới cả workbook**.
+
+### Pattern khuyến nghị — nhiều node → 1 file Excel
+
+Cùng `relativeOrAbsolutePath`, cùng session `file-auto` (hoặc connect lại cùng `rootDirectory`).
+
+| Node | `overwrite` | `type` / ghi chú |
+|------|-------------|------------------|
+| **1 — tạo file** | `true` | `table` (hoặc `operationsJson`) — tạo workbook sạch |
+| **2…N — ghi tiếp** | `false` | `table` sheet khác, hoặc cùng sheet `startCell` khác; hoặc `cells` / `range` / `style` |
+
+**Ví dụ**
+
+```text
+Node A: WriteExcel path=exports\bc.xlsx  type=table  sheetName=DoanhSo   overwrite=true
+Node B: WriteExcel path=exports\bc.xlsx  type=table  sheetName=TonKho    overwrite=false
+Node C: WriteExcel path=exports\bc.xlsx  type=cells  sheetName=DoanhSo   overwrite=false
+        cellsJson={"E1":"Tổng","E2":123}
+```
+
+- Node A tạo file + sheet `DoanhSo`.
+- Node B **không** xóa file → thêm/cập nhật sheet `TonKho`, **giữ** `DoanhSo`.
+- Node C mở file → ghi thêm ô trên `DoanhSo`.
+
+**Sai:** mọi node đều `overwrite=true` + `type=table` → mỗi lần **xóa hết** dữ liệu node trước.
+
+**Một request thay nhiều node:** gom trong `operationsJson` + `overwrite=true` (tạo mới) hoặc `false` (cập nhật file có sẵn) — xem [§15](#15-operationsjson).
+
+### Request mẫu (node tiếp theo)
+
+```json
+{
+  "function": "WriteExcel",
+  "paramObject": {
+    "relativeOrAbsolutePath": "exports\\bc.xlsx",
+    "type": "table",
+    "sheetName": "TonKho",
+    "startCell": "A1",
+    "headersJson": "[\"Mã\",\"SL\"]",
+    "dataJson": "[[\"SP01\",10]]",
+    "overwrite": "false",
+    "createParentDirectories": "true"
+  }
+}
+```
+
+---
+
+## 22) ReadExcel
+
+```json
+{
+  "function": "ReadExcel",
+  "paramObject": {
+    "relativeOrAbsolutePath": "exports\\doanh-so.xlsx",
+    "sheetName": "DoanhSo",
+    "hasHeader": "true"
+  }
+}
+```
+
+| Param | Mặc định | Mô tả |
+|-------|----------|--------|
+| `relativeOrAbsolutePath` | — | File `.xlsx` |
+| `sheetName` | sheet đầu | Tên sheet |
+| `hasHeader` | `true` | object[] theo header / `false` = matrix |
+
+`Result.Content` = JSON string.
+
+---
+
+## 22b) DeleteExcelSheet / ClearExcelRange / DeleteExcelEmptyRows
+
+### `DeleteExcelSheet` — xóa sheet (không xóa file)
+
+```json
+{
+  "function": "DeleteExcelSheet",
+  "paramObject": {
+    "relativeOrAbsolutePath": "exports\\doanh-so.xlsx",
+    "sheetName": "Sheet2"
+  }
+}
+```
+
+Workbook phải còn ≥ 1 sheet. Không có hàm `CloseOutlook`-style để xóa cả file — dùng `DeleteFile` nếu cần.
+
+### `ClearExcelRange` — xóa nội dung vùng / khoảng trống dùng
+
+```json
+{
+  "function": "ClearExcelRange",
+  "paramObject": {
+    "relativeOrAbsolutePath": "exports\\doanh-so.xlsx",
+    "sheetName": "Sheet1",
+    "range": "A1:C100",
+    "clearFormats": "false"
+  }
+}
+```
+
+| Param | Mặc định | Mô tả |
+|-------|----------|--------|
+| `sheetName` | sheet đầu | Tên sheet |
+| `range` | used range | `A1:C10`, hoặc `*` / `used` / `all` / rỗng = toàn Dimension |
+| `clearFormats` | `false` | `true` = xóa luôn style ô |
+
+### `DeleteExcelEmptyRows` — xóa hàng trống
+
+```json
+{
+  "function": "DeleteExcelEmptyRows",
+  "paramObject": {
+    "relativeOrAbsolutePath": "exports\\doanh-so.xlsx",
+    "sheetName": "Sheet1",
+    "keepHeaderRow": "true"
+  }
+}
+```
+
+Hàng coi là trống nếu mọi ô trong used range null hoặc chỉ khoảng trắng. `keepHeaderRow=true` → không xóa hàng đầu Dimension.
+
+---
+
+## 23) Response & lỗi
+
+Luôn kiểm tra `Result.Success` khi Result là `FileAccessResponse` / `FileReadResponse` / …
+
+| Message | Nguyên nhân |
+|---------|-------------|
+| `api-key header is required` / `Invalid api-key` | Thiếu/sai key |
+| `File session not found` | Chưa connect |
+| `rootDirectory is required` | Thiếu khi connect |
+| `function is required` | Thiếu `function` |
+| `Path must end with .xlsx` | Sai đuôi Excel |
+| `dataJson is required for type=table` | Thiếu data |
+| `dataJson must be a JSON array` | dataJson không phải mảng (đã sửa: nested array trong paramObject OK) |
+| `File not found.` | Đọc path không tồn tại |
+| `Worksheet not found` | Sai `sheetName` |
+| `Cannot delete the only worksheet` | `DeleteExcelSheet` khi chỉ còn 1 sheet |
+| `File already exists.` | Download/copy không overwrite |
+| Path ngoài root | Traversal / sai sandbox |
+
+---
+
+## 24) Gắn node n8n
+
+### Workflow chuẩn
+
+| # | Node | Việc |
+|---|------|------|
+| 1 | HTTP | `POST /file-auto/connect` |
+| 2 | Code / HTTP | Hàm file và/hoặc `WriteExcel` |
+| 3 | IF | `Result.Success` |
+| 4 | HTTP | `POST /file-auto/disconnect` |
+
+### Nhiều node ghi cùng 1 `.xlsx`
+
+| # | Node WriteExcel | `overwrite` |
+|---|-----------------|-------------|
+| 1 | Tạo file / sheet đầu (`type=table`) | **`true`** |
+| 2…N | Sheet khác hoặc `cells`/`range` cùng path | **`false`** |
+
+Chi tiết hành vi: [§21 overwrite](#21-overwrite--nhiều-node-ghi-cùng-1-file). Không đặt `overwrite=true` trên mọi node table — sẽ xóa dữ liệu node trước.
+
+### Mapping UI → API
+
+| UI | API |
+|----|-----|
+| Session GUID | `sessionId` |
+| Root trên worker | `rootDirectory` (connect) |
+| Tên hàm | `function` |
+| Tham số | `paramObject` |
+| Excel batch | `operationsJson` = `JSON.stringify(ops)` |
+| Excel headers/rows | `headersJson` / `dataJson` = stringify |
+| Bytes | Base64 |
+| api-key | Header |
+
+### Code mẫu — ghi text rồi Excel
+
+```javascript
+const sessionId = $json.sessionId;
+const rows = items.map(i => [i.json.code, i.json.name, i.json.amount]);
+
+return [{
+  json: {
+    sessionId,
+    function: 'WriteExcel',
+    paramObject: {
+      relativeOrAbsolutePath: 'exports\\tong-hop.xlsx',
+      overwrite: 'true',
+      operationsJson: JSON.stringify([
+        {
+          sheetName: 'DoanhSo',
+          type: 'table',
+          startCell: 'A1',
+          headers: ['Mã', 'Tên', 'Tiền'],
+          data: rows,
+          headerStyle: { bold: true, fillColor: '#4472C4', color: '#FFFFFF' },
+          style: { border: 'thin' }
+        }
+      ])
+    }
+  }
+}];
+```
+
+### Credentials
+
+- Header `api-key`
+- Base URL: `http://<gateway-ip>:8081`
+
+---
+
+## Phụ lục — File vs Excel
+
+| Nhu cầu | Hàm |
+|---------|-----|
+| Đọc/ghi `.txt`, log, JSON text | `ReadAllText` / `WriteAllText` / `AppendAllText` |
+| Binary / Base64 | `ReadAllBytes` / `WriteAllBytes` / `ExportPathForApi` |
+| Copy, move, xóa, list | `CopyFile`, `MoveFile`, `Delete*`, `ListDirectory`, `FindFiles` |
+| Tải từ internet | `DownloadFromUrl` |
+| Gửi file lên API | `UploadToUrl` |
+| Báo cáo / bảng Excel thật | `WriteExcel` |
+| Đọc lại Excel | `ReadExcel` |
+
+---
+
+*Source: `RMIV.DLL.FILEMANAGER.FileAccessManager` · HTTP: `RMIV.WF.CLIENT` · Docs: `/docs/HUONG-DAN-API-FILE.md`.*

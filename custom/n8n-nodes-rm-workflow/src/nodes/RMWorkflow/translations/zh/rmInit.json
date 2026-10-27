@@ -1,0 +1,70 @@
+{
+	"displayName": "RM Init",
+	"description": "初始化 baseUrl、apiKey、sessionId（可选 SAP 连接信息）供后续 RM 节点使用",
+	"properties": {
+		"toolConnectionNotice": {
+			"displayName": "工具连接",
+			"description": "带 * 的字段为必填。Session ID 为 GUID — 点击 Random Session ID 可生成新值。"
+		},
+		"baseUrl": {
+			"displayName": "Base URL",
+			"description": "SAP/Web Automation API 主机"
+		},
+		"apiKey": {
+			"displayName": "API Key",
+			"description": "调用 tool API 时的 api-key 请求头"
+		},
+		"sessionId": {
+			"displayName": "会话 ID",
+			"description": "后续 RM 节点共用的 GUID（可手动修改或点击 Random）"
+		},
+		"randomSessionId": {
+			"displayName": "随机会话 ID",
+			"description": "生成新的 GUID 会话 ID"
+		},
+		"requestTimeoutSeconds": {
+			"displayName": "请求超时（秒）",
+			"description": "调用 API 的 axios 超时（默认 600）"
+		},
+		"logUrl": {
+			"displayName": "日志 URL",
+			"description": "可选。日志回调地址"
+		},
+		"enableSapOptions": {
+			"displayName": "启用 SAP 选项",
+			"description": "开启后显示 SAP 连接字段（可选）。用于 Open and Connect。"
+		},
+		"sapOptionalNotice": {
+			"displayName": "SAP 连接",
+			"description": "以下 SAP 字段均为可选。仅填写 Open and Connect 所需项。"
+		},
+		"server": {
+			"displayName": "服务器",
+			"description": "SAP Logon 连接名"
+		},
+		"client": {
+			"displayName": "客户端",
+			"description": "SAP 客户端"
+		},
+		"username": {
+			"displayName": "用户名",
+			"description": "SAP 登录名"
+		},
+		"password": {
+			"displayName": "密码",
+			"description": "SAP 密码"
+		},
+		"multiLogonAction": {
+			"displayName": "多重登录操作",
+			"description": "可选。opt1 / opt2 / opt3"
+		},
+		"language": {
+			"displayName": "语言",
+			"description": "可选。SAP 语言"
+		},
+		"idleTimeoutMinutes": {
+			"displayName": "空闲超时（分钟）",
+			"description": "可选。空闲多少分钟后可能断开会话"
+		}
+	}
+}

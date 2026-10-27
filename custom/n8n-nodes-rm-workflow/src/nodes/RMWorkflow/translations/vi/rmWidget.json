@@ -1,0 +1,38 @@
+{
+	"header": {
+		"displayName": "RM Widget",
+		"description": "Gọi RM Widget"
+	},
+	"nodeView": {
+		"workflowId": {
+			"displayName": "Workflow",
+			"description": "Duyệt widget store để chọn workflow được cấp cho tài khoản này, hoặc nhập ID workflow. Không thể mở hoặc tạo sub-workflow từ node này."
+		},
+		"workflowInputs": {
+			"displayName": "Workflow Inputs"
+		},
+		"mode": {
+			"displayName": "Chế độ",
+			"options": {
+				"once": {
+					"displayName": "Chạy một lần với tất cả items",
+					"description": "Truyền tất cả items vào một lần thực thi sub-workflow"
+				},
+				"each": {
+					"displayName": "Chạy một lần cho mỗi item",
+					"description": "Gọi sub-workflow riêng cho từng item"
+				}
+			}
+		},
+		"options": {
+			"displayName": "Tùy chọn",
+			"placeholder": "Thêm tùy chọn",
+			"options": {
+				"waitForSubWorkflow": {
+					"displayName": "Chờ sub-workflow hoàn thành",
+					"description": "Workflow chính có chờ sub-workflow chạy xong trước khi tiếp tục hay không"
+				}
+			}
+		}
+	}
+}

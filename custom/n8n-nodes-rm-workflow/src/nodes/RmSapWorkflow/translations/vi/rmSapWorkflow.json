@@ -1,0 +1,799 @@
+{
+	"header": {
+		"displayName": "RM SAP",
+		"description": "Tự động hóa SAP "
+	},
+	"nodeView": {
+		"operation": {
+			"displayName": "Thao tác",
+			"options": {
+				"openAndConnect": {
+					"displayName": "Mở và kết nối",
+					"description": "POST /sap-auto/open-and-connect",
+					"action": "Mở và kết nối"
+				},
+				"disconnect": {
+					"displayName": "Ngắt kết nối",
+					"description": "POST /sap-auto/disconnect — đóng một session theo sessionId",
+					"action": "Ngắt kết nối session"
+				},
+				"sessionByAccount": {
+					"displayName": "Session theo tài khoản",
+					"description": "POST /sap-auto/session/by-account — liệt kê session SAP theo server/client/username",
+					"action": "Lấy session theo tài khoản"
+				},
+				"killByAccount": {
+					"displayName": "Kill theo tài khoản",
+					"description": "POST /sap-auto/session/kill-by-account — đóng hết session SAP của một tài khoản",
+					"action": "Kill session SAP theo tài khoản"
+				},
+				"killAllSapSessions": {
+					"displayName": "Kill tất cả session",
+					"description": "POST /sap-auto/session/kill-all — đóng mọi session SAP trên host (không đóng web/file)",
+					"action": "Kill tất cả session SAP"
+				},
+				"logMessage": {
+					"displayName": "Ghi log",
+					"description": "POST to logUrl",
+					"action": "Gửi log"
+				},
+				"rosWecomSendMessage": {
+					"displayName": "Gửi tin ROS Wecom",
+					"description": "POST https://ros.reginamiracle.com:82/api/msg/text",
+					"action": "Gửi tin ROS Wecom"
+				},
+				"wecomGroupMessage": {
+					"displayName": "Tin nhóm Wecom",
+					"description": "POST https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=",
+					"action": "Gửi tin nhóm Wecom"
+				},
+				"connect": {
+					"displayName": "Kết nối",
+					"description": "Connect()",
+					"action": "Kết nối session"
+				},
+				"reconnect": {
+					"displayName": "Kết nối lại",
+					"description": "Reconnect()",
+					"action": "Kết nối lại session"
+				},
+				"isSessionAlive": {
+					"displayName": "Session còn sống",
+					"description": "IsSessionAlive()",
+					"action": "Kiểm tra session còn sống"
+				},
+				"exists": {
+					"displayName": "Tồn tại",
+					"description": "Exists(id)",
+					"action": "Kiểm tra phần tử tồn tại"
+				},
+				"findIds": {
+					"displayName": "Tìm ID",
+					"description": "FindIds(idPattern)",
+					"action": "Tìm ID phần tử theo pattern"
+				},
+				"setText": {
+					"displayName": "Set text",
+					"description": "SetText(id, value)",
+					"action": "Set text"
+				},
+				"setTexts": {
+					"displayName": "Set nhiều text",
+					"description": "SetTexts(items)",
+					"action": "Set nhiều text"
+				},
+				"getText": {
+					"displayName": "Get text",
+					"description": "GetText(id)",
+					"action": "Get text"
+				},
+				"clear": {
+					"displayName": "Xóa",
+					"description": "Clear(id)",
+					"action": "Xóa trường"
+				},
+				"setTextAndEnter": {
+					"displayName": "Set text và Enter",
+					"description": "SetTextAndEnter(id, value)",
+					"action": "Set text và Enter"
+				},
+				"setFocus": {
+					"displayName": "Set focus",
+					"description": "SetFocus(id)",
+					"action": "Set focus"
+				},
+				"getCaretPosition": {
+					"displayName": "Get vị trí con trỏ",
+					"description": "GetCaretPosition(id)",
+					"action": "Get vị trí con trỏ"
+				},
+				"setCaretPosition": {
+					"displayName": "Set vị trí con trỏ",
+					"description": "SetCaretPosition(id, position)",
+					"action": "Set vị trí con trỏ"
+				},
+				"click": {
+					"displayName": "Click",
+					"description": "Click(id)",
+					"action": "Click"
+				},
+				"doubleClick": {
+					"displayName": "Double click",
+					"description": "DoubleClick(id)",
+					"action": "Double-click phần tử"
+				},
+				"clickByTooltip": {
+					"displayName": "Click theo tooltip",
+					"description": "ClickByTooltip(tooltip)",
+					"action": "Click theo tooltip"
+				},
+				"sendEnter": {
+					"displayName": "Gửi Enter",
+					"description": "SendEnter()",
+					"action": "Gửi Enter"
+				},
+				"sendVKey": {
+					"displayName": "Gửi phím ảo",
+					"description": "SendVKey(vKey)",
+					"action": "Gửi VKey"
+				},
+				"pressToolbarButton": {
+					"displayName": "Nhấn nút toolbar",
+					"description": "PressToolbarButton(toolbarId, buttonIndex)",
+					"action": "Nhấn nút toolbar"
+				},
+				"pressShellButton": {
+					"displayName": "Nhấn nút shell",
+					"description": "PressShellButton(shellId, buttonId)",
+					"action": "Nhấn nút shell"
+				},
+				"scrollPage": {
+					"displayName": "Cuộn trang",
+					"description": "ScrollPage(containerId, position?)",
+					"action": "Cuộn trang (thanh cuộn dọc)"
+				},
+				"resetScroll": {
+					"displayName": "Reset cuộn",
+					"description": "ResetScroll(containerId)",
+					"action": "Reset thanh cuộn về đầu"
+				},
+				"setCheckbox": {
+					"displayName": "Set checkbox",
+					"description": "SetCheckbox(id, value)",
+					"action": "Set checkbox"
+				},
+				"setCheckboxes": {
+					"displayName": "Set nhiều checkbox",
+					"description": "SetCheckboxes(items)",
+					"action": "Set nhiều checkbox"
+				},
+				"getCheckbox": {
+					"displayName": "Get checkbox",
+					"description": "GetCheckbox(id)",
+					"action": "Get checkbox"
+				},
+				"selectRadio": {
+					"displayName": "Chọn radio",
+					"description": "SelectRadio(id)",
+					"action": "Chọn radio"
+				},
+				"selectByKey": {
+					"displayName": "Chọn theo key",
+					"description": "SelectByKey(id, key)",
+					"action": "Chọn combo theo key"
+				},
+				"selectByText": {
+					"displayName": "Chọn theo text",
+					"description": "SelectByText(id, text)",
+					"action": "Chọn combo theo text"
+				},
+				"getSelectedKey": {
+					"displayName": "Get key đã chọn",
+					"description": "GetSelectedKey(id)",
+					"action": "Get key đã chọn"
+				},
+				"getSelectedText": {
+					"displayName": "Get text đã chọn",
+					"description": "GetSelectedText(id)",
+					"action": "Get text đã chọn"
+				},
+				"getOptions": {
+					"displayName": "Get options",
+					"description": "GetOptions(id)",
+					"action": "Get danh sách combo"
+				},
+				"executeTCode": {
+					"displayName": "Chạy T-Code",
+					"description": "ExecuteTCode(tcode)",
+					"action": "Chạy T-code"
+				},
+				"selectTab": {
+					"displayName": "Chọn tab",
+					"description": "SelectTab(tabStripId, tabId) — tabStripId có thể \"\" khi tabId là path đầy đủ",
+					"action": "Chọn tab"
+				},
+				"resetToMainMenu": {
+					"displayName": "Về menu chính",
+					"description": "ResetToMainMenu()",
+					"action": "Về menu chính"
+				},
+				"goBack": {
+					"displayName": "Quay lại",
+					"description": "GoBack()",
+					"action": "Quay lại"
+				},
+				"openNewSession": {
+					"displayName": "Mở session mới",
+					"description": "OpenNewSession()",
+					"action": "Mở session mới"
+				},
+				"getAllRows": {
+					"displayName": "Grid — Lấy tất cả hàng",
+					"description": "GetAllRows(gridId)",
+					"action": "Lấy tất cả hàng grid"
+				},
+				"getGridCellValue": {
+					"displayName": "Grid — Get ô",
+					"description": "GetCellValue(gridId, row, columnName)",
+					"action": "Get ô grid"
+				},
+				"setGridCellValue": {
+					"displayName": "Grid — Set ô",
+					"description": "SetCellValue(gridId, row, columnName, value)",
+					"action": "Set ô grid"
+				},
+				"getGridRowCount": {
+					"displayName": "Grid — Lấy số hàng",
+					"description": "GetRowCount(gridId)",
+					"action": "Lấy số hàng grid"
+				},
+				"getColumnNames": {
+					"displayName": "Grid — Lấy tên cột",
+					"description": "GetColumnNames(gridId)",
+					"action": "Lấy tên cột grid"
+				},
+				"getColumnHeaders": {
+					"displayName": "Grid — Lấy header cột",
+					"description": "GetColumnHeaders(gridId)",
+					"action": "Lấy header cột grid"
+				},
+				"getAllRowsWithHeaders": {
+					"displayName": "Grid — Lấy hàng kèm header",
+					"description": "GetAllRowsWithHeaders(gridId)",
+					"action": "Lấy hàng grid kèm header"
+				},
+				"selectRow": {
+					"displayName": "Grid — Chọn hàng",
+					"description": "SelectRow(gridId, row)",
+					"action": "Chọn hàng grid"
+				},
+				"clickCurrentCell": {
+					"displayName": "Grid — Click ô",
+					"description": "ClickCurrentCell(gridId, row, columnName)",
+					"action": "Click ô grid"
+				},
+				"doubleClickRow": {
+					"displayName": "Grid — Double-click hàng",
+					"description": "DoubleClickRow(gridId, row, columnName)",
+					"action": "Double-click hàng grid"
+				},
+				"scrollGridToRow": {
+					"displayName": "Grid — Cuộn tới hàng",
+					"description": "ScrollToRow(gridId, row)",
+					"action": "Cuộn grid tới hàng"
+				},
+				"pressGridToolbarButton": {
+					"displayName": "Grid — Nhấn nút toolbar",
+					"description": "PressGridToolbarButton(gridId, buttonId)",
+					"action": "Nhấn nút toolbar grid"
+				},
+				"getGridAsDataTable": {
+					"displayName": "Grid — Lấy dạng DataTable",
+					"description": "GetGridAsDataTable(gridId)",
+					"action": "Lấy grid dạng DataTable"
+				},
+				"getGridPage": {
+					"displayName": "Grid — Lấy trang",
+					"description": "GetGridPage(gridId, pageIndex, pageSize?)",
+					"action": "Lấy trang grid"
+				},
+				"exportGridToExcel": {
+					"displayName": "Grid — Xuất Excel",
+					"description": "ExportGridToExcel(gridId, savePath)",
+					"action": "Xuất grid ra Excel"
+				},
+				"exportGridToText": {
+					"displayName": "Grid — Xuất text",
+					"description": "ExportGridToText(gridId, savePath)",
+					"action": "Xuất grid ra text"
+				},
+				"getTableRows": {
+					"displayName": "Table — Lấy hàng",
+					"description": "GetTableRows(tableId)",
+					"action": "Lấy hàng bảng"
+				},
+				"getTableCellValue": {
+					"displayName": "Table — Get ô",
+					"description": "GetCellValue(tableId, row, col)",
+					"action": "Get ô bảng"
+				},
+				"setTableCellValue": {
+					"displayName": "Table — Set ô",
+					"description": "SetCellValue(tableId, row, col, value)",
+					"action": "Set ô bảng"
+				},
+				"scrollTableToRow": {
+					"displayName": "Table — Cuộn tới hàng",
+					"description": "ScrollToRow(tableId, row) — overload table",
+					"action": "Cuộn bảng tới hàng"
+				},
+				"fillMultipleSelectionValues": {
+					"displayName": "Multi Sel — Điền (popup đã mở)",
+					"description": "FillMultipleSelectionValues(cellIdBase, items, ...) — popup đã mở sẵn",
+					"action": "Điền multi selection (popup đã mở)"
+				},
+				"openAndFillMultipleSelectionValues": {
+					"displayName": "Multi Sel — Mở, điền & xác nhận",
+					"description": "OpenAndFillMultipleSelectionValues(openButtonId, cellIdBase, items, ...)",
+					"action": "Mở và điền multi selection"
+				},
+				"selectTreeNode": {
+					"displayName": "Tree — Chọn node",
+					"description": "SelectTreeNode(treeId, nodeKey) — recorder selectedNode",
+					"action": "Chọn node cây"
+				},
+				"getTreeSelectedNode": {
+					"displayName": "Tree — Get node đã chọn",
+					"description": "GetTreeSelectedNode(treeId)",
+					"action": "Get node cây đã chọn"
+				},
+				"selectTreeItem": {
+					"displayName": "Tree — Chọn item",
+					"description": "SelectTreeItem(treeId, nodeKey, columnName)",
+					"action": "Chọn item cây"
+				},
+				"ensureTreeItemVisible": {
+					"displayName": "Tree — Đảm bảo hiển thị",
+					"description": "EnsureTreeItemVisible(treeId, nodeKey, columnName)",
+					"action": "Đảm bảo item cây hiển thị"
+				},
+				"doubleClickTreeItem": {
+					"displayName": "Tree — Double-click item",
+					"description": "DoubleClickTreeItem(treeId, nodeKey, columnName)",
+					"action": "Double-click item cây"
+				},
+				"getTreeItemText": {
+					"displayName": "Tree — Get text item",
+					"description": "GetTreeItemText(treeId, nodeKey, columnName)",
+					"action": "Get text item cây"
+				},
+				"waitForElement": {
+					"displayName": "Chờ phần tử",
+					"description": "WaitForElement(id, timeoutSeconds?)",
+					"action": "Chờ phần tử"
+				},
+				"waitUntilGone": {
+					"displayName": "Chờ biến mất",
+					"description": "WaitUntilGone(id, timeoutSeconds?)",
+					"action": "Chờ phần tử biến mất"
+				},
+				"waitForSap": {
+					"displayName": "Chờ SAP",
+					"description": "WaitForSap(timeoutSeconds?)",
+					"action": "Chờ SAP"
+				},
+				"sleep": {
+					"displayName": "Sleep",
+					"description": "Sleep(milliseconds)",
+					"action": "Sleep"
+				},
+				"isPopupOpen": {
+					"displayName": "Popup — Có mở không",
+					"description": "IsPopupOpen()",
+					"action": "Popup có mở không"
+				},
+				"getPopupTitle": {
+					"displayName": "Popup — Get tiêu đề",
+					"description": "GetPopupTitle()",
+					"action": "Get tiêu đề popup"
+				},
+				"getPopupMessage": {
+					"displayName": "Popup — Get nội dung",
+					"description": "GetPopupMessage()",
+					"action": "Get nội dung popup"
+				},
+				"handlePopup": {
+					"displayName": "Popup — Xử lý",
+					"description": "HandlePopup(action)",
+					"action": "Xử lý popup"
+				},
+				"confirmPopup": {
+					"displayName": "Popup — Xác nhận",
+					"description": "ConfirmPopup()",
+					"action": "Xác nhận popup"
+				},
+				"cancelPopup": {
+					"displayName": "Popup — Hủy",
+					"description": "CancelPopup()",
+					"action": "Hủy popup"
+				},
+				"continuePopup": {
+					"displayName": "Popup — Tiếp tục",
+					"description": "ContinuePopup()",
+					"action": "Tiếp tục popup"
+				},
+				"getStatusText": {
+					"displayName": "Get text status bar",
+					"description": "GetStatusText()",
+					"action": "Get text status bar"
+				},
+				"getStatusType": {
+					"displayName": "Get loại status bar",
+					"description": "GetStatusType()",
+					"action": "Get loại status bar"
+				},
+				"hasError": {
+					"displayName": "Có lỗi",
+					"description": "HasError()",
+					"action": "Status bar có lỗi"
+				},
+				"isSuccess": {
+					"displayName": "Thành công",
+					"description": "IsSuccess()",
+					"action": "Status bar thành công"
+				},
+				"throwIfError": {
+					"displayName": "Ném lỗi nếu có lỗi",
+					"description": "ThrowIfError()",
+					"action": "Ném lỗi nếu status bar lỗi"
+				},
+				"handleSaveFileDialog": {
+					"displayName": "Xử lý hộp thoại lưu file",
+					"description": "HandleSaveFileDialog(savePath)",
+					"action": "Xử lý hộp thoại lưu file"
+				},
+				"selectLocalFileExport": {
+					"displayName": "Chọn export file local",
+					"description": "SelectLocalFileExport(savePath, fileType?)",
+					"action": "Chọn export file local"
+				},
+				"containsText": {
+					"displayName": "Chứa text",
+					"description": "ContainsText(text)",
+					"action": "Chứa text"
+				},
+				"captureScreen": {
+					"displayName": "Chụp màn hình",
+					"description": "CaptureScreen(savePath)",
+					"action": "Chụp màn hình"
+				},
+				"getWindowTitle": {
+					"displayName": "Get tiêu đề cửa sổ",
+					"description": "GetWindowTitle()",
+					"action": "Get tiêu đề cửa sổ"
+				},
+				"getCurrentTCode": {
+					"displayName": "Get T-code hiện tại",
+					"description": "GetCurrentTCode()",
+					"action": "Get T-code hiện tại"
+				},
+				"dumpElementTree": {
+					"displayName": "Dump cây phần tử",
+					"description": "DumpElementTree()",
+					"action": "Dump cây phần tử"
+				},
+				"dumpElementTreeBasic": {
+					"displayName": "Dump cây phần tử (cơ bản)",
+					"description": "DumpElementTreeBasic()",
+					"action": "Dump cây phần tử (cơ bản)"
+				},
+				"dumpUserAreaTexts": {
+					"displayName": "Dump text vùng user",
+					"description": "DumpUserAreaTexts(userAreaId?)",
+					"action": "Dump text vùng user"
+				}
+			}
+		},
+		"branchOnSuccess": {
+			"displayName": "Phân nhánh khi thành công",
+			"description": "Khi bật: node có 2 output — Success (response.Success === true) và Failed (còn lại). Khi tắt: một output như hiện tại, mọi item đi nhánh chính."
+		},
+		"branchOnSuccessInfo": {
+			"displayName": "Phân nhánh thành công",
+			"description": "Output Success: item có Success = true. Output Failed: Success = false, thiếu field Success, hoặc lỗi được trả về khi bật Continue On Fail."
+		},
+		"connectionFieldsSourceInfo": {
+			"displayName": "Nguồn trường kết nối",
+			"description": "Bắt buộc từ JSON input item: baseUrl, apiKey, sessionId (trừ Session By Account / Kill By Account / Kill All Sessions). Tùy chọn: requestTimeoutSeconds (giây, mặc định 600), logUrl."
+		},
+		"server": {
+			"displayName": "Máy chủ",
+			"description": "Tên connection SAP Logon (Open and Connect, Session By Account, Kill By Account)"
+		},
+		"client": {
+			"displayName": "Client",
+			"description": "SAP client (ví dụ 800)"
+		},
+		"username": {
+			"displayName": "Tên đăng nhập",
+			"description": "Tên đăng nhập SAP"
+		},
+		"password": {
+			"displayName": "Mật khẩu"
+		},
+		"multiLogonAction": {
+			"displayName": "Hành vi đăng nhập đa phiên",
+			"description": "Hành vi popup multi-logon SAP. Mặc định opt2 (giữ session khác). Gửi trong body POST open-and-connect.",
+			"placeholder": "opt2",
+			"hint": "opt1, opt2, opt3"
+		},
+		"language": {
+			"displayName": "Ngôn ngữ",
+			"description": "Không gửi trong API được coi là EN — mặc định EN"
+		},
+		"idleTimeoutMinutes": {
+			"displayName": "Timeout nhàn rỗi (phút)",
+			"description": "Tùy chọn. Để trống: không gửi field idleTimeoutMinutes → server không áp idle disconnect theo ô này. Nhập số nguyên > 0 để sau bấy nhiêu phút không có request thì có thể disconnect (tùy server).",
+			"placeholder": "Để trống = không ngắt session theo idle"
+		},
+		"killReason": {
+			"displayName": "Lý do",
+			"description": "Ghi chú tùy chọn gửi trong body (reason) khi đóng session SAP.",
+			"placeholder": "batch cleanup"
+		},
+		"elementId": {
+			"displayName": "SAP Element ID",
+			"description": "Đường dẫn control SAP (tham số id)",
+			"placeholder": "wnd[0]/usr/..."
+		},
+		"textValue": {
+			"displayName": "Giá trị văn bản"
+		},
+		"textsJson": {
+			"displayName": "Texts (JSON object)",
+			"description": "Object map id control -> text. Gửi qua SetTexts — paramObject là map này (không bọc thêm key items).",
+			"placeholder": "{'{'}\"wnd[0]/usr/ctxtMATNR-LOW\":\"10000001\",\"wnd[0]/usr/ctxtWERKS-LOW\":\"1000\",\"wnd[0]/usr/ctxtLGORT-LOW\":\"0001\"{'}'}",
+			"hint": "Map SAP Element ID -> text value."
+		},
+		"checkboxesJson": {
+			"displayName": "Checkboxes (JSON object)",
+			"description": "Object map id checkbox -> \"true\"/\"false\" (cũng chấp nhận 1/0, yes/no, x). Gửi qua SetCheckboxes.",
+			"placeholder": "{'{'}\"wnd[0]/usr/chk[1,49]\":\"true\",\"wnd[0]/usr/chk[1,50]\":\"false\"{'}'}",
+			"hint": "Map SAP Element ID -> true/false."
+		},
+		"caretPosition": {
+			"displayName": "Caret Position"
+		},
+		"checkboxValue": {
+			"displayName": "Checkbox Value"
+		},
+		"comboKey": {
+			"displayName": "Combo Key"
+		},
+		"comboText": {
+			"displayName": "Combo Text"
+		},
+		"virtualKey": {
+			"displayName": "Virtual Key",
+			"description": "Mã SAP VKey (Int32)"
+		},
+		"transactionCode": {
+			"displayName": "Transaction Code",
+			"placeholder": "MM03"
+		},
+		"tabStripId": {
+			"displayName": "Tab Strip ID",
+			"description": "Đường dẫn TabStrip (tabStripId). Có thể bỏ trống nếu Tab ID là path đầy đủ tới tab (recorder .select trên tabp...).",
+			"placeholder": "wnd[0]/usr/.../tabsHEADER_DETAIL"
+		},
+		"tabId": {
+			"displayName": "Tab ID",
+			"description": "Id tab ngắn (kèm Tab Strip ID) hoặc path đầy đủ tới tab — tương đương recorder tabp....select",
+			"placeholder": "tabpTABHDT11 hoặc wnd[0]/usr/.../tabpTABHDT11"
+		},
+		"toolbarId": {
+			"displayName": "Toolbar ID"
+		},
+		"buttonIndex": {
+			"displayName": "Button Index"
+		},
+		"shellId": {
+			"displayName": "Shell ID",
+			"description": "Đường dẫn GuiShell SAP (tham số shellId)",
+			"placeholder": "wnd[0]/shellcont/shell/shellcont[1]/shell[0]"
+		},
+		"buttonId": {
+			"displayName": "Grid Button ID",
+			"description": "PressGridToolbarButton — buttonId"
+		},
+		"containerId": {
+			"displayName": "Container ID",
+			"description": "ScrollPage / ResetScroll — id container có verticalScrollbar (vd. wnd[0]/usr).",
+			"placeholder": "wnd[0]/usr"
+		},
+		"scrollPosition": {
+			"displayName": "Scroll Position",
+			"description": "ScrollPage — ≥ 0 đặt tuyệt đối; < 0 (mặc định -1) = cuộn thêm PageSize (hoặc +1)."
+		},
+		"tooltip": {
+			"displayName": "Tooltip"
+		},
+		"gridId": {
+			"displayName": "Grid ID"
+		},
+		"gridRow": {
+			"displayName": "Grid Row Index"
+		},
+		"columnName": {
+			"displayName": "Column Name",
+			"description": "ALV grid hoặc GuiTree: tên cột (string), ví dụ &Hierarchy"
+		},
+		"cellValue": {
+			"displayName": "Cell Value"
+		},
+		"pageIndex": {
+			"displayName": "Page Index"
+		},
+		"pageSize": {
+			"displayName": "Page Size",
+			"description": "GetGridPage — mặc định API 100"
+		},
+		"treeId": {
+			"displayName": "Tree ID",
+			"description": "Đường dẫn GuiTree (treeId). SelectTreeNode: recorder selectedNode; SelectTreeItem: shell column tree.",
+			"placeholder": "wnd[0]/.../shell hoặc .../cntlTEXT_TYPES_0100/shell"
+		},
+		"nodeKey": {
+			"displayName": "Node Key",
+			"description": "SelectTreeNode: mã node (ví dụ F01). SelectTreeItem: key cột — số có thể gửi \"2\" thay vì pad space.",
+			"placeholder": "F01 hoặc 2"
+		},
+		"tableId": {
+			"displayName": "Table ID"
+		},
+		"tableRow": {
+			"displayName": "Table Row Index"
+		},
+		"tableCol": {
+			"displayName": "Table Column Index",
+			"description": "Table control: chỉ số cột (Int32)"
+		},
+		"savePath": {
+			"displayName": "Save Path",
+			"placeholder": "C:\\temp\\export.xlsx"
+		},
+		"fileType": {
+			"displayName": "File Type",
+			"description": "SelectLocalFileExport — optional (mặc định XLSX)"
+		},
+		"userAreaId": {
+			"displayName": "User Area ID",
+			"description": "DumpUserAreaTexts — optional (mặc định wnd[1]/usr)"
+		},
+		"idPattern": {
+			"displayName": "ID Pattern",
+			"description": "FindIds — pattern path SAP (hỗ trợ `...`), trả danh sách id relative bắt đầu bằng wnd[",
+			"placeholder": "wnd[0]/usr/.../cmbEKKO_CI-POADDR"
+		},
+		"containsSearchText": {
+			"displayName": "Text To Find",
+			"description": "ContainsText — tìm chuỗi trên màn hình"
+		},
+		"handlePopupAction": {
+			"displayName": "Popup Action",
+			"description": "Tham số action cho HandlePopup (theo ISapPopup)"
+		},
+		"timeoutSeconds": {
+			"displayName": "Timeout (Seconds)",
+			"description": "WaitForElement / WaitUntilGone"
+		},
+		"waitSapTimeoutSeconds": {
+			"displayName": "Wait For SAP (Seconds)",
+			"description": "WaitForSap — optional timeoutSeconds (API mặc 30)."
+		},
+		"sleepMs": {
+			"displayName": "Sleep (Ms)"
+		},
+		"botid": {
+			"displayName": "Bot ID",
+			"description": "Key webhook nhóm WeCom. Node gửi POST tới https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key= + botid.",
+			"placeholder": "webhook-key"
+		},
+		"msgtype": {
+			"displayName": "Message Type",
+			"description": "Loại tin nhắn webhook WeCom: text, markdown, markdown_v2 hoặc image.",
+			"options": {
+				"text": {
+					"displayName": "Text"
+				},
+				"markdown": {
+					"displayName": "Markdown"
+				},
+				"markdown_v2": {
+					"displayName": "Markdown V2"
+				},
+				"image": {
+					"displayName": "Image"
+				}
+			}
+		},
+		"content": {
+			"displayName": "Content",
+			"description": "Nội dung gửi trong text.content / markdown.content / markdown_v2.content tùy msgtype.",
+			"placeholder": "Noi dung tin nhan..."
+		},
+		"mentionedList": {
+			"displayName": "Mentioned List",
+			"description": "Tùy chọn. userid WeCom cần {'@'}mention (text.mentioned_list). Nhiều giá trị: phân tách bằng dấu phẩy. Dùng {'@'}all để mention tất cả.",
+			"placeholder": "wangqing,{'@'}all"
+		},
+		"mentionedMobileList": {
+			"displayName": "Mentioned Mobile List",
+			"description": "Tùy chọn. Số điện thoại cần {'@'}mention (text.mentioned_mobile_list). Nhiều giá trị: phân tách bằng dấu phẩy. Dùng {'@'}all để mention tất cả.",
+			"placeholder": "13800001111,{'@'}all"
+		},
+		"base64": {
+			"displayName": "Image Base64",
+			"description": "Ảnh mã hóa base64 (không kèm prefix data:image/...). Dùng khi msgtype = image.",
+			"placeholder": "iVBORw0KGgoAAAANSUhEUgAA..."
+		},
+		"md5": {
+			"displayName": "Image MD5",
+			"description": "MD5 của nội dung ảnh (trước khi base64). Dùng khi msgtype = image.",
+			"placeholder": "md5-hash-of-image-bytes"
+		},
+		"empids": {
+			"displayName": "Emp IDs",
+			"description": "Mã nhân viên nhận tin. Nhiều mã: phân tách bằng dấu | (ví dụ A001|A002).",
+			"placeholder": "A001|A002",
+			"hint": "A001|A002"
+		},
+		"message": {
+			"displayName": "Message",
+			"description": "Nội dung tin nhắn gửi qua ROS Wecom.",
+			"placeholder": "Noi dung tin nhan WeCom..."
+		},
+		"multiSelCellIdBase": {
+			"displayName": "Multi Sel Cell ID Base",
+			"description": "Path ô nhập Multiple Selection (không kèm [row,col]) — tham số cellIdBase.",
+			"placeholder": "wnd[1]/usr/.../tblSAPLALDBSINGLE/ctxtRSCSEL-SLOW_I"
+		},
+		"multiSelItems": {
+			"displayName": "Multi Sel Items",
+			"description": "Danh sách giá trị (items) — phân tách bằng dấu phẩy, chấm phẩy, xuống dòng hoặc tab.",
+			"placeholder": "1,2,3,4,5 hoặc 1;2;3"
+		},
+		"multiSelOpenButtonId": {
+			"displayName": "Multi Sel Open Button ID",
+			"description": "Nút mở popup Multiple Selection (openButtonId) — chỉ Open, Fill & Confirm.",
+			"placeholder": "wnd[0]/usr/btn%_BA_MATNR_%_APP_%-VALU_PUSH"
+		},
+		"multiSelDataRow": {
+			"displayName": "Multi Sel Data Row",
+			"description": "Hàng dữ liệu trong bảng popup (dataRow, mặc định 1)."
+		},
+		"multiSelWindowIndex": {
+			"displayName": "Multi Sel Window Index",
+			"description": "Chỉ số cửa sổ popup wnd[n] (windowIndex, mặc định 1)."
+		},
+		"multiSelSendEnterOnScroll": {
+			"displayName": "Multi Sel Send Enter On Scroll",
+			"description": "Gửi Enter trên wnd[n] khi cuộn sang vùng mới (sendEnterOnScroll)."
+		},
+		"multiSelConfirmButtonIndices": {
+			"displayName": "Multi Sel Confirm Button Indices",
+			"description": "Chỉ số nút xác nhận trên tbar[0] (confirmButtonIndices). Fill: để trống = không bấm. Open: mặc định 0,8.",
+			"placeholder": "0,8"
+		},
+		"logCommand": {
+			"displayName": "Log Command",
+			"description": "Gia tri field command trong body POST logUrl.",
+			"placeholder": "Ten lenh hoac buoc workflow..."
+		},
+		"logContent": {
+			"displayName": "Log Message",
+			"description": "Gia tri field message trong body POST logUrl.",
+			"placeholder": "Noi dung log..."
+		}
+	}
+}

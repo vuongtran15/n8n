@@ -1,0 +1,6 @@
+# Local overrides — keep n8n.env as the committed template
+.env
+.env.*
+!.env.example
+*.local
+data/

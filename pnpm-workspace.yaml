@@ -50,6 +50,8 @@ packages:
   - packages/modules/**
   - packages/extensions/**
   - packages/testing/**
+  # Kito custom nodes (outside nodes-base — fork/merge safe)
+  - custom/*
 
 catalog:
   '@ai-sdk/alibaba': ^2.0.32

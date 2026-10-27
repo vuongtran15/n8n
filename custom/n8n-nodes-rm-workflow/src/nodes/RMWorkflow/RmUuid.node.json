@@ -1,0 +1,13 @@
+{
+	"node": "CUSTOM.rmUuid",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["RM Workflow"],
+	"subcategories": {
+		"RM Workflow": ["RM Workflow"]
+	},
+	"alias": ["rm", "uuid", "guid", "session", "random", "key", "mã khóa"],
+	"resources": {
+		"primaryDocumentation": []
+	}
+}

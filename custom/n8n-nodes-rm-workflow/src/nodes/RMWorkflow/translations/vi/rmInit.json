@@ -1,0 +1,70 @@
+{
+	"displayName": "RM Init",
+	"description": "Khởi tạo baseUrl, apiKey, sessionId (và tùy chọn thông tin SAP) cho các node RM tiếp theo",
+	"properties": {
+		"toolConnectionNotice": {
+			"displayName": "Kết nối Tool",
+			"description": "Các ô có dấu * là bắt buộc. Session ID dạng GUID — bấm Random Session ID để tạo mới."
+		},
+		"baseUrl": {
+			"displayName": "Base URL",
+			"description": "Host SAP/Web Automation API"
+		},
+		"apiKey": {
+			"displayName": "API Key",
+			"description": "Header api-key khi gọi tool API"
+		},
+		"sessionId": {
+			"displayName": "Session ID",
+			"description": "GUID phiên dùng xuyên suốt các node RM tiếp theo (sửa tay hoặc Random)"
+		},
+		"randomSessionId": {
+			"displayName": "Random Session ID",
+			"description": "Tạo Session ID mới dạng GUID"
+		},
+		"requestTimeoutSeconds": {
+			"displayName": "Timeout yêu cầu (giây)",
+			"description": "Timeout axios khi gọi API (mặc định 600)"
+		},
+		"logUrl": {
+			"displayName": "Log URL",
+			"description": "Tùy chọn. Callback log"
+		},
+		"enableSapOptions": {
+			"displayName": "Bật tùy chọn SAP",
+			"description": "Bật để nhập thông tin kết nối SAP (không bắt buộc). Dùng khi workflow sẽ Open and Connect."
+		},
+		"sapOptionalNotice": {
+			"displayName": "Kết nối SAP",
+			"description": "Các field SAP dưới đây không bắt buộc. Chỉ điền những gì cần cho Open and Connect."
+		},
+		"server": {
+			"displayName": "Server",
+			"description": "Tên connection SAP Logon"
+		},
+		"client": {
+			"displayName": "Client",
+			"description": "SAP client"
+		},
+		"username": {
+			"displayName": "Username",
+			"description": "Tên đăng nhập SAP"
+		},
+		"password": {
+			"displayName": "Password",
+			"description": "Mật khẩu SAP"
+		},
+		"multiLogonAction": {
+			"displayName": "Multi Logon Action",
+			"description": "Tùy chọn. opt1 / opt2 / opt3"
+		},
+		"language": {
+			"displayName": "Language",
+			"description": "Tùy chọn. Ngôn ngữ SAP"
+		},
+		"idleTimeoutMinutes": {
+			"displayName": "Idle Timeout (phút)",
+			"description": "Tùy chọn. Phút idle trước khi có thể disconnect"
+		}
+	}
+}

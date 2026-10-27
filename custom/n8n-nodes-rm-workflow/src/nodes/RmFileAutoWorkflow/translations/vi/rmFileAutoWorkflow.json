@@ -1,0 +1,70 @@
+{
+	"displayName": "RM FILE AUTO",
+	"description": "Tự động hóa File & Excel (/file-auto)",
+	"properties": {
+		"operation": {
+			"displayName": "Operation",
+			"description": "Connect / Disconnect / File / Excel"
+		},
+		"branchOnSuccess": {
+			"displayName": "Nhánh theo Success",
+			"description": "Bật 2 output Success / Failed"
+		},
+		"rootDirectory": {
+			"displayName": "Thư mục gốc",
+			"description": "Sandbox trên máy worker"
+		},
+		"excelPath": {
+			"displayName": "Đường dẫn Excel",
+			"description": "Path .xlsx trong root"
+		},
+		"excelWriteMode": {
+			"displayName": "Chế độ ghi Excel",
+			"description": "Table / Cells / Range / Style / Batch"
+		},
+		"excelDataSource": {
+			"displayName": "Nguồn dữ liệu",
+			"description": "JSON hoặc Input Items"
+		},
+		"headersJson": {
+			"displayName": "Headers JSON",
+			"description": "Tên cột hoặc map field→header"
+		},
+		"dataJson": {
+			"displayName": "Data JSON",
+			"description": "Dữ liệu bảng / range"
+		},
+		"operationsJson": {
+			"displayName": "Operations JSON",
+			"description": "Batch nhiều sheet/ops"
+		},
+		"uploadUrl": {
+			"displayName": "URL upload",
+			"description": "URL nhận POST multipart"
+		},
+		"uploadPath": {
+			"displayName": "Đường dẫn",
+			"description": "File hoặc thư mục trên worker"
+		},
+		"uploadPathsJson": {
+			"displayName": "Paths JSON",
+			"description": "Mảng JSON thêm đường dẫn"
+		},
+		"uploadFormFieldsJson": {
+			"displayName": "Form Fields JSON",
+			"description": "Tham số form kèm theo"
+		},
+		"uploadFileFieldName": {
+			"displayName": "Tên field file",
+			"description": "Tên field multipart (mặc định file)"
+		},
+		"uploadZipFolder": {
+			"displayName": "Nén thư mục (zip)",
+			"description": "Nén thư mục thành một .zip rồi upload"
+		},
+		"uploadTimeoutSeconds": {
+			"displayName": "Timeout (giây)",
+			"description": "Timeout upload, mặc định 600"
+		}
+	}
+}
