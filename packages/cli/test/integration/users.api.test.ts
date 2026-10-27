@@ -234,6 +234,16 @@ describe('GET /users', () => {
 				expect(_user.isOwner).toBe(false);
 			});
 
+			test('should filter users by a scope their global role holds', async () => {
+				const response = await ownerAgent
+					.get('/users')
+					.query('filter={ "scope": "nodeTypePolicy:manage" }')
+					.expect(200);
+
+				const emails = response.body.data.items.map((user: PublicUser) => user.email);
+				expect(emails.sort()).toEqual(['admin@n8n.io', 'owner@n8n.io']);
+			});
+
 			test('should filter users by mfaEnabled field', async () => {
 				const response = await ownerAgent
 					.get('/users')
@@ -1165,7 +1175,7 @@ describe('DELETE /users/:id', () => {
 					projectId: transfereePersonalProject.id,
 					role: 'workflow:owner',
 				}),
-			).resolves.not.toBeNull,
+			).resolves.not.toBeNull(),
 			expect(
 				sharedCredentialsRepository.findOneBy({
 					credentialsId: ownedCredential.id,
@@ -1188,7 +1198,7 @@ describe('DELETE /users/:id', () => {
 					projectId: transfereePersonalProject.id,
 					role: 'credential:user',
 				}),
-			),
+			).resolves.not.toBeNull(),
 
 			// the transferee is still owner of the workflow and credential they shared with the user to delete
 			expect(
@@ -1390,13 +1400,13 @@ describe('PATCH /users/:id/role', () => {
 	beforeAll(async () => {
 		await testDb.truncate(['User']);
 
-		[owner, admin, otherAdmin, member, otherMember] = await Promise.all([
+		[owner, admin, otherAdmin, member, otherMember] = [
 			await createOwner(),
 			await createAdmin(),
 			await createAdmin(),
 			await createMember(),
 			await createMember(),
-		]);
+		];
 
 		ownerAgent = testServer.authAgentFor(owner);
 		adminAgent = testServer.authAgentFor(admin);

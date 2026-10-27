@@ -5,6 +5,14 @@ import { createRouter, createMemoryHistory, type Router } from 'vue-router';
 import SessionTimelineTable from '../components/SessionTimelineTable.vue';
 import type { TimelineItem } from '../session-timeline.types';
 
+vi.mock('@/app/stores/nodeTypes.store', function () {
+	return {
+		useNodeTypesStore() {
+			return { getNodeType() {} };
+		},
+	};
+});
+
 vi.mock('@n8n/design-system', async (importOriginal) => ({
 	...(await importOriginal()),
 	N8nRecycleScroller: {
@@ -377,5 +385,31 @@ describe('SessionTimelineTable', () => {
 		await workflowLink.trigger('keydown', { key: ' ' });
 
 		expect(w.emitted('select')).toBeUndefined();
+	});
+	describe('notice slot', () => {
+		function mountWithNotice(visibleKinds = new Set<string>()) {
+			return mount(SessionTimelineTable, {
+				props: { items: makeItems(), selectedIndex: null, visibleKinds, noticeIndex: 2 },
+				slots: { notice: '<div data-test-id="notice-content" />' },
+				global: { plugins: [makeRouter()] },
+			});
+		}
+
+		it('renders one notice row directly below the matching event row', () => {
+			const w = mountWithNotice();
+
+			const noticeRows = w.findAll('[data-test-id="timeline-notice-row"]');
+			expect(noticeRows).toHaveLength(1);
+			expect(
+				noticeRows[0].element.previousElementSibling?.getAttribute('data-timeline-row-id'),
+			).toBe('event-2');
+			expect(noticeRows[0].find('[data-test-id="notice-content"]').exists()).toBe(true);
+		});
+
+		it('omits the notice when its event row is filtered out', () => {
+			const w = mountWithNotice(new Set<string>(['workflow']));
+
+			expect(w.find('[data-test-id="timeline-notice-row"]').exists()).toBe(false);
+		});
 	});
 });

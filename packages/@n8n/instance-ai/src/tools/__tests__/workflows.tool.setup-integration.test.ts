@@ -47,7 +47,7 @@ async function openSetupCard(preferNewCredentials?: string[]) {
 	const context = createContext();
 	const suspend = vi.fn();
 	await executeTool(
-		createWorkflowsTool(context, 'full'),
+		createWorkflowsTool(context),
 		{
 			action: 'setup',
 			workflowId: 'wf1',
@@ -59,7 +59,7 @@ async function openSetupCard(preferNewCredentials?: string[]) {
 	return payload.setupRequests[0];
 }
 
-describe('workflows(action="setup") credential preselection', () => {
+describe('workflow_builder_workflows(action="setup") credential preselection', () => {
 	it('marks the card as preferring a new credential when the user asked for one', async () => {
 		const request = await openSetupCard(['slackApi']);
 

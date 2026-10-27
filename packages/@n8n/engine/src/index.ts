@@ -10,16 +10,23 @@ export {
 	InvalidIdentityTokenError,
 	mintActionToken,
 	mintIdentityToken,
+	mintResumeToken,
 	SharedSecretIdentityVerifier,
 	verifyActionToken,
 } from './auth';
 export type { AuthenticatedCaller, ActionScope, IdentityVerifier } from './auth';
 
 export type {
+	CancelExecutionResponse,
 	EngineErrorResponse,
 	ExecutionSnapshot,
-	ExecutionStepsResponse,
 	StepDetail,
+} from './server';
+export type {
+	FindLatestExecutionRequest,
+	SearchExecutionsRequest,
+	SearchExecutionsResponse,
+	ExecutionListItem,
 } from './server';
 
 // The publisher stays internal: no host constructs or swaps one.
@@ -34,6 +41,27 @@ export type {
 	LifecycleEventBatch,
 } from './lifecycle-events';
 
+export {
+	createResponseEmitter,
+	executionResponseSchema,
+	noopExecutionResponseSender,
+	noopResponseEmitter,
+	RESPONSE_EXPECTATION_KINDS,
+	responseExpectationSchema,
+} from './response-channel';
+export type {
+	ChunkMessage,
+	EndedMessage,
+	ExecutionResponse,
+	ExecutionResponseSender,
+	ResponseEmitter,
+	ResponseExpectation,
+	ResponseExpectationKind,
+	ResponseMessage,
+	UndeliverableMessage,
+} from './response-channel';
+
+export { UnimplementedError } from './common';
 export type { JsonObject, JsonValue } from './common';
 
 export { deriveLoops, isBatchStepConfig } from './graph';
@@ -43,11 +71,14 @@ export type {
 	GraphNode,
 	StepConfig,
 	StepType,
+	StoredWorkflowGraph,
 	WorkflowGraph,
 	WorkflowLoop,
 } from './graph';
 
 export type {
+	ExecutionFilesDeleter,
+	ExecutionLocation,
 	ExternalDependencies,
 	IStepExecutor,
 	StepExecutionContext,
@@ -73,10 +104,12 @@ export type {
 
 export { ExecutionNotFoundError, StepNotFoundError } from './execution';
 export type {
+	CallerContext,
 	ExecutionMode,
 	ExecutionViewStore,
 	ExecutionRecord,
 	ExecutionStatus,
+	DueStep,
 	ExecutionStore,
 	ExecutionView,
 	NewExecutionRecord,
@@ -87,11 +120,15 @@ export type {
 	StepKey,
 	StepKeyId,
 	StepRecord,
+	ResumeCause,
 	StepSlots,
 	StepStatus,
 	StepStore,
 	StepView,
+	SeededSteps,
 	TriggerOutputs,
+	WaitDeclaration,
+	WorkflowDocument,
 } from './execution';
 
 export { createDataSource, WorkflowExecution, WorkflowStepExecution } from './database';

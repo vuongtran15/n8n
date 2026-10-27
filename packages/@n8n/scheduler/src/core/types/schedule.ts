@@ -103,14 +103,21 @@ export interface ScheduledJob {
 	nextRunAt: Date | null; // the next instant the materializer materializes from.
 	lastFiredAt: Date | null;
 	maxAttempts: number;
+	/** How long one attempt of an occurrence may run before the executor stops it. */
+	timeoutSeconds: number;
+	/**
+	 * How many of this job's occurrences may run at the same time. `null` means no
+	 * limit. At least 1 when set.
+	 */
+	concurrencyLimit: number | null;
 	/** What to do with occurrences that came due while nothing ran them. */
 	misfirePolicy: ScheduledJobMisfirePolicy;
 	/** How late an occurrence may be before {@link misfirePolicy} applies to it. */
 	misfireGraceSeconds: number;
 	/**
 	 * Groups jobs for `coalesce_owner`: same value, same group. The scheduler
-	 * only compares values, it never reads them. `null` means the job stands
-	 * alone. Required so an adapter that forgets to map it fails to compile.
+	 * only compares values, it never reads them. Required so an adapter that
+	 * forgets to map it fails to compile.
 	 */
-	ownerKey: string | null;
+	ownerKey: string;
 }

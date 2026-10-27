@@ -1,5 +1,4 @@
-import type { ToolDescriptor } from '@n8n/agents';
-import { type AgentJsonConfig, type AgentSkill } from '@n8n/api-types';
+import { type AgentSkill, type StoredAgentConfig } from '@n8n/api-types';
 import { JsonColumn, WithTimestamps } from '@n8n/db';
 import {
 	Column,
@@ -32,17 +31,16 @@ export class AgentHistory extends WithTimestamps {
 	agent: Relation<Agent>;
 
 	@JsonColumn({ nullable: true, default: null })
-	schema: AgentJsonConfig | null;
+	schema: StoredAgentConfig | null;
 
 	@JsonColumn({ nullable: true, default: null })
-	tools: Record<
-		string,
-		{
-			code: string;
-			descriptor: ToolDescriptor;
-		}
-	> | null;
+	tools: Agent['tools'] | null;
 
+	/**
+	 * @deprecated A published version keeps its skills as pins in
+	 * `agent_version_skill_dependency`. Read them through `AgentSkillRefsService`. Only
+	 * the data migration reads this column, and a later release drops it.
+	 */
 	@JsonColumn({ nullable: true, default: null })
 	skills: Record<string, AgentSkill> | null;
 
