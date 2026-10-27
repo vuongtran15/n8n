@@ -7,6 +7,8 @@ set "CACHE_PUBLIC=%USERPROFILE%\.cache\n8n\public"
 set "RESET_LOG=%ROOT%\reset-build-start-n8n-pm2.log"
 set "RESET_MODE=light"
 set "MEM=16384"
+REM Corepack hoi Y/n khi tai pnpm — bat + redirect log khong tuong tac nen treo
+set "COREPACK_ENABLE_DOWNLOAD_PROMPT=0"
 
 REM Usage:
 REM   reset-build-start-n8n-pm2.bat           -> pnpm reset (giu node_modules)
