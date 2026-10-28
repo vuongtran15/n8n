@@ -1294,13 +1294,22 @@ const onWorkflowActiveToggle = async (data: { id: string; active: boolean }) => 
 	}
 };
 
-/** Patch the list immediately — full refetch alone can lag behind the archive/delete API. */
+/**
+ * Patch the list in place. Do not call fetchWorkflows() right away — a cached/stale
+ * GET can put the old row back and undo the optimistic update (delete looked stuck).
+ */
+const refreshListCountsOnly = () => {
+	void foldersStore.fetchTotalWorkflowsAndFoldersCount(
+		route.params.projectId as string | undefined,
+		currentFolderId.value ?? undefined,
+	);
+};
+
 const onWorkflowArchived = (data: { id: string }) => {
 	const index = workflowsAndFolders.value.findIndex(
 		(w): w is WorkflowListItem => w.resource !== 'folder' && w.id === data.id,
 	);
 	if (index === -1) {
-		void refreshWorkflows();
 		return;
 	}
 	if (filters.value.showArchived) {
@@ -1313,8 +1322,11 @@ const onWorkflowArchived = (data: { id: string }) => {
 		});
 	} else {
 		workflowsAndFolders.value = workflowsAndFolders.value.filter((w) => w.id !== data.id);
+		if (workflowsListStore.totalWorkflowCount > 0) {
+			workflowsListStore.totalWorkflowCount -= 1;
+		}
 	}
-	void refreshWorkflows();
+	refreshListCountsOnly();
 };
 
 const onWorkflowUnarchived = (data: { id: string }) => {
@@ -1328,12 +1340,16 @@ const onWorkflowUnarchived = (data: { id: string }) => {
 			isArchived: false,
 		});
 	}
-	void refreshWorkflows();
+	refreshListCountsOnly();
 };
 
 const onWorkflowDeleted = (data: { id: string }) => {
+	const before = workflowsAndFolders.value.length;
 	workflowsAndFolders.value = workflowsAndFolders.value.filter((w) => w.id !== data.id);
-	void refreshWorkflows();
+	if (workflowsAndFolders.value.length < before && workflowsListStore.totalWorkflowCount > 0) {
+		workflowsListStore.totalWorkflowCount -= 1;
+	}
+	refreshListCountsOnly();
 };
 
 const onWorkflowUnpublished = async (data: { id: string }) => {
