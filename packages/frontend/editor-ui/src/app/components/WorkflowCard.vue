@@ -102,9 +102,9 @@ const props = withDefaults(
 const emit = defineEmits<{
 	'expand:tags': [];
 	'click:tag': [tagId: string, e: PointerEvent];
-	'workflow:deleted': [];
-	'workflow:archived': [];
-	'workflow:unarchived': [];
+	'workflow:deleted': [value: { id: string }];
+	'workflow:archived': [value: { id: string }];
+	'workflow:unarchived': [value: { id: string }];
 	'workflow:unpublished': [value: { id: string }];
 	'workflow:published': [value: { id: string }];
 	'workflow:active-toggle': [value: { id: string; active: boolean }];
@@ -583,7 +583,7 @@ async function deleteWorkflowById(id: WorkflowResource['id'], name: WorkflowReso
 		}),
 		type: 'success',
 	});
-	emit('workflow:deleted');
+	emit('workflow:deleted', { id });
 }
 
 async function archiveWorkflow() {
@@ -632,7 +632,7 @@ async function archiveWorkflow() {
 		},
 		type: 'success',
 	});
-	emit('workflow:archived');
+	emit('workflow:archived', { id: archivedWorkflowId });
 }
 
 async function unarchiveWorkflow() {
@@ -649,7 +649,7 @@ async function unarchiveWorkflow() {
 		}),
 		type: 'success',
 	});
-	emit('workflow:unarchived');
+	emit('workflow:unarchived', { id: props.data.id });
 }
 
 const fetchHiddenBreadCrumbsItems = async () => {

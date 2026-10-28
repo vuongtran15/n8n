@@ -1294,6 +1294,48 @@ const onWorkflowActiveToggle = async (data: { id: string; active: boolean }) => 
 	}
 };
 
+/** Patch the list immediately — full refetch alone can lag behind the archive/delete API. */
+const onWorkflowArchived = (data: { id: string }) => {
+	const index = workflowsAndFolders.value.findIndex(
+		(w): w is WorkflowListItem => w.resource !== 'folder' && w.id === data.id,
+	);
+	if (index === -1) {
+		void refreshWorkflows();
+		return;
+	}
+	if (filters.value.showArchived) {
+		const item = workflowsAndFolders.value[index] as WorkflowListItem;
+		workflowsAndFolders.value.splice(index, 1, {
+			...item,
+			isArchived: true,
+			active: false,
+			activeVersionId: null,
+		});
+	} else {
+		workflowsAndFolders.value = workflowsAndFolders.value.filter((w) => w.id !== data.id);
+	}
+	void refreshWorkflows();
+};
+
+const onWorkflowUnarchived = (data: { id: string }) => {
+	const index = workflowsAndFolders.value.findIndex(
+		(w): w is WorkflowListItem => w.resource !== 'folder' && w.id === data.id,
+	);
+	if (index !== -1) {
+		const item = workflowsAndFolders.value[index] as WorkflowListItem;
+		workflowsAndFolders.value.splice(index, 1, {
+			...item,
+			isArchived: false,
+		});
+	}
+	void refreshWorkflows();
+};
+
+const onWorkflowDeleted = (data: { id: string }) => {
+	workflowsAndFolders.value = workflowsAndFolders.value.filter((w) => w.id !== data.id);
+	void refreshWorkflows();
+};
+
 const onWorkflowUnpublished = async (data: { id: string }) => {
 	const workflow: WorkflowListItem | undefined = workflowsAndFolders.value.find(
 		(w): w is WorkflowListItem => w.id === data.id,
@@ -2455,9 +2497,9 @@ const onNameSubmit = async (name: string) => {
 					:can-manage-instance-mcp="canManageInstanceMcp"
 					:is-workflow-card-mcp-toggle-enabled="isWorkflowCardMcpToggleEnabled"
 					@click:tag="onClickTag"
-					@workflow:deleted="refreshWorkflows"
-					@workflow:archived="refreshWorkflows"
-					@workflow:unarchived="refreshWorkflows"
+					@workflow:deleted="onWorkflowDeleted"
+					@workflow:archived="onWorkflowArchived"
+					@workflow:unarchived="onWorkflowUnarchived"
 					@workflow:moved="fetchWorkflows"
 					@workflow:duplicated="fetchWorkflows"
 					@workflow:unpublished="onWorkflowUnpublished"

@@ -438,7 +438,7 @@ describe('WorkflowCard', () => {
 		expect(workflowsStore.archiveWorkflow).toHaveBeenCalledWith(data.id);
 		expect(toast.showError).not.toHaveBeenCalled();
 		expect(toast.showToast).toHaveBeenCalledTimes(1);
-		expect(emitted()['workflow:archived']).toHaveLength(1);
+		expect(emitted()['workflow:archived']).toEqual([[{ id: data.id }]]);
 	});
 
 	it("should confirm 'Archive' action on active workflows", async () => {
@@ -474,7 +474,7 @@ describe('WorkflowCard', () => {
 		expect(workflowsStore.archiveWorkflow).toHaveBeenCalledWith(data.id);
 		expect(toast.showError).not.toHaveBeenCalled();
 		expect(toast.showToast).toHaveBeenCalledTimes(1);
-		expect(emitted()['workflow:archived']).toHaveLength(1);
+		expect(emitted()['workflow:archived']).toEqual([[{ id: data.id }]]);
 	});
 
 	it('should show a "Delete permanently" link in the archive toast that deletes the archived workflow', async () => {
@@ -503,7 +503,7 @@ describe('WorkflowCard', () => {
 			expect(workflowsListStore.deleteWorkflow).toHaveBeenCalledTimes(1);
 		});
 		expect(workflowsListStore.deleteWorkflow).toHaveBeenCalledWith(data.id);
-		expect(emitted()['workflow:deleted']).toHaveLength(1);
+		expect(emitted()['workflow:deleted']).toEqual([[{ id: data.id }]]);
 	});
 
 	it('should not delete when "Delete permanently" confirmation is cancelled', async () => {
@@ -559,7 +559,7 @@ describe('WorkflowCard', () => {
 		expect(workflowsStore.unarchiveWorkflow).toHaveBeenCalledWith(data.id);
 		expect(toast.showError).not.toHaveBeenCalled();
 		expect(toast.showMessage).toHaveBeenCalledTimes(1);
-		expect(emitted()['workflow:unarchived']).toHaveLength(1);
+		expect(emitted()['workflow:unarchived']).toEqual([[{ id: data.id }]]);
 	});
 
 	it("should show 'Delete' action on archived workflows", async () => {
@@ -594,7 +594,7 @@ describe('WorkflowCard', () => {
 		expect(workflowsListStore.deleteWorkflow).toHaveBeenCalledWith(data.id);
 		expect(toast.showError).not.toHaveBeenCalled();
 		expect(toast.showMessage).toHaveBeenCalledTimes(1);
-		expect(emitted()['workflow:deleted']).toHaveLength(1);
+		expect(emitted()['workflow:deleted']).toEqual([[{ id: data.id }]]);
 	});
 
 	it('should show Read only mode', async () => {
