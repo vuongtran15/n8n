@@ -20,6 +20,7 @@ const SELECTOR_OPS = operationsWithParamKind(
 	'selectorAttribute',
 	'screenshotElement',
 	'setInputFiles',
+	'waitSelector',
 );
 const SELECTOR_VALUE_OPS = operationsWithParamKind('selectorValue');
 const SELECTOR_TEXT_OPS = operationsWithParamKind('selectorText');
@@ -259,18 +260,28 @@ export function getWebCommandShortcutProperties(): INodeProperties[] {
 		{
 			displayName: 'Wait State',
 			name: 'waitState',
-			type: 'string',
+			type: 'options',
+			options: [
+				{ name: 'Visible', value: 'visible' },
+				{ name: 'Attached', value: 'attached' },
+				{ name: 'Hidden', value: 'hidden' },
+				{ name: 'Detached', value: 'detached' },
+			],
 			default: 'visible',
-			placeholder: 'visible, attached, hidden, detached',
 			description: 'Trạng thái chờ selector (Wait For Selector). Mặc định visible.',
 			displayOptions: op(...WAIT_SELECTOR_OPS),
 		},
 		{
 			displayName: 'Load State',
 			name: 'loadState',
-			type: 'string',
+			type: 'options',
+			options: [
+				{ name: 'Load', value: 'load' },
+				{ name: 'DOM Content Loaded', value: 'domcontentloaded' },
+				{ name: 'Network Idle', value: 'networkidle' },
+				{ name: 'Commit', value: 'commit' },
+			],
 			default: 'load',
-			placeholder: 'load, domcontentloaded, networkidle',
 			description: 'Trạng thái tải trang (Wait For Load State). Mặc định load.',
 			displayOptions: op(...WAIT_LOAD_OPS),
 		},
