@@ -84,9 +84,9 @@ export class RmWebAutoWorkflow implements INodeType {
 					...WEB_COMMAND_DEFINITIONS.map((cmd) => ({
 						name: cmd.displayName,
 						value: cmd.operation,
-						description: `${cmd.description} (${cmd.operation})`,
-						// NDV action search matches `action` + `name`; include both labels + operation id.
-						action: `${cmd.displayName} / ${cmd.action} / ${cmd.operation}`,
+						description: cmd.description,
+						// One clean label — NDV search matches `name` + `action` (e.g. "wait" → all Wait *).
+						action: cmd.displayName,
 					})),
 				],
 				default: 'connect',
