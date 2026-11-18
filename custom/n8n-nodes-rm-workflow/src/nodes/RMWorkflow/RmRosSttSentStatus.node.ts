@@ -91,7 +91,7 @@ export class RmRosSttSentStatus implements INodeType {
 				default: '',
 				typeOptions: { theme: 'info' },
 				description:
-					'GET …/check-wecom/{executionId}. Ưu tiên JSON input: executionId / ExecutionId. True = Sent === true; False = còn lại (kể cả executionId không hợp lệ).',
+					'GET …/check-wecom/{executionId}. Portal :200 không cần api-key. Gateway :8081 bắt buộc header api-key (RM Init / JSON). True = Sent === true.',
 			},
 			{
 				displayName: 'Base URL',
@@ -99,7 +99,18 @@ export class RmRosSttSentStatus implements INodeType {
 				type: 'string',
 				default: DEFAULT_BASE_URL,
 				placeholder: 'https://ros.reginamiracle.com:200',
-				description: 'Host API portal (không kèm path check-wecom).',
+				description:
+					'Host API (không kèm path). Portal: https://ros.reginamiracle.com:200 — Gateway nội bộ: http://172.19.17.201:8081.',
+			},
+			{
+				displayName: 'API Key',
+				name: 'apiKey',
+				type: 'string',
+				typeOptions: { password: true },
+				default: '',
+				placeholder: 'chỉ cần khi gọi :8081',
+				description:
+					'Header api-key. Bắt buộc với gateway :8081. Portal :200 để trống. Alias JSON: apiKey / api-key.',
 			},
 			{
 				displayName: 'Execution ID',
@@ -149,6 +160,16 @@ export class RmRosSttSentStatus implements INodeType {
 				),
 			).trim();
 
+			const apiKey = preferStr(
+				itemJson,
+				'apiKey',
+				preferStr(
+					itemJson,
+					'api-key',
+					String(this.getNodeParameter('apiKey', i, '') ?? '').trim(),
+				),
+			).trim();
+
 			let timeoutSeconds = this.getNodeParameter(
 				'requestTimeoutSeconds',
 				i,
@@ -182,11 +203,16 @@ export class RmRosSttSentStatus implements INodeType {
 			}
 
 			const url = `${baseUrl}${DEFAULT_PATH_PREFIX}/${encodeURIComponent(executionId)}`;
+			const headers: Record<string, string> = {};
+			if (apiKey) {
+				headers['api-key'] = apiKey;
+			}
 
 			try {
 				const response = await axios.get<unknown>(url, {
 					timeout: timeoutSeconds * 1000,
 					proxy: false,
+					headers,
 					validateStatus: () => true,
 				});
 
