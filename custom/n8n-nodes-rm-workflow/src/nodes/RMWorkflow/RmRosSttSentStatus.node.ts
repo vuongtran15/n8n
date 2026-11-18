@@ -25,11 +25,17 @@ function valueFromItemJson(itemJson: IDataObject, canonicalKey: string): unknown
 	return undefined;
 }
 
-function preferStr(itemJson: IDataObject, key: string, formVal: string): string {
-	const v = valueFromItemJson(itemJson, key);
-	if (v === undefined || v === null) return formVal;
-	const s = String(v).trim();
-	return s !== '' ? s : formVal;
+/** Ô trên form thắng JSON input — tránh RM Init đè baseUrl sang :8081. */
+function preferFormStr(formVal: string, itemJson: IDataObject, ...jsonKeys: string[]): string {
+	const form = formVal.trim();
+	if (form !== '') return form;
+	for (const key of jsonKeys) {
+		const v = valueFromItemJson(itemJson, key);
+		if (v === undefined || v === null) continue;
+		const s = String(v).trim();
+		if (s !== '') return s;
+	}
+	return '';
 }
 
 function asObject(data: unknown): IDataObject {
@@ -91,7 +97,7 @@ export class RmRosSttSentStatus implements INodeType {
 				default: '',
 				typeOptions: { theme: 'info' },
 				description:
-					'GET …/check-wecom/{executionId}. Portal :200 không cần api-key. Gateway :8081 bắt buộc header api-key (RM Init / JSON). True = Sent === true.',
+					'GET …/check-wecom/{executionId}. Không dùng sessionId. Portal :200 — Base URL trên form thắng JSON (RM Init không đè). API Key để trống. True = Sent === true.',
 			},
 			{
 				displayName: 'Base URL',
@@ -100,7 +106,7 @@ export class RmRosSttSentStatus implements INodeType {
 				default: DEFAULT_BASE_URL,
 				placeholder: 'https://ros.reginamiracle.com:200',
 				description:
-					'Host API (không kèm path). Portal: https://ros.reginamiracle.com:200 — Gateway nội bộ: http://172.19.17.201:8081.',
+					'Host API (không kèm path). Ô form thắng JSON input. Mặc định portal :200 — không cần sessionId / api-key.',
 			},
 			{
 				displayName: 'API Key',
@@ -108,9 +114,9 @@ export class RmRosSttSentStatus implements INodeType {
 				type: 'string',
 				typeOptions: { password: true },
 				default: '',
-				placeholder: 'chỉ cần khi gọi :8081',
+				placeholder: 'để trống với portal :200',
 				description:
-					'Header api-key. Bắt buộc với gateway :8081. Portal :200 để trống. Alias JSON: apiKey / api-key.',
+					'Header api-key. Portal :200 để trống. Chỉ điền khi chủ động gọi gateway :8081. Ô form thắng JSON.',
 			},
 			{
 				displayName: 'Execution ID',
@@ -120,7 +126,7 @@ export class RmRosSttSentStatus implements INodeType {
 				required: true,
 				placeholder: '={{ $execution.id }}',
 				description:
-					'ID execution n8n. Mặc định $execution.id. Alias JSON: executionId / ExecutionId.',
+					'ID execution n8n (không phải sessionId). Mặc định $execution.id.',
 			},
 			{
 				displayName: 'Request Timeout (Seconds)',
@@ -142,33 +148,24 @@ export class RmRosSttSentStatus implements INodeType {
 
 		for (let i = 0; i < inputItems.length; i++) {
 			const itemJson = (inputItems[i]?.json ?? {}) as IDataObject;
-			const baseUrl = preferStr(
-				itemJson,
-				'baseUrl',
-				(this.getNodeParameter('baseUrl', i, DEFAULT_BASE_URL) as string).trim(),
-			)
-				.trim()
-				.replace(/\/+$/, '');
+			// Form thắng JSON — không lấy sessionId; không để RM Init đè baseUrl sang :8081.
+			const baseUrl = (
+				preferFormStr(
+					String(this.getNodeParameter('baseUrl', i, DEFAULT_BASE_URL) ?? ''),
+					itemJson,
+					'baseUrl',
+				) || DEFAULT_BASE_URL
+			).replace(/\/+$/, '');
 
-			const executionId = preferStr(
+			const executionId = preferFormStr(
+				String(this.getNodeParameter('executionId', i, '') ?? ''),
 				itemJson,
 				'executionId',
-				preferStr(
-					itemJson,
-					'ExecutionId',
-					String(this.getNodeParameter('executionId', i, '') ?? '').trim(),
-				),
-			).trim();
+				'ExecutionId',
+			);
 
-			const apiKey = preferStr(
-				itemJson,
-				'apiKey',
-				preferStr(
-					itemJson,
-					'api-key',
-					String(this.getNodeParameter('apiKey', i, '') ?? '').trim(),
-				),
-			).trim();
+			// Chỉ lấy từ form — không lấy apiKey/sessionId từ JSON RM Init.
+			const apiKey = String(this.getNodeParameter('apiKey', i, '') ?? '').trim();
 
 			let timeoutSeconds = this.getNodeParameter(
 				'requestTimeoutSeconds',
