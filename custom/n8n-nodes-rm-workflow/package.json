@@ -19,6 +19,7 @@
     "nodes": [
       "dist/nodes/RMWorkflow/RMWidget.node.js",
       "dist/nodes/RMWorkflow/RmRosPass.node.js",
+      "dist/nodes/RMWorkflow/RmRosSttSentStatus.node.js",
       "dist/nodes/RMWorkflow/RmInit.node.js",
       "dist/nodes/RMWorkflow/RmUuid.node.js",
       "dist/nodes/RMWorkflow/RmGlobalVar.node.js",
